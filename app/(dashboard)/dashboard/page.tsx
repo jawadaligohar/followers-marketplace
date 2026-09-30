@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, ListOrdered, ShieldCheck, User } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
@@ -48,14 +48,28 @@ export default async function DashboardOverviewPage() {
         <WalletBalanceCard walletBalanceCents={session!.user.walletBalanceCents} />
         <Card className="border-white/10 bg-white/[0.03]">
           <CardContent>
-            <div className="text-sm text-muted-foreground">Total orders</div>
-            <div className="mt-2 text-3xl font-extrabold">{orders.length > 0 ? orders.length : 0}</div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                <ListOrdered className="h-4 w-4 text-brand-400" />
+              </span>
+              Total orders
+            </div>
+            <div className="mt-4 text-3xl font-extrabold text-gradient">{orders.length}</div>
           </CardContent>
         </Card>
         <Card className="border-white/10 bg-white/[0.03]">
           <CardContent>
-            <div className="text-sm text-muted-foreground">Account role</div>
-            <div className="mt-2 text-lg font-semibold capitalize">{session?.user.role}</div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                {session?.user.role === "admin" ? (
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                ) : (
+                  <User className="h-4 w-4 text-emerald-400" />
+                )}
+              </span>
+              Account role
+            </div>
+            <div className="mt-4 text-lg font-semibold capitalize">{session?.user.role}</div>
           </CardContent>
         </Card>
       </FadeIn>

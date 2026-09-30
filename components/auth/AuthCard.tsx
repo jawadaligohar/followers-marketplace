@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ShieldCheck } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function AuthCard({
@@ -44,6 +44,16 @@ export default function AuthCard({
           <h1 className="text-xl font-bold">{title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
           <div className="mt-6">{children}</div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-6 flex items-center justify-center gap-1.5 text-xs text-white/30"
+        >
+          <ShieldCheck className="h-3.5 w-3.5" />
+          256-bit encrypted &middot; no password ever shared with us
         </motion.div>
       </div>
     </div>
