@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -23,7 +26,7 @@ export default function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="space-y-4 text-sm text-white/70">
+      <div className="space-y-4 text-sm text-muted-foreground">
         <p>
           If an account exists for <span className="text-white">{email}</span>, we&apos;ve
           sent a password reset link.
@@ -37,28 +40,31 @@ export default function ForgotPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-white/50">Email</label>
-        <input
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-xs text-muted-foreground">
+          Email
+        </Label>
+        <Input
+          id="email"
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
           placeholder="you@example.com"
         />
       </div>
 
-      <button
+      <Button
         type="submit"
+        variant="brand"
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90 disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 py-5"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         Send reset link
-      </button>
+      </Button>
 
-      <p className="text-center text-sm text-white/50">
+      <p className="text-center text-sm text-muted-foreground">
         <Link href="/login" className="font-medium text-accent-500 hover:underline">
           Back to sign in
         </Link>

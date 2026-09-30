@@ -3,18 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     const res = await fetch("/api/auth/reset-password", {
@@ -27,7 +29,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     setLoading(false);
 
     if (!res.ok) {
-      setError(data.error ?? "Something went wrong");
+      toast.error(data.error ?? "Something went wrong");
       return;
     }
 
@@ -37,7 +39,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   if (!token) {
     return (
-      <p className="text-sm text-white/60">
+      <p className="text-sm text-muted-foreground">
         This reset link is missing its token.{" "}
         <Link href="/forgot-password" className="text-accent-500 hover:underline">
           Request a new one
@@ -48,38 +50,35 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   }
 
   if (done) {
-    return <p className="text-sm text-white/70">Password updated. Redirecting to sign in…</p>;
+    return <p className="text-sm text-muted-foreground">Password updated. Redirecting to sign in…</p>;
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">
-          {error}
-        </div>
-      )}
-
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-white/50">New password</label>
-        <input
+      <div className="space-y-1.5">
+        <Label htmlFor="new-password" className="text-xs text-muted-foreground">
+          New password
+        </Label>
+        <Input
+          id="new-password"
           type="password"
           required
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
           placeholder="At least 8 characters"
         />
       </div>
 
-      <button
+      <Button
         type="submit"
+        variant="brand"
         disabled={loading}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90 disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 py-5"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         Reset password
-      </button>
+      </Button>
     </form>
   );
 }

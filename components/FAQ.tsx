@@ -1,7 +1,9 @@
-"use client";
-
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const FAQS = [
   {
@@ -27,8 +29,6 @@ const FAQS = [
 ];
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   return (
     <section id="faq" className="mx-auto max-w-4xl px-6 py-20">
       <div className="mx-auto max-w-2xl text-center">
@@ -40,34 +40,22 @@ export default function FAQ() {
         </p>
       </div>
 
-      <div className="mt-12 space-y-3">
-        {FAQS.map((faq, i) => {
-          const isOpen = openIndex === i;
-          return (
-            <div
-              key={faq.q}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
-            >
-              <button
-                onClick={() => setOpenIndex(isOpen ? null : i)}
-                className="flex w-full items-center justify-between px-6 py-4 text-left text-sm font-medium"
-              >
-                {faq.q}
-                <ChevronDown
-                  className={`h-4 w-4 shrink-0 text-white/40 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {isOpen && (
-                <div className="px-6 pb-4 text-sm leading-relaxed text-white/50">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <Accordion defaultValue={["item-0"]} className="mt-12 space-y-3">
+        {FAQS.map((faq, i) => (
+          <AccordionItem
+            key={faq.q}
+            value={`item-${i}`}
+            className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-6"
+          >
+            <AccordionTrigger className="text-left text-sm font-medium hover:no-underline">
+              {faq.q}
+            </AccordionTrigger>
+            <AccordionContent className="text-sm leading-relaxed text-white/50">
+              {faq.a}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </section>
   );
 }

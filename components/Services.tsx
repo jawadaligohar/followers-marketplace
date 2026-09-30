@@ -1,3 +1,5 @@
+"use client";
+
 import {
   FaInstagram,
   FaTiktok,
@@ -6,6 +8,8 @@ import {
   FaXTwitter,
   FaTelegram,
 } from "react-icons/fa6";
+import { motion } from "motion/react";
+import { Card } from "@/components/ui/card";
 
 const SERVICES = [
   {
@@ -66,28 +70,34 @@ export default function Services() {
       </div>
 
       <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map((service) => (
-          <div
+        {SERVICES.map((service, i) => (
+          <motion.div
             key={service.name}
-            className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-brand-500/50 hover:bg-white/[0.06]"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4, delay: i * 0.05 }}
+            whileHover={{ y: -4 }}
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-              <service.icon className={`h-5 w-5 ${service.color}`} />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold">{service.name}</h3>
-            <p className="mt-2 text-sm text-white/50">{service.desc}</p>
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-white/40">
-                From <span className="font-semibold text-white">{service.from}</span>
-              </span>
-              <a
-                href="#pricing"
-                className="text-sm font-medium text-accent-500 opacity-0 transition group-hover:opacity-100"
-              >
-                Order now →
-              </a>
-            </div>
-          </div>
+            <Card className="group border-white/10 bg-white/[0.03] p-6 transition hover:border-brand-500/50 hover:bg-white/[0.06]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                <service.icon className={`h-5 w-5 ${service.color}`} />
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">{service.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{service.desc}</p>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-sm text-white/40">
+                  From <span className="font-semibold text-white">{service.from}</span>
+                </span>
+                <a
+                  href="#pricing"
+                  className="text-sm font-medium text-accent-500 opacity-0 transition group-hover:opacity-100"
+                >
+                  Order now →
+                </a>
+              </div>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </section>

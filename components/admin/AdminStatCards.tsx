@@ -1,3 +1,5 @@
+import { Card, CardContent } from "@/components/ui/card";
+
 export default function AdminStatCards({
   totalOrders,
   totalUsers,
@@ -16,10 +18,12 @@ export default function AdminStatCards({
   return (
     <div className="grid gap-6 sm:grid-cols-3">
       {stats.map((s) => (
-        <div key={s.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="text-sm text-white/50">{s.label}</div>
-          <div className="mt-2 text-3xl font-extrabold text-gradient">{s.value}</div>
-        </div>
+        <Card key={s.label} className="border-white/10 bg-white/[0.03]">
+          <CardContent>
+            <div className="text-sm text-muted-foreground">{s.label}</div>
+            <div className="mt-2 text-3xl font-extrabold text-gradient">{s.value}</div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

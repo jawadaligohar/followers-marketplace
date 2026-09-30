@@ -1,3 +1,12 @@
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import OrderStatusBadge from "./OrderStatusBadge";
 
 export type OrderRow = {
@@ -14,44 +23,44 @@ export type OrderRow = {
 export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
   if (orders.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-center text-sm text-white/40">
+      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
         No orders yet.
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03]">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-white/40">
-            <th className="px-4 py-3 font-medium">Service</th>
-            <th className="px-4 py-3 font-medium">Quantity</th>
-            <th className="px-4 py-3 font-medium">Payment</th>
-            <th className="px-4 py-3 font-medium">Price</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-white/10">
+            <TableHead>Service</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Payment</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {orders.map((order) => (
-            <tr key={order._id} className="border-b border-white/5 last:border-0">
-              <td className="px-4 py-3">
+            <TableRow key={order._id} className="border-white/5">
+              <TableCell>
                 {order.platformLabel} {order.category}
-              </td>
-              <td className="px-4 py-3 text-white/70">{order.qtyValue.toLocaleString()}</td>
-              <td className="px-4 py-3 capitalize text-white/70">{order.paymentSource}</td>
-              <td className="px-4 py-3 text-white/70">${(order.priceCents / 100).toFixed(2)}</td>
-              <td className="px-4 py-3">
+              </TableCell>
+              <TableCell className="text-white/70">{order.qtyValue.toLocaleString()}</TableCell>
+              <TableCell className="capitalize text-white/70">{order.paymentSource}</TableCell>
+              <TableCell className="text-white/70">${(order.priceCents / 100).toFixed(2)}</TableCell>
+              <TableCell>
                 <OrderStatusBadge status={order.status} />
-              </td>
-              <td className="px-4 py-3 text-white/40">
+              </TableCell>
+              <TableCell className="text-muted-foreground">
                 {new Date(order.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Card>
   );
 }

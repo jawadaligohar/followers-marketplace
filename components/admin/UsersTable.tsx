@@ -1,7 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export type AdminUserRow = {
   _id: string;
@@ -28,6 +47,9 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
     setBusy(null);
     if (res.ok) {
       setRows((prev) => prev.map((u) => (u._id === id ? { ...u, role: role as "customer" | "admin" } : u)));
+      toast.success("Role updated");
+    } else {
+      toast.error("Failed to update role");
     }
   }
 
@@ -51,44 +73,51 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
       );
       setAdjustAmount((prev) => ({ ...prev, [id]: "" }));
       setAdjusting(null);
+      toast.success("Wallet balance updated");
+    } else {
+      toast.error(data.error ?? "Failed to adjust wallet balance");
     }
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03]">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-white/40">
-            <th className="px-4 py-3 font-medium">User</th>
-            <th className="px-4 py-3 font-medium">Role</th>
-            <th className="px-4 py-3 font-medium">Wallet</th>
-            <th className="px-4 py-3 font-medium">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-white/10">
+            <TableHead>User</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Wallet</TableHead>
+            <TableHead>Joined</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((user) => (
-            <tr key={user._id} className="border-b border-white/5 last:border-0">
-              <td className="px-4 py-3">
+            <TableRow key={user._id} className="border-white/5">
+              <TableCell>
                 <div>{user.name}</div>
-                <div className="text-xs text-white/40">{user.email}</div>
-              </td>
-              <td className="px-4 py-3">
-                <select
+                <div className="text-xs text-muted-foreground">{user.email}</div>
+              </TableCell>
+              <TableCell>
+                <Select
                   value={user.role}
                   disabled={busy === user._id}
-                  onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                  className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none capitalize"
+                  onValueChange={(value) => handleRoleChange(user._id, value as string)}
                 >
-                  <option value="customer" className="bg-[#0d0f1d]">customer</option>
-                  <option value="admin" className="bg-[#0d0f1d]">admin</option>
-                </select>
-              </td>
-              <td className="px-4 py-3">
+                  <SelectTrigger size="sm" className="h-7 text-xs capitalize">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer" className="text-xs">customer</SelectItem>
+                    <SelectItem value="admin" className="text-xs">admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell>
                 <div className="flex items-center gap-2">
                   <span className="text-white/70">${(user.walletBalanceCents / 100).toFixed(2)}</span>
                   {adjusting === user._id ? (
                     <div className="flex items-center gap-1">
-                      <input
+                      <Input
                         type="number"
                         step="0.01"
                         placeholder="+/- $"
@@ -96,15 +125,17 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                         onChange={(e) =>
                           setAdjustAmount((prev) => ({ ...prev, [user._id]: e.target.value }))
                         }
-                        className="w-24 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none"
+                        className="h-7 w-24 text-xs"
                       />
-                      <button
+                      <Button
+                        size="sm"
+                        variant="brand"
                         onClick={() => handleWalletAdjust(user._id)}
                         disabled={busy === user._id}
-                        className="rounded-lg bg-brand-500 px-2 py-1 text-xs font-medium text-white"
+                        className="h-7"
                       >
                         {busy === user._id ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <button
@@ -115,14 +146,14 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                     </button>
                   )}
                 </div>
-              </td>
-              <td className="px-4 py-3 text-white/40">
+              </TableCell>
+              <TableCell className="text-muted-foreground">
                 {new Date(user.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Card>
   );
 }

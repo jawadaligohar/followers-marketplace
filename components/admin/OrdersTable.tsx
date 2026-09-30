@@ -1,7 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type AdminOrderRow = {
   _id: string;
@@ -32,71 +49,78 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
 
     if (res.ok) {
       setRows((prev) => prev.map((r) => (r._id === id ? { ...r, status } : r)));
+      toast.success("Order status updated");
+    } else {
+      toast.error("Failed to update order status");
     }
   }
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-center text-sm text-white/40">
+      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
         No orders yet.
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03]">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wide text-white/40">
-            <th className="px-4 py-3 font-medium">Customer</th>
-            <th className="px-4 py-3 font-medium">Service</th>
-            <th className="px-4 py-3 font-medium">Qty</th>
-            <th className="px-4 py-3 font-medium">Payment</th>
-            <th className="px-4 py-3 font-medium">Price</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Date</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-white/10">
+            <TableHead>Customer</TableHead>
+            <TableHead>Service</TableHead>
+            <TableHead>Qty</TableHead>
+            <TableHead>Payment</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((order) => {
             const user = typeof order.userId === "object" ? order.userId : null;
             return (
-              <tr key={order._id} className="border-b border-white/5 last:border-0">
-                <td className="px-4 py-3">
+              <TableRow key={order._id} className="border-white/5">
+                <TableCell>
                   <div>{user?.name ?? "—"}</div>
-                  <div className="text-xs text-white/40">{user?.email}</div>
-                </td>
-                <td className="px-4 py-3">
+                  <div className="text-xs text-muted-foreground">{user?.email}</div>
+                </TableCell>
+                <TableCell>
                   {order.platformLabel} {order.category}
-                </td>
-                <td className="px-4 py-3 text-white/70">{order.qtyValue.toLocaleString()}</td>
-                <td className="px-4 py-3 capitalize text-white/70">{order.paymentSource}</td>
-                <td className="px-4 py-3 text-white/70">${(order.priceCents / 100).toFixed(2)}</td>
-                <td className="px-4 py-3">
+                </TableCell>
+                <TableCell className="text-white/70">{order.qtyValue.toLocaleString()}</TableCell>
+                <TableCell className="capitalize text-white/70">{order.paymentSource}</TableCell>
+                <TableCell className="text-white/70">${(order.priceCents / 100).toFixed(2)}</TableCell>
+                <TableCell>
                   <div className="flex items-center gap-2">
                     <OrderStatusBadge status={order.status} />
-                    <select
+                    <Select
                       value={order.status}
                       disabled={updating === order._id}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                      className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none"
+                      onValueChange={(value) => handleStatusChange(order._id, value as string)}
                     >
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s} className="bg-[#0d0f1d]">
-                          {s}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger size="sm" className="h-7 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map((s) => (
+                          <SelectItem key={s} value={s} className="text-xs">
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </td>
-                <td className="px-4 py-3 text-white/40">
+                </TableCell>
+                <TableCell className="text-muted-foreground">
                   {new Date(order.createdAt).toLocaleDateString()}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Card>
   );
 }

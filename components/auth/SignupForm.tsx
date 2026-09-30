@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import GoogleButton from "./GoogleButton";
 
 export default function SignupForm() {
@@ -12,12 +17,10 @@ export default function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     const res = await fetch("/api/auth/signup", {
@@ -29,7 +32,7 @@ export default function SignupForm() {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      setError(data.error ?? "Something went wrong");
+      toast.error(data.error ?? "Something went wrong");
       setLoading(false);
       return;
     }
@@ -50,67 +53,68 @@ export default function SignupForm() {
     <div className="space-y-5">
       <GoogleButton />
 
-      <div className="flex items-center gap-3 text-xs text-white/30">
-        <div className="h-px flex-1 bg-white/10" />
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <Separator className="flex-1" />
         or
-        <div className="h-px flex-1 bg-white/10" />
+        <Separator className="flex-1" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">
-            {error}
-          </div>
-        )}
-
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">Name</label>
-          <input
+        <div className="space-y-1.5">
+          <Label htmlFor="name" className="text-xs text-muted-foreground">
+            Name
+          </Label>
+          <Input
+            id="name"
             type="text"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             placeholder="Jane Doe"
           />
         </div>
 
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">Email</label>
-          <input
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs text-muted-foreground">
+            Email
+          </Label>
+          <Input
+            id="email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             placeholder="you@example.com"
           />
         </div>
 
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">Password</label>
-          <input
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs text-muted-foreground">
+            Password
+          </Label>
+          <Input
+            id="password"
             type="password"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             placeholder="At least 8 characters"
           />
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="brand"
           disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90 disabled:opacity-60"
+          className="flex w-full items-center justify-center gap-2 py-5"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           Create account
-        </button>
+        </Button>
       </form>
 
-      <p className="text-center text-sm text-white/50">
+      <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link href="/login" className="font-medium text-accent-500 hover:underline">
           Sign in

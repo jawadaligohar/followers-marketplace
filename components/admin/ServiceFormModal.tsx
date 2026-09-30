@@ -1,7 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { X, Plus, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { Plus, Trash2, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 export type ServiceFormTier = {
   qty: string;
@@ -38,7 +50,6 @@ export default function ServiceFormModal({
 }) {
   const [form, setForm] = useState<ServiceFormData>(initial ?? EMPTY);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   function updateTier(index: number, patch: Partial<ServiceFormTier>) {
     setForm((prev) => ({
@@ -59,7 +70,6 @@ export default function ServiceFormModal({
   }
 
   async function handleSave() {
-    setError(null);
     setSaving(true);
 
     const url = form._id ? `/api/admin/services/${form._id}` : "/api/admin/services";
@@ -82,72 +92,69 @@ export default function ServiceFormModal({
     setSaving(false);
 
     if (!res.ok) {
-      setError(data.error ?? "Something went wrong");
+      toast.error(data.error ?? "Something went wrong");
       return;
     }
 
+    toast.success(form._id ? "Service updated" : "Service created");
     onSaved();
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-      <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-[#0d0f1d] p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{form._id ? "Edit service" : "New service"}</h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{form._id ? "Edit service" : "New service"}</DialogTitle>
+        </DialogHeader>
 
-        {error && (
-          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">
-            {error}
-          </div>
-        )}
-
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/50">Platform ID</label>
-            <input
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="platformId" className="text-xs text-muted-foreground">
+              Platform ID
+            </Label>
+            <Input
+              id="platformId"
               value={form.platformId}
               onChange={(e) => setForm((p) => ({ ...p, platformId: e.target.value }))}
               placeholder="instagram"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             />
           </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/50">Platform Label</label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="platformLabel" className="text-xs text-muted-foreground">
+              Platform Label
+            </Label>
+            <Input
+              id="platformLabel"
               value={form.platformLabel}
               onChange={(e) => setForm((p) => ({ ...p, platformLabel: e.target.value }))}
               placeholder="Instagram"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             />
           </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-white/50">Category</label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="category" className="text-xs text-muted-foreground">
+              Category
+            </Label>
+            <Input
+              id="category"
               value={form.category}
               onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
               placeholder="Followers"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
             />
           </div>
           <div className="flex items-end gap-2">
             <label className="flex items-center gap-2 text-sm text-white/70">
-              <input
-                type="checkbox"
+              <Switch
                 checked={form.active}
-                onChange={(e) => setForm((p) => ({ ...p, active: e.target.checked }))}
+                onCheckedChange={(checked) => setForm((p) => ({ ...p, active: checked }))}
               />
               Active
             </label>
           </div>
         </div>
 
-        <div className="mt-6">
+        <div>
           <div className="mb-2 flex items-center justify-between">
-            <label className="text-xs font-medium text-white/50">Pricing tiers</label>
+            <Label className="text-xs text-muted-foreground">Pricing tiers</Label>
             <button
               type="button"
               onClick={addTier}
@@ -160,20 +167,20 @@ export default function ServiceFormModal({
           <div className="space-y-2">
             {form.tiers.map((tier, i) => (
               <div key={i} className="grid grid-cols-12 gap-2">
-                <input
+                <Input
                   value={tier.qty}
                   onChange={(e) => updateTier(i, { qty: e.target.value })}
                   placeholder="Label (e.g. 1,000)"
-                  className="col-span-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white outline-none"
+                  className="col-span-4 h-8 text-xs"
                 />
-                <input
+                <Input
                   type="number"
                   value={tier.qtyValue || ""}
                   onChange={(e) => updateTier(i, { qtyValue: parseInt(e.target.value) || 0 })}
                   placeholder="Qty"
-                  className="col-span-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white outline-none"
+                  className="col-span-3 h-8 text-xs"
                 />
-                <input
+                <Input
                   type="number"
                   value={tier.priceCents ? (tier.priceCents / 100).toString() : ""}
                   onChange={(e) =>
@@ -181,45 +188,38 @@ export default function ServiceFormModal({
                   }
                   placeholder="Price $"
                   step="0.01"
-                  className="col-span-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white outline-none"
+                  className="col-span-3 h-8 text-xs"
                 />
-                <label className="col-span-1 flex items-center justify-center">
-                  <input
-                    type="checkbox"
+                <div className="col-span-1 flex items-center justify-center" title="Highlight">
+                  <Switch
                     checked={!!tier.highlight}
-                    onChange={(e) => updateTier(i, { highlight: e.target.checked })}
-                    title="Highlight"
+                    onCheckedChange={(checked) => updateTier(i, { highlight: checked })}
                   />
-                </label>
-                <button
+                </div>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => removeTier(i)}
-                  className="col-span-1 flex items-center justify-center text-white/30 hover:text-red-400"
+                  className="col-span-1 text-white/30 hover:text-red-400"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                </Button>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-white/15 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/5"
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-          >
+          </Button>
+          <Button variant="brand" onClick={handleSave} disabled={saving} className="gap-2">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Save
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

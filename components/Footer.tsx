@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const FOOTER_LINKS = {
   Services: ["Instagram", "TikTok", "YouTube", "Facebook", "Telegram"],
@@ -44,7 +45,8 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/30 sm:flex-row">
+        <Separator className="mt-12 bg-white/10" />
+        <div className="flex flex-col items-center justify-between gap-4 pt-8 text-xs text-white/30 sm:flex-row">
           <p>© {new Date().getFullYear()} Surgeon. All rights reserved.</p>
           <p>Not affiliated with Instagram, TikTok, YouTube or Facebook.</p>
         </div>

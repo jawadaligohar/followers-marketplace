@@ -2,16 +2,18 @@
 
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
 
 export default function GoogleButton({ callbackUrl }: { callbackUrl?: string }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={() => signIn("google", { callbackUrl: callbackUrl ?? "/dashboard" })}
-      className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 py-2.5 text-sm font-medium text-white transition hover:bg-white/10"
+      className="flex w-full items-center justify-center gap-2 py-5"
     >
       <FcGoogle className="h-4 w-4" />
       Continue with Google
-    </button>
+    </Button>
   );
 }

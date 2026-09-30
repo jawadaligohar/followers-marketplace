@@ -23,7 +23,7 @@ export default function AuthCard({
 
         <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
           <h1 className="text-xl font-bold">{title}</h1>
-          <p className="mt-1 text-sm text-white/50">{subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
           <div className="mt-6">{children}</div>
         </div>
       </div>

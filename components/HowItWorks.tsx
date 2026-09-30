@@ -1,4 +1,7 @@
+"use client";
+
 import { MousePointerClick, CreditCard, Rocket } from "lucide-react";
+import { motion } from "motion/react";
 
 const STEPS = [
   {
@@ -34,7 +37,14 @@ export default function HowItWorks() {
 
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <div key={step.title} className="relative text-center">
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className="relative text-center"
+            >
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 shadow-lg shadow-brand-600/30">
                 <step.icon className="h-7 w-7 text-white" />
               </div>
@@ -42,8 +52,8 @@ export default function HowItWorks() {
                 {i + 1}
               </div>
               <h3 className="mt-3 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-white/50">{step.desc}</p>
-            </div>
+              <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
+            </motion.div>
           ))}
         </div>
       </div>

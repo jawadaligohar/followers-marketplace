@@ -3,9 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { Loader2, Wallet, CreditCard } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { walletPriceCents } from "@/lib/pricing";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
   instagram: { icon: FaInstagram, color: "text-pink-500" },
@@ -33,7 +39,6 @@ export default function NewOrderForm() {
   const [targetLink, setTargetLink] = useState("");
   const [paymentSource, setPaymentSource] = useState<"wallet" | "card">("wallet");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/services")
@@ -67,7 +72,6 @@ export default function NewOrderForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!currentService || !selectedTier) return;
-    setError(null);
     setSubmitting(true);
 
     const res = await fetch("/api/orders", {
@@ -86,11 +90,11 @@ export default function NewOrderForm() {
 
     if (!res.ok) {
       if (res.status === 402) {
-        setError(
+        toast.error(
           `Insufficient wallet balance. You need $${((data.shortfallCents ?? 0) / 100).toFixed(2)} more.`
         );
       } else {
-        setError(data.error ?? "Something went wrong");
+        toast.error(data.error ?? "Something went wrong");
       }
       return;
     }
@@ -101,23 +105,26 @@ export default function NewOrderForm() {
     }
 
     await update();
+    toast.success("Order placed");
     router.push("/dashboard/orders");
     router.refresh();
   }
 
   if (loadingServices) {
     return (
-      <div className="flex items-center justify-center py-20 text-white/40">
-        <Loader2 className="h-5 w-5 animate-spin" />
+      <div className="max-w-xl space-y-6">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-10 w-full" />
       </div>
     );
   }
 
   if (services.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-center text-sm text-white/40">
+      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
         No services available right now.
-      </div>
+      </Card>
     );
   }
 
@@ -128,14 +135,8 @@ export default function NewOrderForm() {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
-      {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm text-red-300">
-          {error}
-        </div>
-      )}
-
       <div>
-        <label className="mb-2 block text-xs font-medium text-white/50">Platform</label>
+        <Label className="mb-2 text-xs text-muted-foreground">Platform</Label>
         <div className="grid grid-cols-3 gap-2">
           {services.map((svc) => {
             const meta = PLATFORM_ICONS[svc.platformId];
@@ -161,7 +162,7 @@ export default function NewOrderForm() {
       </div>
 
       <div>
-        <label className="mb-2 block text-xs font-medium text-white/50">Quantity</label>
+        <Label className="mb-2 text-xs text-muted-foreground">Quantity</Label>
         <div className="grid grid-cols-4 gap-2">
           {currentService?.tiers.map((tier) => (
             <button
@@ -180,20 +181,22 @@ export default function NewOrderForm() {
         </div>
       </div>
 
-      <div>
-        <label className="mb-1.5 block text-xs font-medium text-white/50">Profile Link</label>
-        <input
+      <div className="space-y-1.5">
+        <Label htmlFor="target-link" className="text-xs text-muted-foreground">
+          Profile Link
+        </Label>
+        <Input
+          id="target-link"
           type="url"
           required
           value={targetLink}
           onChange={(e) => setTargetLink(e.target.value)}
           placeholder="https://instagram.com/yourprofile"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-brand-500"
         />
       </div>
 
       <div>
-        <label className="mb-2 block text-xs font-medium text-white/50">Payment method</label>
+        <Label className="mb-2 text-xs text-muted-foreground">Payment method</Label>
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -223,18 +226,19 @@ export default function NewOrderForm() {
       </div>
 
       <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-        <span className="text-sm text-white/50">Total price</span>
+        <span className="text-sm text-muted-foreground">Total price</span>
         <span className="text-2xl font-bold text-gradient">${(chargeCents / 100).toFixed(2)}</span>
       </div>
 
-      <button
+      <Button
         type="submit"
+        variant="brand"
         disabled={submitting}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90 disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 py-5"
       >
         {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
         {paymentSource === "card" ? "Continue to payment" : "Place order"}
-      </button>
+      </Button>
     </form>
   );
 }

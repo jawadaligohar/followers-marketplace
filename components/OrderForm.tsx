@@ -10,6 +10,10 @@ import {
   walletPrice,
   formatUsd,
 } from "@/lib/pricing";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const PLATFORMS = [
   { id: "instagram", label: "Instagram", icon: FaInstagram, color: "text-pink-500" },
@@ -37,9 +41,9 @@ export default function OrderForm() {
   }
 
   return (
-    <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-8">
+    <Card className="relative border-white/10 bg-white/[0.03] p-6 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-8">
       <h2 className="text-lg font-semibold">Start your order</h2>
-      <p className="mt-1 text-sm text-white/50">
+      <p className="mt-1 text-sm text-muted-foreground">
         Choose a platform and quantity to see instant pricing.
       </p>
 
@@ -66,36 +70,26 @@ export default function OrderForm() {
       </div>
 
       <div className="mt-5 space-y-4">
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">
-            Service
-          </label>
-          <select
-            value="Followers"
-            disabled
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none focus:border-brand-500"
-          >
-            <option className="bg-[#0d0f1d]">Followers</option>
-          </select>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Service</Label>
+          <Input value="Followers" disabled />
         </div>
 
-        <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">
+        <div className="space-y-1.5">
+          <Label htmlFor="hero-link" className="text-xs text-muted-foreground">
             Profile Link
-          </label>
-          <input
+          </Label>
+          <Input
+            id="hero-link"
             type="text"
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="https://instagram.com/yourprofile"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-brand-500"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">
-            Quantity
-          </label>
+          <Label className="mb-1.5 text-xs text-muted-foreground">Quantity</Label>
           <div className="grid grid-cols-4 gap-2">
             {tiers.map((tier) => (
               <button
@@ -116,7 +110,7 @@ export default function OrderForm() {
       </div>
 
       <div className="mt-6 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-        <span className="text-sm text-white/50">Total price</span>
+        <span className="text-sm text-muted-foreground">Total price</span>
         <span className="text-2xl font-bold text-gradient">
           ${formatUsd(selectedTier.price)}
         </span>
@@ -126,14 +120,15 @@ export default function OrderForm() {
         if paid from wallet ({WALLET_DISCOUNT * 100}% off)
       </div>
 
-      <button
+      <Button
         type="button"
+        variant="brand"
         onClick={() => router.push("/signup?callbackUrl=/dashboard/orders/new")}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90"
+        className="mt-4 flex w-full items-center justify-center gap-2 py-5"
       >
         Continue to Checkout
         <ArrowRight className="h-4 w-4" />
-      </button>
-    </div>
+      </Button>
+    </Card>
   );
 }

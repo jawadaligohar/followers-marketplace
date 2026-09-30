@@ -1,4 +1,7 @@
+"use client";
+
 import { ShieldCheck, Zap, Lock, Star } from "lucide-react";
+import { motion } from "motion/react";
 import OrderForm from "./OrderForm";
 
 const TRUST_BADGES = [
@@ -12,7 +15,11 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-grid">
       <div className="glow absolute inset-x-0 top-0 h-[600px]" />
       <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/70">
             <Star className="h-3.5 w-3.5 fill-accent-500 text-accent-500" />
             Trusted by 250,000+ creators worldwide
@@ -38,9 +45,15 @@ export default function Hero() {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        <OrderForm />
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+        >
+          <OrderForm />
+        </motion.div>
       </div>
     </section>
   );

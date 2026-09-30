@@ -3,7 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
@@ -42,12 +50,9 @@ export default function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           {isAuthed ? (
-            <Link
-              href="/dashboard"
-              className="rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90"
-            >
+            <Button variant="brand" render={<Link href="/dashboard" />}>
               Go to Dashboard
-            </Link>
+            </Button>
           ) : (
             <>
               <Link
@@ -56,48 +61,52 @@ export default function Header() {
               >
                 Sign in
               </Link>
-              <Link
-                href="/signup"
-                className="rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90"
-              >
+              <Button variant="brand" render={<Link href="/signup" />}>
                 Get Started
-              </Link>
+              </Button>
             </>
           )}
         </div>
 
-        <button
-          className="md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-
-      {open && (
-        <div className="border-t border-white/10 bg-background px-6 py-4 md:hidden">
-          <nav className="flex flex-col gap-4">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger
+            render={
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Toggle menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            }
+          />
+          <SheetContent side="right" className="bg-background">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-left">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-500">
+                  <Sparkles className="h-4 w-4 text-white" />
+                </span>
+                Surgeon
+              </SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-4 px-4">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className="text-sm font-medium text-white/70 hover:text-white"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <Button
+                variant="brand"
                 onClick={() => setOpen(false)}
-                className="text-sm font-medium text-white/70 hover:text-white"
+                render={<Link href={isAuthed ? "/dashboard" : "/signup"} />}
               >
-                {link.label}
-              </a>
-            ))}
-            <Link
-              href={isAuthed ? "/dashboard" : "/signup"}
-              onClick={() => setOpen(false)}
-              className="rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-5 py-2.5 text-center text-sm font-semibold text-white"
-            >
-              {isAuthed ? "Go to Dashboard" : "Get Started"}
-            </Link>
-          </nav>
-        </div>
-      )}
+                {isAuthed ? "Go to Dashboard" : "Get Started"}
+              </Button>
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }
