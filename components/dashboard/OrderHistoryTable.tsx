@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -43,8 +46,14 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order) => (
-            <TableRow key={order._id} className="border-white/5">
+          {orders.map((order, i) => (
+            <motion.tr
+              key={order._id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
+              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+            >
               <TableCell>
                 {order.platformLabel} {order.category}
               </TableCell>
@@ -57,7 +66,7 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
               <TableCell className="text-muted-foreground">
                 {new Date(order.createdAt).toLocaleDateString()}
               </TableCell>
-            </TableRow>
+            </motion.tr>
           ))}
         </TableBody>
       </Table>

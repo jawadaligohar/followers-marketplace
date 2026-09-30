@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
@@ -91,8 +92,14 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((user) => (
-            <TableRow key={user._id} className="border-white/5">
+          {rows.map((user, i) => (
+            <motion.tr
+              key={user._id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
+              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+            >
               <TableCell>
                 <div>{user.name}</div>
                 <div className="text-xs text-muted-foreground">{user.email}</div>
@@ -150,7 +157,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
               <TableCell className="text-muted-foreground">
                 {new Date(user.createdAt).toLocaleDateString()}
               </TableCell>
-            </TableRow>
+            </motion.tr>
           ))}
         </TableBody>
       </Table>

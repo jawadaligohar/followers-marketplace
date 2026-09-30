@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
 import { Card } from "@/components/ui/card";
 import {
@@ -78,10 +79,16 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((order) => {
+          {rows.map((order, i) => {
             const user = typeof order.userId === "object" ? order.userId : null;
             return (
-              <TableRow key={order._id} className="border-white/5">
+              <motion.tr
+                key={order._id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
+                className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+              >
                 <TableCell>
                   <div>{user?.name ?? "—"}</div>
                   <div className="text-xs text-muted-foreground">{user?.email}</div>
@@ -116,7 +123,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 <TableCell className="text-muted-foreground">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </TableCell>
-              </TableRow>
+              </motion.tr>
             );
           })}
         </TableBody>

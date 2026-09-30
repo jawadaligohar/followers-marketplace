@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -46,8 +49,14 @@ export default function TransactionHistoryTable({ transactions }: { transactions
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((tx) => (
-            <TableRow key={tx._id} className="border-white/5">
+          {transactions.map((tx, i) => (
+            <motion.tr
+              key={tx._id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
+              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+            >
               <TableCell>{TYPE_LABELS[tx.type] ?? tx.type}</TableCell>
               <TableCell className="text-muted-foreground">{tx.note ?? "—"}</TableCell>
               <TableCell
@@ -60,7 +69,7 @@ export default function TransactionHistoryTable({ transactions }: { transactions
               <TableCell className="text-muted-foreground">
                 {new Date(tx.createdAt).toLocaleDateString()}
               </TableCell>
-            </TableRow>
+            </motion.tr>
           ))}
         </TableBody>
       </Table>

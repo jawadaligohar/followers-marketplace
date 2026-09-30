@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
@@ -59,8 +60,14 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((svc) => (
-              <TableRow key={svc._id} className="border-white/5">
+            {rows.map((svc, i) => (
+              <motion.tr
+                key={svc._id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
+                className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+              >
                 <TableCell>{svc.platformLabel}</TableCell>
                 <TableCell className="text-white/70">{svc.category}</TableCell>
                 <TableCell className="text-white/70">{svc.tiers.length} tiers</TableCell>
@@ -89,7 +96,7 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                     </Button>
                   </div>
                 </TableCell>
-              </TableRow>
+              </motion.tr>
             ))}
           </TableBody>
         </Table>

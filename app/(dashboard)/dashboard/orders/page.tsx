@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import OrderHistoryTable, { OrderRow } from "@/components/dashboard/OrderHistoryTable";
+import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Orders | Surgeon" };
 
@@ -24,8 +25,12 @@ export default async function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Order history</h1>
-      <OrderHistoryTable orders={orderRows} />
+      <FadeIn>
+        <h1 className="text-2xl font-bold">Order history</h1>
+      </FadeIn>
+      <FadeIn delay={0.05}>
+        <OrderHistoryTable orders={orderRows} />
+      </FadeIn>
     </div>
   );
 }

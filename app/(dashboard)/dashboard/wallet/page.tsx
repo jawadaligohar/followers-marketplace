@@ -4,6 +4,7 @@ import { Transaction } from "@/lib/db/models/Transaction";
 import WalletBalanceCard from "@/components/dashboard/WalletBalanceCard";
 import TopUpForm from "@/components/dashboard/TopUpForm";
 import TransactionHistoryTable, { TransactionRow } from "@/components/dashboard/TransactionHistoryTable";
+import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Wallet | Surgeon" };
 
@@ -27,17 +28,19 @@ export default async function WalletPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Wallet</h1>
+      <FadeIn>
+        <h1 className="text-2xl font-bold">Wallet</h1>
+      </FadeIn>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <FadeIn delay={0.05} className="grid gap-6 lg:grid-cols-2">
         <WalletBalanceCard walletBalanceCents={session!.user.walletBalanceCents} />
         <TopUpForm />
-      </div>
+      </FadeIn>
 
-      <div>
+      <FadeIn delay={0.1}>
         <h2 className="mb-3 text-lg font-semibold">Transaction history</h2>
         <TransactionHistoryTable transactions={rows} />
-      </div>
+      </FadeIn>
     </div>
   );
 }

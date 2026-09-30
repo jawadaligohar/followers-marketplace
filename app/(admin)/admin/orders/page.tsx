@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
+import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Orders | Surgeon Admin" };
 
@@ -25,8 +26,12 @@ export default async function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">All orders</h1>
-      <OrdersTable orders={rows} />
+      <FadeIn>
+        <h1 className="text-2xl font-bold">All orders</h1>
+      </FadeIn>
+      <FadeIn delay={0.05}>
+        <OrdersTable orders={rows} />
+      </FadeIn>
     </div>
   );
 }

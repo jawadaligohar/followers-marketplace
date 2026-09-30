@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -49,13 +50,14 @@ export default function TopUpForm() {
       <CardContent>
         <div className="grid grid-cols-4 gap-2">
           {PRESETS_CENTS.map((preset) => (
-            <button
+            <motion.button
               key={preset}
               type="button"
               onClick={() => {
                 setAmountCents(preset);
                 setCustomAmount("");
               }}
+              whileTap={{ scale: 0.95 }}
               className={`rounded-lg border px-2 py-2.5 text-sm font-medium transition ${
                 amountCents === preset && !customAmount
                   ? "border-brand-500 bg-brand-500/10 text-white"
@@ -63,7 +65,7 @@ export default function TopUpForm() {
               }`}
             >
               ${(preset / 100).toFixed(0)}
-            </button>
+            </motion.button>
           ))}
         </div>
 

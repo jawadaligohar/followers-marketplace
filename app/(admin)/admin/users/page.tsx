@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import UsersTable, { AdminUserRow } from "@/components/admin/UsersTable";
+import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Users | Surgeon Admin" };
 
@@ -19,8 +20,12 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">All users</h1>
-      <UsersTable users={rows} />
+      <FadeIn>
+        <h1 className="text-2xl font-bold">All users</h1>
+      </FadeIn>
+      <FadeIn delay={0.05}>
+        <UsersTable users={rows} />
+      </FadeIn>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "motion/react";
 import { Loader2, Wallet, CreditCard } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { walletPriceCents } from "@/lib/pricing";
@@ -143,10 +144,11 @@ export default function NewOrderForm() {
             const Icon = meta?.icon;
             const active = platformId === svc.platformId;
             return (
-              <button
+              <motion.button
                 key={svc.platformId}
                 type="button"
                 onClick={() => handlePlatformChange(svc.platformId)}
+                whileTap={{ scale: 0.95 }}
                 className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 text-xs font-medium transition ${
                   active
                     ? "border-brand-500 bg-brand-500/10 text-white"
@@ -155,7 +157,7 @@ export default function NewOrderForm() {
               >
                 {Icon && <Icon className={`h-5 w-5 ${meta.color}`} />}
                 {svc.platformLabel}
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -165,10 +167,11 @@ export default function NewOrderForm() {
         <Label className="mb-2 text-xs text-muted-foreground">Quantity</Label>
         <div className="grid grid-cols-4 gap-2">
           {currentService?.tiers.map((tier) => (
-            <button
+            <motion.button
               key={tier.qty}
               type="button"
               onClick={() => setQtyValue(tier.qtyValue)}
+              whileTap={{ scale: 0.95 }}
               className={`rounded-lg border px-2 py-2 text-xs font-medium transition ${
                 qtyValue === tier.qtyValue
                   ? "border-brand-500 bg-brand-500/10 text-white"
@@ -176,7 +179,7 @@ export default function NewOrderForm() {
               }`}
             >
               {tier.qty}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -198,9 +201,10 @@ export default function NewOrderForm() {
       <div>
         <Label className="mb-2 text-xs text-muted-foreground">Payment method</Label>
         <div className="grid grid-cols-2 gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={() => setPaymentSource("wallet")}
+            whileTap={{ scale: 0.97 }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "wallet"
                 ? "border-brand-500 bg-brand-500/10 text-white"
@@ -209,10 +213,11 @@ export default function NewOrderForm() {
           >
             <Wallet className="h-4 w-4" />
             Wallet (-15%)
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             type="button"
             onClick={() => setPaymentSource("card")}
+            whileTap={{ scale: 0.97 }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "card"
                 ? "border-brand-500 bg-brand-500/10 text-white"
@@ -221,24 +226,37 @@ export default function NewOrderForm() {
           >
             <CreditCard className="h-4 w-4" />
             Card
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+      <div className="flex items-center justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 py-3">
         <span className="text-sm text-muted-foreground">Total price</span>
-        <span className="text-2xl font-bold text-gradient">${(chargeCents / 100).toFixed(2)}</span>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={`${platformId}-${qtyValue}-${paymentSource}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="text-2xl font-bold text-gradient"
+          >
+            ${(chargeCents / 100).toFixed(2)}
+          </motion.span>
+        </AnimatePresence>
       </div>
 
-      <Button
-        type="submit"
-        variant="brand"
-        disabled={submitting}
-        className="flex w-full items-center justify-center gap-2 py-5"
-      >
-        {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-        {paymentSource === "card" ? "Continue to payment" : "Place order"}
-      </Button>
+      <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+        <Button
+          type="submit"
+          variant="brand"
+          disabled={submitting}
+          className="flex w-full items-center justify-center gap-2 py-5"
+        >
+          {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {paymentSource === "card" ? "Continue to payment" : "Place order"}
+        </Button>
+      </motion.div>
     </form>
   );
 }
