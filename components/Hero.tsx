@@ -4,6 +4,7 @@ import { ShieldCheck, Zap, Lock, Star } from "lucide-react";
 import { motion } from "motion/react";
 import OrderForm from "./OrderForm";
 import AnimatedBackground from "./AnimatedBackground";
+import PaymentMethods from "./PaymentMethods";
 
 const TRUST_BADGES = [
   { icon: ShieldCheck, label: "100% Safe & Secure" },
@@ -82,6 +83,10 @@ export default function Hero() {
         >
           <OrderForm />
         </motion.div>
+      </div>
+
+      <div className="relative px-6 pb-16">
+        <PaymentMethods />
       </div>
     </section>
   );

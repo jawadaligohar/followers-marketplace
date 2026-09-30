@@ -1,8 +1,9 @@
 "use client";
 
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, BadgeCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const TESTIMONIALS = [
   {
@@ -10,18 +11,48 @@ const TESTIMONIALS = [
     role: "Content Creator",
     quote:
       "I was skeptical at first but the delivery was fast and my engagement actually improved. Support answered my questions within minutes.",
+    purchased: "2,500 Instagram Followers",
+    time: "2 weeks ago",
   },
   {
     name: "Daniel R.",
     role: "Small Business Owner",
     quote:
       "Used this for my shop's Instagram before a launch. Smooth checkout, no password needed, and the followers started coming in right away.",
+    purchased: "1,000 Instagram Followers",
+    time: "1 month ago",
   },
   {
     name: "Priya S.",
     role: "TikTok Creator",
     quote:
       "Best value I've found for TikTok growth services. The drip-feed option made everything look natural. Will be ordering again.",
+    purchased: "5,000 TikTok Followers",
+    time: "3 weeks ago",
+  },
+  {
+    name: "Marcus T.",
+    role: "Wedding Photographer",
+    quote:
+      "Needed a quick boost before a big showcase post. Delivery started within the hour and everything looked completely natural.",
+    purchased: "2,500 Instagram Likes",
+    time: "5 days ago",
+  },
+  {
+    name: "Sofia L.",
+    role: "Salon Owner",
+    quote:
+      "Support walked me through everything since it was my first time. The wallet discount makes reordering every month a no-brainer.",
+    purchased: "1,000 Facebook Followers",
+    time: "1 week ago",
+  },
+  {
+    name: "Jake M.",
+    role: "Automotive Detailer",
+    quote:
+      "Refill guarantee actually means something here — had a small drop after two weeks and they topped it right back up, no questions asked.",
+    purchased: "500 TikTok Likes",
+    time: "2 months ago",
   },
 ];
 
@@ -38,26 +69,19 @@ export default function Testimonials() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={t.name}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
+              transition={{ duration: 0.4, delay: (i % 3) * 0.05 }}
               whileHover={{ y: -4 }}
             >
-              <Card className="border-white/10 bg-white/[0.03] p-6">
-                <Quote className="h-6 w-6 text-brand-500" />
-                <p className="mt-4 text-sm leading-relaxed text-white/70">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div className="mt-6 flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-semibold">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
-                  </div>
+              <Card className="h-full border-white/10 bg-white/[0.03] p-6">
+                <div className="flex items-start justify-between">
+                  <Quote className="h-6 w-6 text-brand-500" />
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, starIndex) => (
                       <motion.span
@@ -65,12 +89,30 @@ export default function Testimonials() {
                         initial={{ opacity: 0, scale: 0 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.2, delay: i * 0.05 + starIndex * 0.06 }}
+                        transition={{ duration: 0.2, delay: (i % 3) * 0.05 + starIndex * 0.06 }}
                       >
                         <Star className="h-3.5 w-3.5 fill-accent-500 text-accent-500" />
                       </motion.span>
                     ))}
                   </div>
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-white/70">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+
+                <Badge variant="completed" className="mt-4 rounded-full font-normal">
+                  Purchased {t.purchased}
+                </Badge>
+
+                <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
+                  <div>
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      {t.name}
+                      <BadgeCheck className="h-3.5 w-3.5 text-accent-500" />
+                    </div>
+                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                  </div>
+                  <span className="text-xs text-white/30">{t.time}</span>
                 </div>
               </Card>
             </motion.div>
