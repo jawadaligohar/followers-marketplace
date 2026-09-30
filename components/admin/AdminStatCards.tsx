@@ -1,4 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
+import { ListOrdered, Users, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import CountUp from "@/components/CountUp";
 
 export default function AdminStatCards({
   totalOrders,
@@ -10,20 +15,60 @@ export default function AdminStatCards({
   totalRevenueCents: number;
 }) {
   const stats = [
-    { label: "Total orders", value: totalOrders.toLocaleString() },
-    { label: "Total users", value: totalUsers.toLocaleString() },
-    { label: "Revenue", value: `$${(totalRevenueCents / 100).toFixed(2)}` },
+    {
+      label: "Total orders",
+      value: totalOrders,
+      decimals: 0,
+      prefix: "",
+      icon: ListOrdered,
+      accent: "from-brand-500/15 to-transparent",
+      iconColor: "text-brand-400",
+    },
+    {
+      label: "Total users",
+      value: totalUsers,
+      decimals: 0,
+      prefix: "",
+      icon: Users,
+      accent: "from-accent-500/15 to-transparent",
+      iconColor: "text-accent-500",
+    },
+    {
+      label: "Revenue",
+      value: totalRevenueCents / 100,
+      decimals: 2,
+      prefix: "$",
+      icon: DollarSign,
+      accent: "from-emerald-500/15 to-transparent",
+      iconColor: "text-emerald-400",
+    },
   ];
 
   return (
     <div className="grid gap-6 sm:grid-cols-3">
-      {stats.map((s) => (
-        <Card key={s.label} className="border-white/10 bg-white/[0.03]">
-          <CardContent>
-            <div className="text-sm text-muted-foreground">{s.label}</div>
-            <div className="mt-2 text-3xl font-extrabold text-gradient">{s.value}</div>
-          </CardContent>
-        </Card>
+      {stats.map((s, i) => (
+        <motion.div
+          key={s.label}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: i * 0.08 }}
+          whileHover={{ y: -3 }}
+        >
+          <Card className={`relative overflow-hidden border-white/10 bg-gradient-to-br ${s.accent} bg-white/[0.03]`}>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">{s.label}</div>
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                  <s.icon className={`h-4 w-4 ${s.iconColor}`} />
+                </span>
+              </div>
+              <div className="mt-3 text-3xl font-extrabold text-gradient">
+                {s.prefix}
+                <CountUp value={s.value} decimals={s.decimals} />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       ))}
     </div>
   );

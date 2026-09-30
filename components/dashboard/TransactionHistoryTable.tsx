@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { Receipt } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -10,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import EmptyState from "@/components/shared/EmptyState";
 
 export type TransactionRow = {
   _id: string;
@@ -30,9 +32,11 @@ const TYPE_LABELS: Record<string, string> = {
 export default function TransactionHistoryTable({ transactions }: { transactions: TransactionRow[] }) {
   if (transactions.length === 0) {
     return (
-      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
-        No transactions yet.
-      </Card>
+      <EmptyState
+        icon={Receipt}
+        title="No transactions yet"
+        description="Wallet top-ups and order charges will appear here."
+      />
     );
   }
 

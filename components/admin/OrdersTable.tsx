@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
+import { PackageOpen } from "lucide-react";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
+import EmptyState from "@/components/shared/EmptyState";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -58,9 +60,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
 
   if (rows.length === 0) {
     return (
-      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
-        No orders yet.
-      </Card>
+      <EmptyState icon={PackageOpen} title="No orders yet" description="Orders placed by customers will appear here." />
     );
   }
 

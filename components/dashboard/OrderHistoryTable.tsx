@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
+import { PackageOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -10,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import EmptyState from "@/components/shared/EmptyState";
 import OrderStatusBadge from "./OrderStatusBadge";
 
 export type OrderRow = {
@@ -26,9 +30,15 @@ export type OrderRow = {
 export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
   if (orders.length === 0) {
     return (
-      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
-        No orders yet.
-      </Card>
+      <EmptyState
+        icon={PackageOpen}
+        title="No orders yet"
+        description="Your first order will show up here once you place it."
+      >
+        <Button variant="brand" className="mt-5" render={<Link href="/dashboard/orders/new" />}>
+          Place your first order
+        </Button>
+      </EmptyState>
     );
   }
 
