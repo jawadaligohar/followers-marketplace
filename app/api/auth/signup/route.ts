@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
+import { Order } from "@/lib/db/models/Order";
 import { signupSchema } from "@/lib/validation/auth";
 
 export async function POST(req: Request) {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  await User.create({
+  const user = await User.create({
     name,
     email: email.toLowerCase(),
     passwordHash,
@@ -37,6 +38,12 @@ export async function POST(req: Request) {
     role: "customer",
     walletBalanceCents: 0,
   });
+
+  // Link any prior guest orders placed with this email to the new account.
+  await Order.updateMany(
+    { guestEmail: email.toLowerCase(), userId: null },
+    { $set: { userId: user._id }, $unset: { guestEmail: "" } }
+  );
 
   return NextResponse.json({ ok: true });
 }

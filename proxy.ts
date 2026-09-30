@@ -18,7 +18,7 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/checkout")) {
+  if (pathname.startsWith("/dashboard")) {
     if (!isLoggedIn) {
       const url = new URL("/login", req.nextUrl.origin);
       url.searchParams.set("callbackUrl", pathname);
@@ -30,5 +30,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/checkout/:path*", "/admin/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 };

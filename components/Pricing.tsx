@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Check, Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Check, Wallet, ShoppingCart } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa";
 import { motion } from "motion/react";
 import { PLATFORM_PRICING, WALLET_DISCOUNT, walletPrice, formatUsd } from "@/lib/pricing";
+import { useCart } from "@/lib/cart/CartContext";
+import { useServiceIds } from "@/lib/cart/useServiceIds";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -16,10 +19,33 @@ const PLATFORMS = [
 ] as const;
 
 export default function Pricing() {
+  const router = useRouter();
+  const { addItem } = useCart();
+  const serviceIdByPlatform = useServiceIds();
   const [platform, setPlatform] = useState<(typeof PLATFORMS)[number]["id"]>(
     "instagram"
   );
   const tiers = PLATFORM_PRICING[platform];
+
+  function handleOrder(tier: (typeof tiers)[number]) {
+    const serviceId = serviceIdByPlatform[platform];
+    if (!serviceId) {
+      toast.error("Services are still loading, try again in a moment");
+      return;
+    }
+    addItem({
+      serviceId,
+      platformId: platform,
+      platformLabel: PLATFORMS.find((p) => p.id === platform)!.label,
+      category: "Followers",
+      qty: tier.qty,
+      qtyValue: tier.qtyValue,
+      priceCents: Math.round(tier.price * 100),
+      targetLink: "",
+    });
+    toast.success("Added to cart");
+    router.push("/checkout");
+  }
 
   return (
     <section id="pricing" className="mx-auto max-w-7xl px-6 py-20">
@@ -109,10 +135,11 @@ export default function Pricing() {
 
               <Button
                 variant={tier.highlight ? "brand" : "outline"}
-                className="mt-6 w-full rounded-xl py-5"
-                render={<Link href="/signup?callbackUrl=/dashboard/orders/new" />}
+                className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-5"
+                onClick={() => handleOrder(tier)}
               >
-                Order Now
+                <ShoppingCart className="h-4 w-4" />
+                Add to Cart
               </Button>
             </Card>
           </motion.div>

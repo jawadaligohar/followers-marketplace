@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Sparkles, ShieldCheck } from "lucide-react";
+import { Sparkles, ShieldCheck, ArrowLeft } from "lucide-react";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function AuthCard({
@@ -14,10 +15,26 @@ export default function AuthCard({
   subtitle: string;
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-grid px-6 py-16">
       <div className="glow absolute inset-x-0 top-0 h-[500px]" />
       <AnimatedBackground />
+
+      <motion.button
+        type="button"
+        onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ x: -2 }}
+        className="absolute left-6 top-6 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm text-white/60 backdrop-blur-sm transition hover:border-white/20 hover:text-white"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back
+      </motion.button>
+
       <div className="relative w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: -10 }}

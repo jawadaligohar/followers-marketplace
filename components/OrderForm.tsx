@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRight, Wallet } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowRight, Wallet, ShoppingCart } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa";
 import {
   PLATFORM_PRICING,
@@ -11,6 +12,8 @@ import {
   walletPrice,
   formatUsd,
 } from "@/lib/pricing";
+import { useCart } from "@/lib/cart/CartContext";
+import { useServiceIds } from "@/lib/cart/useServiceIds";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -24,6 +27,8 @@ const PLATFORMS = [
 
 export default function OrderForm() {
   const router = useRouter();
+  const { addItem } = useCart();
+  const serviceIdByPlatform = useServiceIds();
   const [platform, setPlatform] = useState<(typeof PLATFORMS)[number]["id"]>(
     "instagram"
   );
@@ -39,6 +44,30 @@ export default function OrderForm() {
   function handlePlatformChange(id: (typeof PLATFORMS)[number]["id"]) {
     setPlatform(id);
     setQtyValue(PLATFORM_PRICING[id][0].qtyValue);
+  }
+
+  function handleAddToCart() {
+    const serviceId = serviceIdByPlatform[platform];
+    if (!serviceId) {
+      toast.error("Services are still loading, try again in a moment");
+      return;
+    }
+    if (!link.trim()) {
+      toast.error("Enter your profile link first");
+      return;
+    }
+    addItem({
+      serviceId,
+      platformId: platform,
+      platformLabel: PLATFORMS.find((p) => p.id === platform)!.label,
+      category: "Followers",
+      qty: selectedTier.qty,
+      qtyValue: selectedTier.qtyValue,
+      priceCents: Math.round(selectedTier.price * 100),
+      targetLink: link.trim(),
+    });
+    toast.success("Added to cart");
+    router.push("/checkout");
   }
 
   return (
@@ -136,13 +165,17 @@ export default function OrderForm() {
         <Button
           type="button"
           variant="brand"
-          onClick={() => router.push("/signup?callbackUrl=/dashboard/orders/new")}
+          onClick={handleAddToCart}
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
         >
-          Continue to Checkout
+          <ShoppingCart className="h-4 w-4" />
+          Add to Cart
           <ArrowRight className="h-4 w-4" />
         </Button>
       </motion.div>
+      <p className="mt-3 text-center text-xs text-white/30">
+        No account needed — checkout as a guest or sign in to save 15% with wallet.
+      </p>
     </Card>
   );
 }

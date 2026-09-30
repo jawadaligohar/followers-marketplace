@@ -61,21 +61,21 @@ export async function POST(req: Request) {
   }
 
   if (kind === "order_payment") {
-    const orderId = checkoutSession.metadata?.orderId;
-    if (!orderId) return NextResponse.json({ received: true });
+    const orderIds = checkoutSession.metadata?.orderIds?.split(",").filter(Boolean) ?? [];
+    if (orderIds.length === 0) return NextResponse.json({ received: true });
 
-    const order = await Order.findById(orderId);
-    if (!order || order.status !== "pending") {
+    const orders = await Order.find({ _id: { $in: orderIds }, status: "pending" });
+    if (orders.length === 0) {
       return NextResponse.json({ received: true });
     }
 
     // Record a zero-effect ledger row purely for idempotency tracking on this session id.
     await Transaction.create({
-      userId: order.userId,
+      userId: orders[0].userId,
       type: "order_debit",
       amountCents: 0,
       balanceAfterCents: 0,
-      relatedOrderId: order._id,
+      relatedOrderId: orders[0]._id,
       stripeSessionId: checkoutSession.id,
       stripePaymentIntentId:
         typeof checkoutSession.payment_intent === "string"
@@ -84,23 +84,26 @@ export async function POST(req: Request) {
       note: "Card payment confirmed via Stripe",
     });
 
-    const service = await Service.findById(order.serviceId);
+    for (const order of orders) {
+      const service = await Service.findById(order.serviceId);
 
-    try {
-      const result = await supplierClient.submitOrder({
-        supplierServiceId: service?.supplierServiceId ?? "mock",
-        link: order.targetLink,
-        quantity: order.qtyValue,
-      });
-      order.supplierOrderId = result.supplierOrderId;
-      order.supplierStatus = result.status;
-      order.status = "processing";
-    } catch {
-      order.status = "failed";
-      order.failureReason = "Supplier submission failed";
+      try {
+        const result = await supplierClient.submitOrder({
+          supplierServiceId: service?.supplierServiceId ?? "mock",
+          link: order.targetLink,
+          quantity: order.qtyValue,
+        });
+        order.supplierOrderId = result.supplierOrderId;
+        order.supplierStatus = result.status;
+        order.status = "processing";
+      } catch {
+        order.status = "failed";
+        order.failureReason = "Supplier submission failed";
+      }
+
+      await order.save();
     }
 
-    await order.save();
     return NextResponse.json({ received: true });
   }
 

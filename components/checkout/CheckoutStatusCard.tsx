@@ -17,6 +17,7 @@ export default function CheckoutStatusCard({
   ctaLabel,
   ctaHref,
   ctaVariant = "brand",
+  children,
 }: {
   status: "success" | "cancel";
   title: string;
@@ -24,6 +25,7 @@ export default function CheckoutStatusCard({
   ctaLabel: string;
   ctaHref: string;
   ctaVariant?: "brand" | "outline";
+  children?: React.ReactNode;
 }) {
   const Icon = ICONS[status];
   const iconClassName = status === "success" ? "text-accent-500" : "text-white/40";
@@ -70,6 +72,7 @@ export default function CheckoutStatusCard({
             {ctaLabel}
           </Button>
         </motion.div>
+        {children}
       </motion.div>
     </div>
   );

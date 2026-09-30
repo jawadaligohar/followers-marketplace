@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { CartProvider } from "@/lib/cart/CartContext";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={cn("h-full", "antialiased", "font-sans", geist.variable)}>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <CartProvider>{children}</CartProvider>
+        </SessionProvider>
         <Toaster richColors />
       </body>
     </html>

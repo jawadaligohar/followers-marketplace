@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { motion } from "motion/react";
 import { Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CartDrawer from "@/components/cart/CartDrawer";
 import {
   Sheet,
   SheetContent,
@@ -59,6 +60,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <CartDrawer />
           {isAuthed ? (
             <Button variant="brand" render={<Link href="/dashboard" />}>
               Go to Dashboard
@@ -78,14 +80,16 @@ export default function Header() {
           )}
         </div>
 
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger
-            render={
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Toggle menu">
-                <Menu className="h-5 w-5" />
-              </Button>
-            }
-          />
+        <div className="flex items-center gap-2 md:hidden">
+          <CartDrawer />
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger
+              render={
+                <Button variant="ghost" size="icon" aria-label="Toggle menu">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              }
+            />
           <SheetContent side="right" className="bg-background">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2 text-left">
@@ -115,7 +119,8 @@ export default function Header() {
               </Button>
             </nav>
           </SheetContent>
-        </Sheet>
+          </Sheet>
+        </div>
       </div>
     </motion.header>
   );
