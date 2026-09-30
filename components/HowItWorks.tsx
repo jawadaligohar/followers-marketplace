@@ -1,63 +1,139 @@
 "use client";
 
-import { MousePointerClick, CreditCard, Rocket } from "lucide-react";
 import { motion } from "motion/react";
+import { Check, Loader2, TrendingUp } from "lucide-react";
+import { FaInstagram } from "react-icons/fa6";
 
 const STEPS = [
   {
-    icon: MousePointerClick,
-    title: "Choose Your Service",
-    desc: "Select a platform, pick a service, and enter your profile or post link.",
+    number: "01",
+    title: "Choose your service",
+    desc: "Select a platform, pick a service, and enter your profile or post link. No account access required — ever.",
+    visual: "pick",
   },
   {
-    icon: CreditCard,
-    title: "Secure Checkout",
-    desc: "Pay safely with card, PayPal or crypto. No password or account access ever required.",
+    number: "02",
+    title: "Secure checkout",
+    desc: "Pay safely with card, PayPal or crypto in seconds. Your payment is the only thing we ever touch.",
+    visual: "pay",
   },
   {
-    icon: Rocket,
-    title: "Watch It Grow",
-    desc: "Your order starts processing instantly and completes within minutes to hours.",
+    number: "03",
+    title: "Watch it grow",
+    desc: "Delivery starts within minutes and paces itself naturally so your growth always looks organic.",
+    visual: "grow",
   },
 ];
+
+function StepVisual({ type }: { type: string }) {
+  if (type === "pick") {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-orange-400">
+          <FaInstagram className="h-4 w-4 text-white" />
+        </span>
+        <div className="flex-1">
+          <div className="h-2 w-24 rounded-full bg-white/20" />
+          <div className="mt-1.5 h-2 w-16 rounded-full bg-white/10" />
+        </div>
+        <motion.span
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand-500"
+        >
+          <span className="h-2 w-2 rounded-full bg-brand-500" />
+        </motion.span>
+      </div>
+    );
+  }
+
+  if (type === "pay") {
+    return (
+      <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+        <div className="flex items-center justify-between">
+          <div className="h-5 w-8 rounded bg-gradient-to-br from-brand-500 to-accent-500" />
+          <Loader2 className="h-4 w-4 animate-spin text-accent-500" />
+        </div>
+        <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
+          <Check className="h-3.5 w-3.5" />
+          Payment confirmed
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+      <div className="flex items-end gap-1 h-10">
+        {[40, 55, 45, 70, 85, 95].map((h, i) => (
+          <motion.div
+            key={i}
+            initial={{ height: 0 }}
+            whileInView={{ height: `${h}%` }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 + i * 0.06 }}
+            className="flex-1 rounded-t-sm bg-gradient-to-t from-brand-500 to-accent-500"
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex items-center gap-1.5 text-xs text-accent-500">
+        <TrendingUp className="h-3.5 w-3.5" />
+        Growing steadily
+      </div>
+    </div>
+  );
+}
 
 export default function HowItWorks() {
   return (
     <section id="how-it-works" className="border-y border-white/10 bg-white/[0.02] py-20">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="max-w-xl">
+          <motion.h2
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4 }}
+            className="text-3xl font-extrabold tracking-tight sm:text-4xl"
+          >
             How it works
-          </h2>
-          <p className="mt-4 text-white/60">
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="mt-4 text-white/60"
+          >
             Three simple steps to grow your social presence — no hassle, no
             waiting around.
-          </p>
+          </motion.p>
         </div>
 
-        <div className="relative mt-14 grid gap-8 md:grid-cols-3">
-          <div className="absolute top-8 left-0 right-0 hidden h-px bg-gradient-to-r from-transparent via-white/10 to-transparent md:block" />
+        <div className="relative mt-16 space-y-14">
+          <div className="absolute left-[27px] top-4 bottom-4 hidden w-px bg-gradient-to-b from-brand-500/40 via-white/10 to-transparent sm:block" />
+
           {STEPS.map((step, i) => (
             <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="relative text-center"
+              key={step.number}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative grid gap-6 sm:grid-cols-[auto_1fr_260px] sm:items-center sm:pl-0"
             >
-              <motion.div
-                whileHover={{ scale: 1.08, rotate: 3 }}
-                transition={{ duration: 0.2 }}
-                className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 shadow-lg shadow-brand-600/30"
-              >
-                <step.icon className="h-7 w-7 text-white" />
-              </motion.div>
-              <div className="mx-auto mt-4 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-background text-xs font-bold text-white/60">
-                {i + 1}
+              <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-background text-lg font-extrabold text-gradient">
+                {step.number}
+              </span>
+
+              <div>
+                <h3 className="text-xl font-semibold">{step.title}</h3>
+                <p className="mt-2 max-w-sm text-sm text-muted-foreground">{step.desc}</p>
               </div>
-              <h3 className="mt-3 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
+
+              <div className="sm:w-[260px]">
+                <StepVisual type={step.visual} />
+              </div>
             </motion.div>
           ))}
         </div>
