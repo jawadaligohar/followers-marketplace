@@ -5,6 +5,9 @@ import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import WalletBalanceCard from "@/components/dashboard/WalletBalanceCard";
 import OrderHistoryTable, { OrderRow } from "@/components/dashboard/OrderHistoryTable";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Dashboard | Surgeon" };
 
@@ -30,33 +33,34 @@ export default async function DashboardOverviewPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <FadeIn className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Welcome back{session?.user.name ? `, ${session.user.name.split(" ")[0]}` : ""}</h1>
-          <p className="mt-1 text-sm text-white/50">Here&apos;s what&apos;s happening with your account.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Here&apos;s what&apos;s happening with your account.</p>
         </div>
-        <Link
-          href="/dashboard/orders/new"
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/30 transition hover:opacity-90"
-        >
+        <Button variant="brand" render={<Link href="/dashboard/orders/new" />} className="gap-2">
           <PlusCircle className="h-4 w-4" />
           New Order
-        </Link>
-      </div>
+        </Button>
+      </FadeIn>
 
-      <div className="grid gap-6 sm:grid-cols-3">
+      <FadeIn delay={0.05} className="grid gap-6 sm:grid-cols-3">
         <WalletBalanceCard walletBalanceCents={session!.user.walletBalanceCents} />
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="text-sm text-white/50">Total orders</div>
-          <div className="mt-2 text-3xl font-extrabold">{orders.length > 0 ? orders.length : 0}</div>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="text-sm text-white/50">Account role</div>
-          <div className="mt-2 text-lg font-semibold capitalize">{session?.user.role}</div>
-        </div>
-      </div>
+        <Card className="border-white/10 bg-white/[0.03]">
+          <CardContent>
+            <div className="text-sm text-muted-foreground">Total orders</div>
+            <div className="mt-2 text-3xl font-extrabold">{orders.length > 0 ? orders.length : 0}</div>
+          </CardContent>
+        </Card>
+        <Card className="border-white/10 bg-white/[0.03]">
+          <CardContent>
+            <div className="text-sm text-muted-foreground">Account role</div>
+            <div className="mt-2 text-lg font-semibold capitalize">{session?.user.role}</div>
+          </CardContent>
+        </Card>
+      </FadeIn>
 
-      <div>
+      <FadeIn delay={0.1}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Recent orders</h2>
           <Link href="/dashboard/orders" className="text-sm text-accent-500 hover:underline">
@@ -64,7 +68,7 @@ export default async function DashboardOverviewPage() {
           </Link>
         </div>
         <OrderHistoryTable orders={orderRows} />
-      </div>
+      </FadeIn>
     </div>
   );
 }

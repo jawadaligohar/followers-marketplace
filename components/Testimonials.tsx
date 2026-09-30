@@ -59,11 +59,16 @@ export default function Testimonials() {
                     <div className="text-xs text-muted-foreground">{t.role}</div>
                   </div>
                   <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-3.5 w-3.5 fill-accent-500 text-accent-500"
-                      />
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <motion.span
+                        key={starIndex}
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.2, delay: i * 0.05 + starIndex * 0.06 }}
+                      >
+                        <Star className="h-3.5 w-3.5 fill-accent-500 text-accent-500" />
+                      </motion.span>
                     ))}
                   </div>
                 </div>

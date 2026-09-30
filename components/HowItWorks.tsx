@@ -35,7 +35,8 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
+        <div className="relative mt-14 grid gap-8 md:grid-cols-3">
+          <div className="absolute top-8 left-0 right-0 hidden h-px bg-gradient-to-r from-transparent via-white/10 to-transparent md:block" />
           {STEPS.map((step, i) => (
             <motion.div
               key={step.title}
@@ -45,9 +46,13 @@ export default function HowItWorks() {
               transition={{ duration: 0.4, delay: i * 0.1 }}
               className="relative text-center"
             >
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 shadow-lg shadow-brand-600/30">
+              <motion.div
+                whileHover={{ scale: 1.08, rotate: 3 }}
+                transition={{ duration: 0.2 }}
+                className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 shadow-lg shadow-brand-600/30"
+              >
                 <step.icon className="h-7 w-7 text-white" />
-              </div>
+              </motion.div>
               <div className="mx-auto mt-4 flex h-6 w-6 items-center justify-center rounded-full border border-white/10 bg-background text-xs font-bold text-white/60">
                 {i + 1}
               </div>

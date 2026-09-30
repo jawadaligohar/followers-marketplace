@@ -22,13 +22,19 @@ export default function CTA() {
             Join thousands of creators and businesses already growing faster
             with Surgeon. Get started in less than 2 minutes.
           </p>
-          <Button
-            variant="brand"
-            className="mt-8 px-8 py-6"
-            render={<Link href="/signup" />}
+          <motion.div
+            className="mt-8 inline-block"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
           >
-            Start Growing Now
-          </Button>
+            <Button
+              variant="brand"
+              className="px-8 py-6"
+              render={<Link href="/signup" />}
+            >
+              Start Growing Now
+            </Button>
+          </motion.div>
         </Card>
       </motion.div>
     </section>

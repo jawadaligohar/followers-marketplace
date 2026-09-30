@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { motion } from "motion/react";
 import { Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +28,20 @@ export default function Header() {
   const isAuthed = status === "authenticated";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
+    <motion.header
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md"
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500">
+          <motion.span
+            whileHover={{ rotate: 12, scale: 1.05 }}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500"
+          >
             <Sparkles className="h-5 w-5 text-white" />
-          </span>
+          </motion.span>
           <span className="text-lg font-bold tracking-tight">Surgeon</span>
         </Link>
 
@@ -41,9 +50,10 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-white/70 transition hover:text-white"
+              className="group relative text-sm font-medium text-white/70 transition hover:text-white"
             >
               {link.label}
+              <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
@@ -107,6 +117,6 @@ export default function Header() {
           </SheetContent>
         </Sheet>
       </div>
-    </header>
+    </motion.header>
   );
 }

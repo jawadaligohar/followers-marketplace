@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
 import { ArrowRight, Wallet } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa";
 import {
@@ -52,10 +53,11 @@ export default function OrderForm() {
           const Icon = p.icon;
           const active = platform === p.id;
           return (
-            <button
+            <motion.button
               key={p.id}
               type="button"
               onClick={() => handlePlatformChange(p.id)}
+              whileTap={{ scale: 0.95 }}
               className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 text-xs font-medium transition ${
                 active
                   ? "border-brand-500 bg-brand-500/10 text-white"
@@ -64,7 +66,7 @@ export default function OrderForm() {
             >
               <Icon className={`h-5 w-5 ${p.color}`} />
               {p.label}
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -92,10 +94,11 @@ export default function OrderForm() {
           <Label className="mb-1.5 text-xs text-muted-foreground">Quantity</Label>
           <div className="grid grid-cols-4 gap-2">
             {tiers.map((tier) => (
-              <button
+              <motion.button
                 key={tier.qty}
                 type="button"
                 onClick={() => setQtyValue(tier.qtyValue)}
+                whileTap={{ scale: 0.95 }}
                 className={`rounded-lg border px-2 py-2 text-xs font-medium transition ${
                   qtyValue === tier.qtyValue
                     ? "border-brand-500 bg-brand-500/10 text-white"
@@ -103,32 +106,43 @@ export default function OrderForm() {
                 }`}
               >
                 {tier.qty}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+      <div className="mt-6 flex items-center justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 py-3">
         <span className="text-sm text-muted-foreground">Total price</span>
-        <span className="text-2xl font-bold text-gradient">
-          ${formatUsd(selectedTier.price)}
-        </span>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={`${platform}-${selectedTier.qtyValue}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="text-2xl font-bold text-gradient"
+          >
+            ${formatUsd(selectedTier.price)}
+          </motion.span>
+        </AnimatePresence>
       </div>
       <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-accent-500">
         <Wallet className="h-3.5 w-3.5" />${formatUsd(walletPrice(selectedTier.price))}{" "}
         if paid from wallet ({WALLET_DISCOUNT * 100}% off)
       </div>
 
-      <Button
-        type="button"
-        variant="brand"
-        onClick={() => router.push("/signup?callbackUrl=/dashboard/orders/new")}
-        className="mt-4 flex w-full items-center justify-center gap-2 py-5"
-      >
-        Continue to Checkout
-        <ArrowRight className="h-4 w-4" />
-      </Button>
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <Button
+          type="button"
+          variant="brand"
+          onClick={() => router.push("/signup?callbackUrl=/dashboard/orders/new")}
+          className="mt-4 flex w-full items-center justify-center gap-2 py-5"
+        >
+          Continue to Checkout
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </motion.div>
     </Card>
   );
 }

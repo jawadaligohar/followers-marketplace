@@ -80,7 +80,7 @@ export default function Services() {
             whileHover={{ y: -4 }}
           >
             <Card className="group border-white/10 bg-white/[0.03] p-6 transition hover:border-brand-500/50 hover:bg-white/[0.06]">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-transform duration-300 group-hover:scale-110 group-hover:border-brand-500/40">
                 <service.icon className={`h-5 w-5 ${service.color}`} />
               </div>
               <h3 className="mt-4 text-lg font-semibold">{service.name}</h3>
