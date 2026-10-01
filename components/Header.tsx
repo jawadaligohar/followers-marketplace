@@ -33,18 +33,33 @@ export default function Header() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md"
+      className="sticky top-0 z-50 flex flex-col shadow-sm"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2">
-          <motion.span
-            whileHover={{ rotate: 12, scale: 1.05 }}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500"
-          >
-            <Heart className="h-5 w-5 text-white" />
-          </motion.span>
-          <span className="text-lg font-bold tracking-tight">Surgeon</span>
-        </Link>
+      {/* Announcement Bar */}
+      <div className="flex items-center justify-center gap-3 bg-brand-500 px-4 py-2 text-xs font-medium text-white sm:text-sm">
+        <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+          Trusted
+        </span>
+        <span className="hidden sm:inline">
+          Secure checkout &bull; 30-Day Refill Guarantee &bull; 24/7 Live Support
+        </span>
+        <span className="sm:hidden">
+          Secure checkout &bull; 24/7 support
+        </span>
+      </div>
+
+      {/* Main Nav */}
+      <div className="border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <Link href="/" className="flex items-center gap-2">
+            <motion.span
+              whileHover={{ rotate: 12, scale: 1.05 }}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500"
+            >
+              <Heart className="h-5 w-5 text-white" />
+            </motion.span>
+            <span className="text-lg font-bold tracking-tight">Surgeon</span>
+          </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
@@ -121,6 +136,7 @@ export default function Header() {
           </SheetContent>
           </Sheet>
         </div>
+      </div>
       </div>
     </motion.header>
   );

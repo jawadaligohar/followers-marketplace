@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, Zap, Lock, Star } from "lucide-react";
+import { ShieldCheck, Zap, Lock, Star, Headset, RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
 import OrderForm from "./OrderForm";
 import AnimatedBackground from "./AnimatedBackground";
@@ -10,6 +10,8 @@ const TRUST_BADGES = [
   { icon: ShieldCheck, label: "100% Safe & Secure" },
   { icon: Zap, label: "Instant Delivery" },
   { icon: Lock, label: "No Password Needed" },
+  { icon: RefreshCw, label: "30-Day Refill" },
+  { icon: Headset, label: "24/7 Support" },
 ];
 
 const container = {

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Sparkles, LayoutDashboard, ListOrdered, PlusCircle, Wallet } from "lucide-react";
 import SidebarNav from "@/components/shared/SidebarNav";

@@ -1,9 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 import bcrypt from "bcryptjs";
-import { dbConnect } from "../lib/db/connect";
-import { Service } from "../lib/db/models/Service";
-import { User } from "../lib/db/models/User";
-import { PLATFORM_PRICING } from "../lib/pricing";
+
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -12,6 +10,11 @@ const PLATFORM_LABELS: Record<string, string> = {
 };
 
 async function seed() {
+  const { dbConnect } = await import("../lib/db/connect");
+  const { Service } = await import("../lib/db/models/Service");
+  const { User } = await import("../lib/db/models/User");
+  const { PLATFORM_PRICING } = await import("../lib/pricing");
+
   await dbConnect();
 
   for (const [platformId, tiers] of Object.entries(PLATFORM_PRICING)) {

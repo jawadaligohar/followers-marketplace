@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { toast } from "sonner";
-import { ArrowRight, Wallet, ShoppingCart } from "lucide-react";
+import { ArrowRight, Wallet, ShoppingCart, ShieldCheck, RefreshCw, Headset } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa";
 import {
   PLATFORM_PRICING,
@@ -176,6 +176,21 @@ export default function OrderForm() {
       <p className="mt-3 text-center text-xs text-muted-foreground/70">
         No account needed — checkout as a guest or sign in to save 15% with wallet.
       </p>
+
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[10px] font-medium text-muted-foreground sm:text-xs">
+        <span className="flex items-center gap-1">
+          <ShieldCheck className="h-3.5 w-3.5 text-brand-500" />
+          Secure Checkout
+        </span>
+        <span className="flex items-center gap-1">
+          <RefreshCw className="h-3.5 w-3.5 text-brand-500" />
+          30-Day Refill
+        </span>
+        <span className="flex items-center gap-1">
+          <Headset className="h-3.5 w-3.5 text-brand-500" />
+          24/7 Support
+        </span>
+      </div>
     </Card>
   );
 }

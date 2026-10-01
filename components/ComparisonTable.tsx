@@ -33,7 +33,7 @@ export default function ComparisonTable() {
         className="mt-12"
       >
         <Card className="overflow-hidden border-border bg-card p-0">
-          <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-border px-6 py-4 text-sm font-semibold sm:gap-x-8">
+          <div className="grid grid-cols-[1fr_80px_80px] sm:grid-cols-[1fr_140px_140px] items-center gap-x-2 border-b border-border px-6 py-4 text-sm font-semibold sm:gap-x-4">
             <span className="text-muted-foreground">Feature</span>
             <span className="text-center text-gradient">Surgeon</span>
             <span className="text-center text-muted-foreground">Bot Services</span>
@@ -45,7 +45,7 @@ export default function ComparisonTable() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-border px-6 py-3.5 text-sm last:border-0 sm:gap-x-8"
+              className="grid grid-cols-[1fr_80px_80px] sm:grid-cols-[1fr_140px_140px] items-center gap-x-2 border-b border-border px-6 py-3.5 text-sm last:border-0 sm:gap-x-4"
             >
               <span className="text-foreground/80">{row.label}</span>
               <span className="flex justify-center">

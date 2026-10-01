@@ -128,6 +128,14 @@ export default function Pricing() {
                 </li>
                 <li className="flex items-start gap-2 text-sm text-foreground/80">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
+                  30-Day Refill Guarantee
+                </li>
+                <li className="flex items-start gap-2 text-sm text-foreground/80">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
+                  24/7 Human Support
+                </li>
+                <li className="flex items-start gap-2 text-sm text-foreground/80">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
                   No password required
                 </li>
               </ul>
