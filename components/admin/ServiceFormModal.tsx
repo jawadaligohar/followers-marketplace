@@ -142,7 +142,7 @@ export default function ServiceFormModal({
             />
           </div>
           <div className="flex items-end gap-2">
-            <label className="flex items-center gap-2 text-sm text-white/70">
+            <label className="flex items-center gap-2 text-sm text-foreground/80">
               <Switch
                 checked={form.active}
                 onCheckedChange={(checked) => setForm((p) => ({ ...p, active: checked }))}
@@ -158,7 +158,7 @@ export default function ServiceFormModal({
             <button
               type="button"
               onClick={addTier}
-              className="flex items-center gap-1 text-xs text-accent-500 hover:underline"
+              className="flex items-center gap-1 text-xs text-brand-600 hover:underline"
             >
               <Plus className="h-3.5 w-3.5" /> Add tier
             </button>
@@ -201,7 +201,7 @@ export default function ServiceFormModal({
                   variant="ghost"
                   size="icon"
                   onClick={() => removeTier(i)}
-                  className="col-span-1 text-white/30 hover:text-red-400"
+                  className="col-span-1 text-muted-foreground/50 hover:text-rose-500"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -214,7 +214,7 @@ export default function ServiceFormModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="brand" onClick={handleSave} disabled={saving} className="gap-2">
+          <Button variant="default" onClick={handleSave} disabled={saving} className="gap-2">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Save
           </Button>

@@ -23,7 +23,7 @@ export default function DashboardShell({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-500">
@@ -35,7 +35,7 @@ export default function DashboardShell({
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/wallet"
-              className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-medium text-accent-500 sm:flex"
+              className="hidden items-center gap-2 rounded-full border border-border bg-muted px-4 py-1.5 text-sm font-medium text-brand-600 sm:flex"
             >
               <Wallet className="h-3.5 w-3.5" />${(walletBalanceCents / 100).toFixed(2)}
             </Link>

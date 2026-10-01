@@ -81,10 +81,10 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
   }
 
   return (
-    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+    <Card className="overflow-x-auto border-border bg-card p-0">
       <Table>
         <TableHeader>
-          <TableRow className="border-white/10">
+          <TableRow className="border-border">
             <TableHead>User</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Wallet</TableHead>
@@ -98,7 +98,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
-              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+              className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
             >
               <TableCell>
                 <div>{user.name}</div>
@@ -121,7 +121,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <span className="text-white/70">${(user.walletBalanceCents / 100).toFixed(2)}</span>
+                  <span className="text-foreground/80">${(user.walletBalanceCents / 100).toFixed(2)}</span>
                   {adjusting === user._id ? (
                     <div className="flex items-center gap-1">
                       <Input
@@ -136,7 +136,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                       />
                       <Button
                         size="sm"
-                        variant="brand"
+                        variant="default"
                         onClick={() => handleWalletAdjust(user._id)}
                         disabled={busy === user._id}
                         className="h-7"
@@ -147,7 +147,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                   ) : (
                     <button
                       onClick={() => setAdjusting(user._id)}
-                      className="text-xs text-accent-500 hover:underline"
+                      className="text-xs text-brand-600 hover:underline"
                     >
                       Adjust
                     </button>

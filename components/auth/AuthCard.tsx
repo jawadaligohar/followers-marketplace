@@ -29,7 +29,7 @@ export default function AuthCard({
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
         whileHover={{ x: -2 }}
-        className="absolute left-6 top-6 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm text-white/60 backdrop-blur-sm transition hover:border-white/20 hover:text-white"
+        className="absolute left-6 top-6 z-10 flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur-sm transition hover:border-brand-500/30 hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back
@@ -56,7 +56,7 @@ export default function AuthCard({
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
-          className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 shadow-2xl shadow-black/40 backdrop-blur-sm"
+          className="rounded-3xl border border-border bg-card p-8 shadow-2xl shadow-black/10 backdrop-blur-sm"
         >
           <h1 className="text-xl font-bold">{title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
@@ -67,7 +67,7 @@ export default function AuthCard({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="mt-6 flex items-center justify-center gap-1.5 text-xs text-white/30"
+          className="mt-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/70"
         >
           <ShieldCheck className="h-3.5 w-3.5" />
           256-bit encrypted &middot; no password ever shared with us

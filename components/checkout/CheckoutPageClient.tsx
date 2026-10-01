@@ -19,7 +19,7 @@ import { PackageOpen } from "lucide-react";
 
 const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
   instagram: { icon: FaInstagram, color: "text-pink-500" },
-  tiktok: { icon: FaTiktok, color: "text-white" },
+  tiktok: { icon: FaTiktok, color: "text-foreground" },
   facebook: { icon: FaFacebook, color: "text-blue-500" },
 };
 
@@ -93,7 +93,7 @@ export default function CheckoutPageClient() {
           title="Your cart is empty"
           description="Add a service from the homepage to get started."
         >
-          <Button variant="brand" className="mt-5" render={<Link href="/#pricing" />}>
+          <Button variant="default" className="mt-5" render={<Link href="/#pricing" />}>
             Browse services
           </Button>
         </EmptyState>
@@ -105,7 +105,7 @@ export default function CheckoutPageClient() {
     <div className="mx-auto max-w-3xl px-6 py-12">
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-sm text-white/50 transition hover:text-white"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to home
@@ -127,11 +127,11 @@ export default function CheckoutPageClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: i * 0.05 }}
             >
-              <Card className="border-white/10 bg-white/[0.03]">
+              <Card className="border-border bg-card">
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
                         {Icon && <Icon className={`h-4 w-4 ${meta.color}`} />}
                       </span>
                       <div>
@@ -147,7 +147,7 @@ export default function CheckoutPageClient() {
                       </span>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="text-white/30 transition hover:text-red-400"
+                        className="text-muted-foreground/50 transition hover:text-rose-500"
                         aria-label="Remove item"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -167,7 +167,7 @@ export default function CheckoutPageClient() {
       </div>
 
       {!isAuthed && (
-        <Card className="mt-6 border-white/10 bg-white/[0.03]">
+        <Card className="mt-6 border-border bg-card">
           <CardContent className="space-y-1.5">
             <Label htmlFor="guest-email" className="text-xs text-muted-foreground">
               Email (for your receipt and order updates)
@@ -180,9 +180,9 @@ export default function CheckoutPageClient() {
               onChange={(e) => setGuestEmail(e.target.value)}
               placeholder="you@example.com"
             />
-            <p className="pt-1 text-xs text-white/30">
+            <p className="pt-1 text-xs text-muted-foreground/60">
               No account needed.{" "}
-              <Link href="/signup" className="text-accent-500 hover:underline">
+              <Link href="/login" className="text-brand-600 hover:underline">
                 Sign in
               </Link>{" "}
               to pay from your wallet and save 15%.
@@ -201,8 +201,8 @@ export default function CheckoutPageClient() {
             whileTap={isAuthed ? { scale: 0.97 } : undefined}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "wallet"
-                ? "border-brand-500 bg-brand-500/10 text-white"
-                : "border-white/10 text-white/50 hover:border-white/20"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
             } ${!isAuthed ? "cursor-not-allowed opacity-40" : ""}`}
           >
             <Wallet className="h-4 w-4" />
@@ -214,8 +214,8 @@ export default function CheckoutPageClient() {
             whileTap={{ scale: 0.97 }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "card"
-                ? "border-brand-500 bg-brand-500/10 text-white"
-                : "border-white/10 text-white/50 hover:border-white/20"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
             }`}
           >
             <CreditCard className="h-4 w-4" />
@@ -224,7 +224,7 @@ export default function CheckoutPageClient() {
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+      <div className="mt-6 flex items-center justify-between rounded-xl border border-border bg-muted px-4 py-3">
         <span className="text-sm text-muted-foreground">Total</span>
         <span className="text-2xl font-bold text-gradient">
           ${(chargeCents / 100).toFixed(2)}
@@ -234,7 +234,7 @@ export default function CheckoutPageClient() {
       <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
         <Button
           type="button"
-          variant="brand"
+          variant="default"
           disabled={submitting}
           onClick={handleCheckout}
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
@@ -244,7 +244,7 @@ export default function CheckoutPageClient() {
         </Button>
       </motion.div>
 
-      <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-white/30">
+      <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground/60">
         <ShieldCheck className="h-3.5 w-3.5" />
         Secure checkout &middot; no password ever required
       </p>

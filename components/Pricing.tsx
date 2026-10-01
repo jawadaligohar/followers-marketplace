@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 const PLATFORMS = [
   { id: "instagram", label: "Instagram", icon: FaInstagram, color: "text-pink-500" },
-  { id: "tiktok", label: "TikTok", icon: FaTiktok, color: "text-white" },
+  { id: "tiktok", label: "TikTok", icon: FaTiktok, color: "text-foreground" },
   { id: "facebook", label: "Facebook", icon: FaFacebook, color: "text-blue-500" },
 ] as const;
 
@@ -53,18 +53,18 @@ export default function Pricing() {
         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Simple, transparent pricing
         </h2>
-        <p className="mt-4 text-white/60">
+        <p className="mt-4 text-muted-foreground">
           Followers pricing shown below. No subscriptions, no hidden fees —
           pay once per order.
         </p>
-        <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/70">
-          <Wallet className="h-3.5 w-3.5 text-accent-500" />
+        <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
+          <Wallet className="h-3.5 w-3.5 text-brand-600" />
           Pay from your wallet balance and save {WALLET_DISCOUNT * 100}% on
           every order
         </div>
       </div>
 
-      <div className="mx-auto mt-8 flex w-fit gap-2 rounded-full border border-white/10 bg-white/5 p-1">
+      <div className="mx-auto mt-8 flex w-fit gap-2 rounded-full border border-border bg-card p-1 shadow-sm">
         {PLATFORMS.map((p) => {
           const Icon = p.icon;
           const active = platform === p.id;
@@ -75,11 +75,11 @@ export default function Pricing() {
               onClick={() => setPlatform(p.id)}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
                 active
-                  ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white"
-                  : "text-white/50 hover:text-white/80"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className={`h-4 w-4 ${active ? "text-white" : p.color}`} />
+              <Icon className={`h-4 w-4 ${active ? "text-primary-foreground" : p.color}`} />
               {p.label}
             </button>
           );
@@ -100,8 +100,8 @@ export default function Pricing() {
             <Card
               className={`relative h-full border p-6 ${
                 tier.highlight
-                  ? "border-brand-500 bg-gradient-to-b from-brand-500/10 to-transparent shadow-2xl shadow-brand-600/20"
-                  : "border-white/10 bg-white/[0.03]"
+                  ? "border-brand-500 bg-gradient-to-b from-brand-50 to-transparent shadow-xl shadow-brand-500/10"
+                  : "border-border bg-card"
               }`}
             >
               {tier.highlight && (
@@ -117,24 +117,24 @@ export default function Pricing() {
                   ${formatUsd(tier.price)}
                 </span>
               </div>
-              <div className="mt-1 flex items-center gap-1.5 text-xs text-accent-500">
+              <div className="mt-1 flex items-center gap-1.5 text-xs text-brand-600">
                 <Wallet className="h-3.5 w-3.5" />${formatUsd(walletPrice(tier.price))}{" "}
                 with wallet
               </div>
 
               <ul className="mt-5 space-y-2.5">
-                <li className="flex items-start gap-2 text-sm text-white/70">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-500" />
+                <li className="flex items-start gap-2 text-sm text-foreground/80">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
                   Real, active followers
                 </li>
-                <li className="flex items-start gap-2 text-sm text-white/70">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent-500" />
+                <li className="flex items-start gap-2 text-sm text-foreground/80">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
                   No password required
                 </li>
               </ul>
 
               <Button
-                variant={tier.highlight ? "brand" : "outline"}
+                variant={tier.highlight ? "default" : "outline"}
                 className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-5"
                 onClick={() => handleOrder(tier)}
               >
@@ -146,7 +146,7 @@ export default function Pricing() {
         ))}
       </div>
 
-      <p className="mt-8 text-center text-xs text-white/30">
+      <p className="mt-8 text-center text-xs text-muted-foreground/60">
         Prices shown are for Followers. Pricing for Likes, Views and other
         services is available at checkout.
       </p>

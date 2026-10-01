@@ -26,7 +26,7 @@ const METHODS = [
 export default function PaymentMethods() {
   return (
     <div className="mx-auto mt-10 max-w-3xl">
-      <p className="text-center text-xs font-medium uppercase tracking-widest text-white/30">
+      <p className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground/60">
         Secure payments powered by
       </p>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -37,9 +37,9 @@ export default function PaymentMethods() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.3, delay: i * 0.04 }}
-            whileHover={{ y: -2, borderColor: "rgba(255,255,255,0.25)" }}
+            whileHover={{ y: -2, borderColor: "rgba(17,17,17,0.2)" }}
             title={method.name}
-            className="flex h-10 w-14 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/60 transition-colors hover:text-white"
+            className="flex h-10 w-14 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
           >
             <method.icon className="h-5 w-5" />
           </motion.div>

@@ -35,7 +35,7 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
         title="No orders yet"
         description="Your first order will show up here once you place it."
       >
-        <Button variant="brand" className="mt-5" render={<Link href="/dashboard/orders/new" />}>
+        <Button variant="default" className="mt-5" render={<Link href="/dashboard/orders/new" />}>
           Place your first order
         </Button>
       </EmptyState>
@@ -43,10 +43,10 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
   }
 
   return (
-    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+    <Card className="overflow-x-auto border-border bg-card p-0">
       <Table>
         <TableHeader>
-          <TableRow className="border-white/10">
+          <TableRow className="border-border">
             <TableHead>Service</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Payment</TableHead>
@@ -62,14 +62,14 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
-              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+              className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
             >
               <TableCell>
                 {order.platformLabel} {order.category}
               </TableCell>
-              <TableCell className="text-white/70">{order.qtyValue.toLocaleString()}</TableCell>
-              <TableCell className="capitalize text-white/70">{order.paymentSource}</TableCell>
-              <TableCell className="text-white/70">${(order.priceCents / 100).toFixed(2)}</TableCell>
+              <TableCell className="text-foreground/80">{order.qtyValue.toLocaleString()}</TableCell>
+              <TableCell className="capitalize text-foreground/80">{order.paymentSource}</TableCell>
+              <TableCell className="text-foreground/80">${(order.priceCents / 100).toFixed(2)}</TableCell>
               <TableCell>
                 <OrderStatusBadge status={order.status} />
               </TableCell>

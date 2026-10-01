@@ -14,9 +14,9 @@ const SERVICES = [
   { platform: "Instagram", label: "Followers", icon: FaInstagram, color: "text-pink-500" },
   { platform: "Instagram", label: "Likes", icon: FaInstagram, color: "text-pink-500" },
   { platform: "Instagram", label: "Views", icon: FaInstagram, color: "text-pink-500" },
-  { platform: "TikTok", label: "Followers", icon: FaTiktok, color: "text-white" },
-  { platform: "TikTok", label: "Likes", icon: FaTiktok, color: "text-white" },
-  { platform: "TikTok", label: "Views", icon: FaTiktok, color: "text-white" },
+  { platform: "TikTok", label: "Followers", icon: FaTiktok, color: "text-foreground" },
+  { platform: "TikTok", label: "Likes", icon: FaTiktok, color: "text-foreground" },
+  { platform: "TikTok", label: "Views", icon: FaTiktok, color: "text-foreground" },
   { platform: "YouTube", label: "Subscribers", icon: FaYoutube, color: "text-red-500" },
   { platform: "YouTube", label: "Views", icon: FaYoutube, color: "text-red-500" },
   { platform: "Facebook", label: "Page Likes", icon: FaFacebook, color: "text-blue-500" },
@@ -25,13 +25,13 @@ const SERVICES = [
 
 export default function ExploreServices() {
   return (
-    <section className="border-y border-white/10 bg-white/[0.02] py-20">
+    <section className="border-y border-border bg-muted/40 py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Explore more services
           </h2>
-          <p className="mt-4 text-white/60">
+          <p className="mt-4 text-muted-foreground">
             Mix and match across platforms to build a complete growth
             strategy.
           </p>
@@ -48,16 +48,16 @@ export default function ExploreServices() {
               whileHover={{ y: -3 }}
             >
               <Link
-                href="/signup?callbackUrl=/dashboard/orders/new"
-                className="group flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm transition hover:border-brand-500/40 hover:bg-white/[0.06]"
+                href="/#pricing"
+                className="group flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-sm transition hover:border-brand-500/40 hover:shadow-sm"
               >
                 <span className="flex items-center gap-2.5">
                   <svc.icon className={`h-4 w-4 shrink-0 ${svc.color}`} />
-                  <span className="text-white/70">
-                    {svc.platform} <span className="text-white">{svc.label}</span>
+                  <span className="text-muted-foreground">
+                    {svc.platform} <span className="text-foreground">{svc.label}</span>
                   </span>
                 </span>
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-white/20 transition group-hover:text-accent-500" />
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 transition group-hover:text-brand-500" />
               </Link>
             </motion.div>
           ))}

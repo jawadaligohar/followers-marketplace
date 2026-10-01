@@ -44,7 +44,7 @@ export default function FAQ() {
         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Frequently asked questions
         </h2>
-        <p className="mt-4 text-white/60">
+        <p className="mt-4 text-muted-foreground">
           Everything you need to know before placing your first order.
         </p>
       </motion.div>
@@ -60,12 +60,12 @@ export default function FAQ() {
           >
             <AccordionItem
               value={`item-${i}`}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] px-6 transition-colors hover:border-white/20"
+              className="overflow-hidden rounded-2xl border border-border bg-card px-6 transition-colors hover:border-brand-500/30"
             >
               <AccordionTrigger className="text-left text-sm font-medium hover:no-underline">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-sm leading-relaxed text-white/50">
+              <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>

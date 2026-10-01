@@ -50,7 +50,7 @@ export default async function AdminOverviewPage() {
       <FadeIn delay={0.1}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Recent orders</h2>
-          <Link href="/admin/orders" className="text-sm text-accent-500 hover:underline">
+          <Link href="/admin/orders" className="text-sm text-brand-600 hover:underline">
             View all
           </Link>
         </div>

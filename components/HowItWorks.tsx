@@ -28,13 +28,13 @@ const STEPS = [
 function StepVisual({ type }: { type: string }) {
   if (type === "pick") {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
+      <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-orange-400">
           <FaInstagram className="h-4 w-4 text-white" />
         </span>
         <div className="flex-1">
-          <div className="h-2 w-24 rounded-full bg-white/20" />
-          <div className="mt-1.5 h-2 w-16 rounded-full bg-white/10" />
+          <div className="h-2 w-24 rounded-full bg-muted" />
+          <div className="mt-1.5 h-2 w-16 rounded-full bg-muted" />
         </div>
         <motion.span
           animate={{ scale: [1, 1.2, 1] }}
@@ -49,12 +49,12 @@ function StepVisual({ type }: { type: string }) {
 
   if (type === "pay") {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+      <div className="rounded-xl border border-border bg-card p-3">
         <div className="flex items-center justify-between">
           <div className="h-5 w-8 rounded bg-gradient-to-br from-brand-500 to-accent-500" />
-          <Loader2 className="h-4 w-4 animate-spin text-accent-500" />
+          <Loader2 className="h-4 w-4 animate-spin text-brand-600" />
         </div>
-        <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
+        <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-600">
           <Check className="h-3.5 w-3.5" />
           Payment confirmed
         </div>
@@ -63,7 +63,7 @@ function StepVisual({ type }: { type: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+    <div className="rounded-xl border border-border bg-card p-3">
       <div className="flex items-end gap-1 h-10">
         {[40, 55, 45, 70, 85, 95].map((h, i) => (
           <motion.div
@@ -76,7 +76,7 @@ function StepVisual({ type }: { type: string }) {
           />
         ))}
       </div>
-      <div className="mt-2 flex items-center gap-1.5 text-xs text-accent-500">
+      <div className="mt-2 flex items-center gap-1.5 text-xs text-brand-600">
         <TrendingUp className="h-3.5 w-3.5" />
         Growing steadily
       </div>
@@ -86,7 +86,7 @@ function StepVisual({ type }: { type: string }) {
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-y border-white/10 bg-white/[0.02] py-20">
+    <section id="how-it-works" className="border-y border-border bg-muted/40 py-20">
       <div className="mx-auto max-w-5xl px-6">
         <div className="max-w-xl">
           <motion.h2
@@ -103,7 +103,7 @@ export default function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.4, delay: 0.05 }}
-            className="mt-4 text-white/60"
+            className="mt-4 text-muted-foreground"
           >
             Three simple steps to grow your social presence — no hassle, no
             waiting around.
@@ -111,7 +111,7 @@ export default function HowItWorks() {
         </div>
 
         <div className="relative mt-16 space-y-14">
-          <div className="absolute left-[27px] top-4 bottom-4 hidden w-px bg-gradient-to-b from-brand-500/40 via-white/10 to-transparent sm:block" />
+          <div className="absolute left-[27px] top-4 bottom-4 hidden w-px bg-gradient-to-b from-brand-500/40 via-border to-transparent sm:block" />
 
           {STEPS.map((step, i) => (
             <motion.div
@@ -122,7 +122,7 @@ export default function HowItWorks() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="relative grid gap-6 sm:grid-cols-[auto_1fr_260px] sm:items-center sm:pl-0"
             >
-              <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-background text-lg font-extrabold text-gradient">
+              <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-background text-lg font-extrabold text-gradient">
                 {step.number}
               </span>
 

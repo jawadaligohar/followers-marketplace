@@ -14,7 +14,7 @@ export default function HeroMockup() {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.5 }}
-        className="relative rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/40 backdrop-blur-sm"
+        className="relative rounded-3xl border border-border bg-card p-5 shadow-2xl shadow-black/10 backdrop-blur-sm"
       >
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 via-fuchsia-500 to-orange-400">
@@ -22,7 +22,7 @@ export default function HeroMockup() {
           </span>
           <div>
             <div className="text-sm font-semibold">Instagram Followers</div>
-            <div className="flex items-center gap-1.5 text-xs text-accent-500">
+            <div className="flex items-center gap-1.5 text-xs text-brand-600">
               <motion.span
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -47,7 +47,7 @@ export default function HeroMockup() {
         </div>
 
         <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-          <TrendingUp className="h-3.5 w-3.5 text-accent-500" />
+          <TrendingUp className="h-3.5 w-3.5 text-brand-600" />
           Growing steadily over the last 7 days
         </div>
       </motion.div>
@@ -57,7 +57,7 @@ export default function HeroMockup() {
         whileInView={{ opacity: 1, x: 0, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: 0.6 }}
-        className="absolute -left-6 top-6 flex items-center gap-2 rounded-full border border-white/10 bg-background/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-sm"
+        className="absolute -left-6 top-6 flex items-center gap-2 rounded-full border border-border bg-background/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-sm"
       >
         <Heart className="h-3.5 w-3.5 fill-red-400 text-red-400" />
         Likes
@@ -68,9 +68,9 @@ export default function HeroMockup() {
         whileInView={{ opacity: 1, x: 0, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: 0.75 }}
-        className="absolute -right-4 bottom-10 flex items-center gap-2 rounded-full border border-white/10 bg-background/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-sm"
+        className="absolute -right-4 bottom-10 flex items-center gap-2 rounded-full border border-border bg-background/90 px-3.5 py-2 text-xs font-medium shadow-lg backdrop-blur-sm"
       >
-        <UserPlus className="h-3.5 w-3.5 text-accent-500" />
+        <UserPlus className="h-3.5 w-3.5 text-brand-600" />
         UK Followers
       </motion.div>
     </div>

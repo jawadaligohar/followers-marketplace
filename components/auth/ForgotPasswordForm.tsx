@@ -28,10 +28,10 @@ export default function ForgotPasswordForm() {
     return (
       <div className="space-y-4 text-sm text-muted-foreground">
         <p>
-          If an account exists for <span className="text-white">{email}</span>, we&apos;ve
+          If an account exists for <span className="text-foreground">{email}</span>, we&apos;ve
           sent a password reset link.
         </p>
-        <Link href="/login" className="font-medium text-accent-500 hover:underline">
+        <Link href="/login" className="font-medium text-brand-600 hover:underline">
           Back to sign in
         </Link>
       </div>
@@ -56,7 +56,7 @@ export default function ForgotPasswordForm() {
 
       <Button
         type="submit"
-        variant="brand"
+        variant="default"
         disabled={loading}
         className="flex w-full items-center justify-center gap-2 py-5"
       >
@@ -65,7 +65,7 @@ export default function ForgotPasswordForm() {
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        <Link href="/login" className="font-medium text-accent-500 hover:underline">
+        <Link href="/login" className="font-medium text-brand-600 hover:underline">
           Back to sign in
         </Link>
       </p>

@@ -33,7 +33,7 @@ export default function Header() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="sticky top-0 z-50 border-b border-white/10 bg-background/80 backdrop-blur-md"
+      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="group relative text-sm font-medium text-white/70 transition hover:text-white"
+              className="group relative text-sm font-medium text-muted-foreground transition hover:text-foreground"
             >
               {link.label}
               <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-300 group-hover:w-full" />
@@ -62,18 +62,18 @@ export default function Header() {
         <div className="hidden items-center gap-3 md:flex">
           <CartDrawer />
           {isAuthed ? (
-            <Button variant="brand" render={<Link href="/dashboard" />}>
+            <Button variant="default" render={<Link href="/dashboard" />}>
               Go to Dashboard
             </Button>
           ) : (
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-white/70 transition hover:text-white"
+                className="text-sm font-medium text-muted-foreground transition hover:text-foreground"
               >
                 Sign in
               </Link>
-              <Button variant="brand" render={<Link href="/signup" />}>
+              <Button variant="default" render={<Link href="/signup" />}>
                 Get Started
               </Button>
             </>
@@ -105,13 +105,13 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="text-sm font-medium text-white/70 hover:text-white"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                   {link.label}
                 </a>
               ))}
               <Button
-                variant="brand"
+                variant="default"
                 onClick={() => setOpen(false)}
                 render={<Link href={isAuthed ? "/dashboard" : "/signup"} />}
               >

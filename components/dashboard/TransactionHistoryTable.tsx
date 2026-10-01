@@ -41,10 +41,10 @@ export default function TransactionHistoryTable({ transactions }: { transactions
   }
 
   return (
-    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+    <Card className="overflow-x-auto border-border bg-card p-0">
       <Table>
         <TableHeader>
-          <TableRow className="border-white/10">
+          <TableRow className="border-border">
             <TableHead>Type</TableHead>
             <TableHead>Note</TableHead>
             <TableHead>Amount</TableHead>
@@ -59,17 +59,17 @@ export default function TransactionHistoryTable({ transactions }: { transactions
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
-              className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+              className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
             >
               <TableCell>{TYPE_LABELS[tx.type] ?? tx.type}</TableCell>
               <TableCell className="text-muted-foreground">{tx.note ?? "—"}</TableCell>
               <TableCell
-                className={`font-medium ${tx.amountCents >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                className={`font-medium ${tx.amountCents >= 0 ? "text-emerald-600" : "text-rose-600"}`}
               >
                 {tx.amountCents >= 0 ? "+" : ""}
                 ${(tx.amountCents / 100).toFixed(2)}
               </TableCell>
-              <TableCell className="text-white/70">${(tx.balanceAfterCents / 100).toFixed(2)}</TableCell>
+              <TableCell className="text-foreground/80">${(tx.balanceAfterCents / 100).toFixed(2)}</TableCell>
               <TableCell className="text-muted-foreground">
                 {new Date(tx.createdAt).toLocaleDateString()}
               </TableCell>

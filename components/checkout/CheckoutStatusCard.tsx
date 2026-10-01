@@ -16,7 +16,7 @@ export default function CheckoutStatusCard({
   description,
   ctaLabel,
   ctaHref,
-  ctaVariant = "brand",
+  ctaVariant = "default",
   children,
 }: {
   status: "success" | "cancel";
@@ -24,11 +24,11 @@ export default function CheckoutStatusCard({
   description: string;
   ctaLabel: string;
   ctaHref: string;
-  ctaVariant?: "brand" | "outline";
+  ctaVariant?: "default" | "outline";
   children?: React.ReactNode;
 }) {
   const Icon = ICONS[status];
-  const iconClassName = status === "success" ? "text-accent-500" : "text-white/40";
+  const iconClassName = status === "success" ? "text-brand-600" : "text-muted-foreground/50";
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-grid px-6">
@@ -37,7 +37,7 @@ export default function CheckoutStatusCard({
         initial={{ opacity: 0, y: 20, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-8 text-center shadow-2xl shadow-black/40"
+        className="relative w-full max-w-md rounded-3xl border border-border bg-card p-8 text-center shadow-2xl shadow-black/10"
       >
         <motion.div
           initial={{ scale: 0, rotate: -20 }}

@@ -29,7 +29,7 @@ export default function UserMenu({ name, email }: { name?: string | null; email?
           <div className="text-sm font-medium">{name ?? "Account"}</div>
           <div className="text-xs text-muted-foreground">{email}</div>
         </div>
-        <Avatar className="h-9 w-9 border border-white/10 bg-gradient-to-br from-brand-500 to-accent-500">
+        <Avatar className="h-9 w-9 border border-border bg-gradient-to-br from-brand-500 to-accent-500">
           <AvatarFallback className="bg-transparent text-xs font-semibold text-white">
             {initials ?? <User className="h-4 w-4" />}
           </AvatarFallback>

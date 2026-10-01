@@ -20,7 +20,7 @@ export default function ComparisonTable() {
         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Real engagement, side by side
         </h2>
-        <p className="mt-4 text-white/60">
+        <p className="mt-4 text-muted-foreground">
           Not all growth services are built the same. Here&apos;s how Surgeon
           compares to typical bot-driven providers.
         </p>
@@ -33,11 +33,11 @@ export default function ComparisonTable() {
         transition={{ duration: 0.4 }}
         className="mt-12"
       >
-        <Card className="overflow-hidden border-white/10 bg-white/[0.03] p-0">
-          <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-white/10 px-6 py-4 text-sm font-semibold sm:gap-x-8">
-            <span className="text-white/40">Feature</span>
+        <Card className="overflow-hidden border-border bg-card p-0">
+          <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-border px-6 py-4 text-sm font-semibold sm:gap-x-8">
+            <span className="text-muted-foreground">Feature</span>
             <span className="text-center text-gradient">Surgeon</span>
-            <span className="text-center text-white/40">Bot Services</span>
+            <span className="text-center text-muted-foreground">Bot Services</span>
           </div>
           {ROWS.map((row, i) => (
             <motion.div
@@ -46,21 +46,21 @@ export default function ComparisonTable() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-white/5 px-6 py-3.5 text-sm last:border-0 sm:gap-x-8"
+              className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 border-b border-border px-6 py-3.5 text-sm last:border-0 sm:gap-x-8"
             >
-              <span className="text-white/70">{row.label}</span>
+              <span className="text-foreground/80">{row.label}</span>
               <span className="flex justify-center">
                 {row.us ? (
-                  <Check className="h-4 w-4 text-emerald-400" />
+                  <Check className="h-4 w-4 text-emerald-600" />
                 ) : (
-                  <X className="h-4 w-4 text-white/20" />
+                  <X className="h-4 w-4 text-muted-foreground/40" />
                 )}
               </span>
               <span className="flex justify-center">
                 {row.bots ? (
-                  <Check className="h-4 w-4 text-white/40" />
+                  <Check className="h-4 w-4 text-muted-foreground/60" />
                 ) : (
-                  <X className="h-4 w-4 text-red-400/70" />
+                  <X className="h-4 w-4 text-rose-500/70" />
                 )}
               </span>
             </motion.div>

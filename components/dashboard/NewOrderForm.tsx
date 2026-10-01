@@ -16,7 +16,7 @@ import { Card } from "@/components/ui/card";
 
 const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
   instagram: { icon: FaInstagram, color: "text-pink-500" },
-  tiktok: { icon: FaTiktok, color: "text-white" },
+  tiktok: { icon: FaTiktok, color: "text-foreground" },
   facebook: { icon: FaFacebook, color: "text-blue-500" },
 };
 
@@ -123,7 +123,7 @@ export default function NewOrderForm() {
 
   if (services.length === 0) {
     return (
-      <Card className="border-white/10 bg-white/[0.03] p-10 text-center text-sm text-muted-foreground">
+      <Card className="border-border bg-card p-10 text-center text-sm text-muted-foreground">
         No services available right now.
       </Card>
     );
@@ -151,8 +151,8 @@ export default function NewOrderForm() {
                 whileTap={{ scale: 0.95 }}
                 className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 text-xs font-medium transition ${
                   active
-                    ? "border-brand-500 bg-brand-500/10 text-white"
-                    : "border-white/10 text-white/50 hover:border-white/20"
+                    ? "border-brand-500 bg-brand-500/10 text-foreground"
+                    : "border-border text-muted-foreground hover:border-brand-500/30"
                 }`}
               >
                 {Icon && <Icon className={`h-5 w-5 ${meta.color}`} />}
@@ -174,8 +174,8 @@ export default function NewOrderForm() {
               whileTap={{ scale: 0.95 }}
               className={`rounded-lg border px-2 py-2 text-xs font-medium transition ${
                 qtyValue === tier.qtyValue
-                  ? "border-brand-500 bg-brand-500/10 text-white"
-                  : "border-white/10 text-white/50 hover:border-white/20"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground"
+                  : "border-border text-muted-foreground hover:border-brand-500/30"
               }`}
             >
               {tier.qty}
@@ -207,8 +207,8 @@ export default function NewOrderForm() {
             whileTap={{ scale: 0.97 }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "wallet"
-                ? "border-brand-500 bg-brand-500/10 text-white"
-                : "border-white/10 text-white/50 hover:border-white/20"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
             }`}
           >
             <Wallet className="h-4 w-4" />
@@ -220,8 +220,8 @@ export default function NewOrderForm() {
             whileTap={{ scale: 0.97 }}
             className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
               paymentSource === "card"
-                ? "border-brand-500 bg-brand-500/10 text-white"
-                : "border-white/10 text-white/50 hover:border-white/20"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
             }`}
           >
             <CreditCard className="h-4 w-4" />
@@ -230,7 +230,7 @@ export default function NewOrderForm() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+      <div className="flex items-center justify-between overflow-hidden rounded-xl border border-border bg-muted px-4 py-3">
         <span className="text-sm text-muted-foreground">Total price</span>
         <AnimatePresence mode="wait">
           <motion.span
@@ -249,7 +249,7 @@ export default function NewOrderForm() {
       <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
         <Button
           type="submit"
-          variant="brand"
+          variant="default"
           disabled={submitting}
           className="flex w-full items-center justify-center gap-2 py-5"
         >

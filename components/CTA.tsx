@@ -14,11 +14,11 @@ export default function CTA() {
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="glow relative overflow-hidden border-white/10 bg-gradient-to-br from-brand-600/20 to-accent-500/10 px-8 py-16 text-center">
+        <Card className="glow relative overflow-hidden border-border bg-gradient-to-br from-brand-50 to-warm-lilac/20 px-8 py-16 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Ready to grow your audience?
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-white/60">
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Join thousands of creators and businesses already growing faster
             with Surgeon. Get started in less than 2 minutes.
           </p>
@@ -28,9 +28,9 @@ export default function CTA() {
             whileTap={{ scale: 0.97 }}
           >
             <Button
-              variant="brand"
+              variant="default"
               className="px-8 py-6"
-              render={<Link href="/signup" />}
+              render={<Link href="/#pricing" />}
             >
               Start Growing Now
             </Button>

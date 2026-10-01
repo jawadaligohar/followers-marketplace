@@ -2,40 +2,50 @@
 @import "tw-animate-css";
 
 :root {
-  --background: #070914;
-  --foreground: #eef1fb;
-  --brand-50: #f1f6ff;
+  --background: #fbfaf7;
+  --foreground: #14110f;
+  --brand-50: #f4f1ff;
   --brand-500: #6d5bff;
   --brand-600: #5a3dff;
   --accent-500: #22d3ee;
 
-  --card: #0d0f1d;
+  --card: #ffffff;
   --card-foreground: var(--foreground);
-  --popover: #0d0f1d;
+  --popover: #ffffff;
   --popover-foreground: var(--foreground);
-  --primary: var(--brand-500);
+  --primary: #111111;
   --primary-foreground: #ffffff;
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: var(--foreground);
-  --muted: rgba(255, 255, 255, 0.06);
-  --muted-foreground: rgba(238, 241, 251, 0.5);
-  --accent: var(--accent-500);
-  --accent-foreground: #06222a;
-  --destructive: #ef4444;
+  --secondary: #f1efe9;
+  --secondary-foreground: #14110f;
+  --muted: #f1efe9;
+  --muted-foreground: #6b675f;
+  --accent: #fef3c7;
+  --accent-foreground: #78350f;
+  --destructive: #e11d48;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
+  --border: #e7e3d9;
+  --input: #e7e3d9;
   --ring: var(--brand-500);
   --radius: 0.75rem;
 
-  --sidebar: #0d0f1d;
+  --sidebar: #ffffff;
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--brand-500);
+  --sidebar-primary: #111111;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent: #f1efe9;
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-border: #e7e3d9;
   --sidebar-ring: var(--brand-500);
+
+  /* Pastel sticker-card accents, paired with dark foregrounds for on-badge text */
+  --warm-amber: #fbbf24;
+  --warm-amber-foreground: #4a2e05;
+  --warm-rose: #fda4af;
+  --warm-rose-foreground: #881337;
+  --warm-mint: #86efac;
+  --warm-mint-foreground: #14532d;
+  --warm-lilac: #c4b5fd;
+  --warm-lilac-foreground: #3b0764;
 }
 
 @theme inline {
@@ -74,6 +84,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --color-warm-amber: var(--warm-amber);
+  --color-warm-amber-foreground: var(--warm-amber-foreground);
+  --color-warm-rose: var(--warm-rose);
+  --color-warm-rose-foreground: var(--warm-rose-foreground);
+  --color-warm-mint: var(--warm-mint);
+  --color-warm-mint-foreground: var(--warm-mint-foreground);
+  --color-warm-lilac: var(--warm-lilac);
+  --color-warm-lilac-foreground: var(--warm-lilac-foreground);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -96,17 +115,17 @@ body {
 }
 
 .bg-grid {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(20, 17, 15, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 17, 15, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 .glow {
-  background: radial-gradient(circle at 50% 0%, rgba(109, 91, 255, 0.35), transparent 60%);
+  background: radial-gradient(circle at 50% 0%, rgba(196, 181, 253, 0.35), transparent 60%);
 }
 
 .text-gradient {
-  background: linear-gradient(90deg, #a78bfa, #22d3ee);
+  background: linear-gradient(90deg, #6d5bff, #be185d);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

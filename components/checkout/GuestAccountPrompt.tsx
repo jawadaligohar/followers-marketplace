@@ -56,10 +56,10 @@ export default function GuestAccountPrompt({ email }: { email: string }) {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left"
+          className="mt-6 overflow-hidden rounded-2xl border border-border bg-card p-5 text-left"
         >
           <div className="flex items-center gap-2 text-sm font-medium">
-            <UserPlus className="h-4 w-4 text-accent-500" />
+            <UserPlus className="h-4 w-4 text-brand-600" />
             Save this order to an account
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -96,7 +96,7 @@ export default function GuestAccountPrompt({ email }: { email: string }) {
             <div className="flex gap-2 pt-1">
               <Button
                 type="submit"
-                variant="brand"
+                variant="default"
                 disabled={loading}
                 className="flex flex-1 items-center justify-center gap-2"
               >

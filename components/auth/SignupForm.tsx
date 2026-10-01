@@ -105,7 +105,7 @@ export default function SignupForm() {
 
         <Button
           type="submit"
-          variant="brand"
+          variant="default"
           disabled={loading}
           className="flex w-full items-center justify-center gap-2 py-5"
         >
@@ -116,7 +116,7 @@ export default function SignupForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-accent-500 hover:underline">
+        <Link href="/login" className="font-medium text-brand-600 hover:underline">
           Sign in
         </Link>
       </p>

@@ -41,7 +41,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     return (
       <p className="text-sm text-muted-foreground">
         This reset link is missing its token.{" "}
-        <Link href="/forgot-password" className="text-accent-500 hover:underline">
+        <Link href="/forgot-password" className="text-brand-600 hover:underline">
           Request a new one
         </Link>
         .
@@ -72,7 +72,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
       <Button
         type="submit"
-        variant="brand"
+        variant="default"
         disabled={loading}
         className="flex w-full items-center justify-center gap-2 py-5"
       >

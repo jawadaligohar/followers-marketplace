@@ -72,7 +72,7 @@ export default function LoginForm() {
             <Label htmlFor="password" className="text-xs text-muted-foreground">
               Password
             </Label>
-            <Link href="/forgot-password" className="text-xs text-accent-500 hover:underline">
+            <Link href="/forgot-password" className="text-xs text-brand-600 hover:underline">
               Forgot password?
             </Link>
           </div>
@@ -88,7 +88,7 @@ export default function LoginForm() {
 
         <Button
           type="submit"
-          variant="brand"
+          variant="default"
           disabled={loading}
           className="flex w-full items-center justify-center gap-2 py-5"
         >
@@ -99,7 +99,7 @@ export default function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-medium text-accent-500 hover:underline">
+        <Link href="/signup" className="font-medium text-brand-600 hover:underline">
           Sign up
         </Link>
       </p>

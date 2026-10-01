@@ -38,7 +38,7 @@ export default async function DashboardOverviewPage() {
           <h1 className="text-2xl font-bold">Welcome back{session?.user.name ? `, ${session.user.name.split(" ")[0]}` : ""}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Here&apos;s what&apos;s happening with your account.</p>
         </div>
-        <Button variant="brand" render={<Link href="/dashboard/orders/new" />} className="gap-2">
+        <Button variant="default" render={<Link href="/dashboard/orders/new" />} className="gap-2">
           <PlusCircle className="h-4 w-4" />
           New Order
         </Button>
@@ -46,25 +46,25 @@ export default async function DashboardOverviewPage() {
 
       <FadeIn delay={0.05} className="grid gap-6 sm:grid-cols-3">
         <WalletBalanceCard walletBalanceCents={session!.user.walletBalanceCents} />
-        <Card className="border-white/10 bg-white/[0.03]">
+        <Card className="border-border bg-card">
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
-                <ListOrdered className="h-4 w-4 text-brand-400" />
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-muted">
+                <ListOrdered className="h-4 w-4 text-brand-600" />
               </span>
               Total orders
             </div>
             <div className="mt-4 text-3xl font-extrabold text-gradient">{orders.length}</div>
           </CardContent>
         </Card>
-        <Card className="border-white/10 bg-white/[0.03]">
+        <Card className="border-border bg-card">
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-muted">
                 {session?.user.role === "admin" ? (
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
                 ) : (
-                  <User className="h-4 w-4 text-emerald-400" />
+                  <User className="h-4 w-4 text-emerald-600" />
                 )}
               </span>
               Account role
@@ -77,7 +77,7 @@ export default async function DashboardOverviewPage() {
       <FadeIn delay={0.1}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Recent orders</h2>
-          <Link href="/dashboard/orders" className="text-sm text-accent-500 hover:underline">
+          <Link href="/dashboard/orders" className="text-sm text-brand-600 hover:underline">
             View all
           </Link>
         </div>

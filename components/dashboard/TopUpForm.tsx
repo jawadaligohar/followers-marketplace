@@ -42,7 +42,7 @@ export default function TopUpForm() {
   }
 
   return (
-    <Card className="border-white/10 bg-white/[0.03]">
+    <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Top up wallet</CardTitle>
         <CardDescription>Pay from your wallet to save 15% on every order.</CardDescription>
@@ -60,8 +60,8 @@ export default function TopUpForm() {
               whileTap={{ scale: 0.95 }}
               className={`rounded-lg border px-2 py-2.5 text-sm font-medium transition ${
                 amountCents === preset && !customAmount
-                  ? "border-brand-500 bg-brand-500/10 text-white"
-                  : "border-white/10 text-white/50 hover:border-white/20"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground"
+                  : "border-border text-muted-foreground hover:border-brand-500/30"
               }`}
             >
               ${(preset / 100).toFixed(0)}
@@ -86,7 +86,7 @@ export default function TopUpForm() {
 
         <Button
           type="button"
-          variant="brand"
+          variant="default"
           onClick={handleTopUp}
           disabled={loading}
           className="mt-5 flex w-full items-center justify-center gap-2 py-5"

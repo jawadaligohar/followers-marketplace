@@ -42,16 +42,16 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button variant="brand" onClick={() => setEditing("new")} className="gap-2">
+        <Button variant="default" onClick={() => setEditing("new")} className="gap-2">
           <Plus className="h-4 w-4" />
           New service
         </Button>
       </div>
 
-      <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+      <Card className="overflow-x-auto border-border bg-card p-0">
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10">
+            <TableRow className="border-border">
               <TableHead>Platform</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Tiers</TableHead>
@@ -66,11 +66,11 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
-                className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+                className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
               >
                 <TableCell>{svc.platformLabel}</TableCell>
-                <TableCell className="text-white/70">{svc.category}</TableCell>
-                <TableCell className="text-white/70">{svc.tiers.length} tiers</TableCell>
+                <TableCell className="text-foreground/80">{svc.category}</TableCell>
+                <TableCell className="text-foreground/80">{svc.tiers.length} tiers</TableCell>
                 <TableCell>
                   <Badge variant={svc.active ? "completed" : "cancelled"} className="rounded-full">
                     {svc.active ? "Active" : "Inactive"}
@@ -82,7 +82,7 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                       variant="ghost"
                       size="icon"
                       onClick={() => setEditing(svc)}
-                      className="text-white/50 hover:text-white"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -90,7 +90,7 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(svc._id)}
-                      className="text-white/50 hover:text-red-400"
+                      className="text-muted-foreground hover:text-rose-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

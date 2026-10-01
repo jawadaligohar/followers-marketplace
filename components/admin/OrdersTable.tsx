@@ -65,10 +65,10 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
   }
 
   return (
-    <Card className="overflow-x-auto border-white/10 bg-white/[0.03] p-0">
+    <Card className="overflow-x-auto border-border bg-card p-0">
       <Table>
         <TableHeader>
-          <TableRow className="border-white/10">
+          <TableRow className="border-border">
             <TableHead>Customer</TableHead>
             <TableHead>Service</TableHead>
             <TableHead>Qty</TableHead>
@@ -87,7 +87,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.4) }}
-                className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.02]"
+                className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
               >
                 <TableCell>
                   <div>{user?.name ?? "—"}</div>
@@ -96,9 +96,9 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 <TableCell>
                   {order.platformLabel} {order.category}
                 </TableCell>
-                <TableCell className="text-white/70">{order.qtyValue.toLocaleString()}</TableCell>
-                <TableCell className="capitalize text-white/70">{order.paymentSource}</TableCell>
-                <TableCell className="text-white/70">${(order.priceCents / 100).toFixed(2)}</TableCell>
+                <TableCell className="text-foreground/80">{order.qtyValue.toLocaleString()}</TableCell>
+                <TableCell className="capitalize text-foreground/80">{order.paymentSource}</TableCell>
+                <TableCell className="text-foreground/80">${(order.priceCents / 100).toFixed(2)}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <OrderStatusBadge status={order.status} />

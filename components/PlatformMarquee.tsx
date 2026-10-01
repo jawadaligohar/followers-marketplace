@@ -23,7 +23,7 @@ const LOGOS = [
 export default function PlatformMarquee() {
   const items = [...LOGOS, ...LOGOS];
   return (
-    <div className="border-y border-white/10 bg-white/[0.02] py-6">
+    <div className="border-y border-border bg-muted/40 py-6">
       <div
         className="mx-auto max-w-7xl overflow-hidden px-6"
         style={{
@@ -37,7 +37,7 @@ export default function PlatformMarquee() {
           {items.map((item, i) => (
             <span
               key={`${item.name}-${i}`}
-              className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold uppercase tracking-widest text-white/30 transition-colors hover:text-white/70"
+              className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-foreground"
             >
               <item.icon className="h-4 w-4" />
               {item.name}

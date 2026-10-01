@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 
 const PLATFORMS = [
   { id: "instagram", label: "Instagram", icon: FaInstagram, color: "text-pink-500" },
-  { id: "tiktok", label: "TikTok", icon: FaTiktok, color: "text-white" },
+  { id: "tiktok", label: "TikTok", icon: FaTiktok, color: "text-foreground" },
   { id: "facebook", label: "Facebook", icon: FaFacebook, color: "text-blue-500" },
 ] as const;
 
@@ -71,7 +71,7 @@ export default function OrderForm() {
   }
 
   return (
-    <Card className="relative border-white/10 bg-white/[0.03] p-6 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-8">
+    <Card className="relative border-border bg-card p-6 shadow-2xl shadow-black/10 backdrop-blur-sm sm:p-8">
       <h2 className="text-lg font-semibold">Start your order</h2>
       <p className="mt-1 text-sm text-muted-foreground">
         Choose a platform and quantity to see instant pricing.
@@ -89,8 +89,8 @@ export default function OrderForm() {
               whileTap={{ scale: 0.95 }}
               className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 text-xs font-medium transition ${
                 active
-                  ? "border-brand-500 bg-brand-500/10 text-white"
-                  : "border-white/10 text-white/50 hover:border-white/20 hover:text-white/80"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground"
+                  : "border-border text-muted-foreground hover:border-brand-500/30 hover:text-foreground"
               }`}
             >
               <Icon className={`h-5 w-5 ${p.color}`} />
@@ -130,8 +130,8 @@ export default function OrderForm() {
                 whileTap={{ scale: 0.95 }}
                 className={`rounded-lg border px-2 py-2 text-xs font-medium transition ${
                   qtyValue === tier.qtyValue
-                    ? "border-brand-500 bg-brand-500/10 text-white"
-                    : "border-white/10 text-white/50 hover:border-white/20"
+                    ? "border-brand-500 bg-brand-500/10 text-foreground"
+                    : "border-border text-muted-foreground hover:border-brand-500/30"
                 }`}
               >
                 {tier.qty}
@@ -141,7 +141,7 @@ export default function OrderForm() {
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between overflow-hidden rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+      <div className="mt-6 flex items-center justify-between overflow-hidden rounded-xl border border-border bg-muted px-4 py-3">
         <span className="text-sm text-muted-foreground">Total price</span>
         <AnimatePresence mode="wait">
           <motion.span
@@ -156,7 +156,7 @@ export default function OrderForm() {
           </motion.span>
         </AnimatePresence>
       </div>
-      <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-accent-500">
+      <div className="mt-2 flex items-center justify-center gap-1.5 text-xs text-brand-600">
         <Wallet className="h-3.5 w-3.5" />${formatUsd(walletPrice(selectedTier.price))}{" "}
         if paid from wallet ({WALLET_DISCOUNT * 100}% off)
       </div>
@@ -164,7 +164,7 @@ export default function OrderForm() {
       <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
         <Button
           type="button"
-          variant="brand"
+          variant="default"
           onClick={handleAddToCart}
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
         >
@@ -173,7 +173,7 @@ export default function OrderForm() {
           <ArrowRight className="h-4 w-4" />
         </Button>
       </motion.div>
-      <p className="mt-3 text-center text-xs text-white/30">
+      <p className="mt-3 text-center text-xs text-muted-foreground/70">
         No account needed — checkout as a guest or sign in to save 15% with wallet.
       </p>
     </Card>
