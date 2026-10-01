@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import PlatformMarquee from "@/components/PlatformMarquee";
 import OurPhilosophy from "@/components/OurPhilosophy";
+import Guarantees from "@/components/Guarantees";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import Stats from "@/components/Stats";
 import Services from "@/components/Services";
@@ -25,6 +26,7 @@ export default function Home() {
         <Hero />
         <PlatformMarquee />
         <OurPhilosophy />
+        <Guarantees />
         <ShowcaseSection />
         <Stats />
         <Services />
