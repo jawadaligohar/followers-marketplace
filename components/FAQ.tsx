@@ -45,7 +45,7 @@ export default function FAQ() {
           Frequently asked questions
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Everything you need to know before placing your first order.
+          We know you might have questions. Here's everything you need to know before we get started.
         </p>
       </motion.div>
 

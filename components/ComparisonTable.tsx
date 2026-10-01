@@ -18,11 +18,10 @@ export default function ComparisonTable() {
     <section className="mx-auto max-w-5xl px-6 py-20">
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Real engagement, side by side
+          Why choose real people?
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Not all growth services are built the same. Here&apos;s how Surgeon
-          compares to typical bot-driven providers.
+          Not all growth services are built the same. Here's why building a genuine community beats artificial bot-driven numbers.
         </p>
       </div>
 

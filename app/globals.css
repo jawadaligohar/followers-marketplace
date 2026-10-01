@@ -2,39 +2,39 @@
 @import "tw-animate-css";
 
 :root {
-  --background: #fbfaf7;
-  --foreground: #14110f;
-  --brand-50: #f4f1ff;
-  --brand-500: #6d5bff;
-  --brand-600: #5a3dff;
-  --accent-500: #22d3ee;
+  --background: #fffbfa;
+  --foreground: #2d241e;
+  --brand-50: #fff3ed;
+  --brand-500: #f97316;
+  --brand-600: #ea580c;
+  --accent-500: #fde047;
 
   --card: #ffffff;
   --card-foreground: var(--foreground);
   --popover: #ffffff;
   --popover-foreground: var(--foreground);
-  --primary: #111111;
+  --primary: #1a1512;
   --primary-foreground: #ffffff;
-  --secondary: #f1efe9;
-  --secondary-foreground: #14110f;
-  --muted: #f1efe9;
-  --muted-foreground: #6b675f;
+  --secondary: #f4eee9;
+  --secondary-foreground: #2d241e;
+  --muted: #f4eee9;
+  --muted-foreground: #736961;
   --accent: #fef3c7;
   --accent-foreground: #78350f;
-  --destructive: #e11d48;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e7e3d9;
-  --input: #e7e3d9;
+  --border: #ede8e3;
+  --input: #ede8e3;
   --ring: var(--brand-500);
-  --radius: 0.75rem;
+  --radius: 1.25rem;
 
   --sidebar: #ffffff;
   --sidebar-foreground: var(--foreground);
-  --sidebar-primary: #111111;
+  --sidebar-primary: #1a1512;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1efe9;
+  --sidebar-accent: #f4eee9;
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: #e7e3d9;
+  --sidebar-border: #ede8e3;
   --sidebar-ring: var(--brand-500);
 
   /* Pastel sticker-card accents, paired with dark foregrounds for on-badge text */
@@ -115,17 +115,16 @@ body {
 }
 
 .bg-grid {
-  background-image: linear-gradient(rgba(20, 17, 15, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 17, 15, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-image: radial-gradient(rgba(45, 36, 30, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .glow {
-  background: radial-gradient(circle at 50% 0%, rgba(196, 181, 253, 0.35), transparent 60%);
+  background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.15), transparent 60%);
 }
 
 .text-gradient {
-  background: linear-gradient(90deg, #6d5bff, #be185d);
+  background: linear-gradient(90deg, #f97316, #ec4899);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -141,5 +140,5 @@ body {
 }
 
 .animate-marquee {
-  animation: marquee 28s linear infinite;
+  animation: marquee 35s linear infinite;
 }

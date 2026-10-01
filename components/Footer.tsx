@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const FOOTER_LINKS = {
   Services: ["Instagram", "TikTok", "YouTube", "Facebook", "Telegram"],
-  Company: ["About Us", "Contact", "Blog", "Careers"],
+  Company: ["Our Story", "Contact", "Blog", "Careers"],
   Legal: ["Terms of Service", "Privacy Policy", "Refund Policy"],
 };
 
@@ -27,13 +27,12 @@ export default function Footer() {
                 whileHover={{ rotate: 12, scale: 1.05 }}
                 className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-500"
               >
-                <Sparkles className="h-4 w-4 text-white" />
+                <Heart className="h-4 w-4 text-white" />
               </motion.span>
               <span className="text-base font-bold">Surgeon</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-              The fastest way to grow your social media presence — trusted by
-              creators and brands worldwide.
+              Helping you build real, lasting connections with your community. We're in this together.
             </p>
           </motion.div>
 

@@ -100,7 +100,7 @@ export default function Testimonials() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.2, delay: (i % 3) * 0.05 + starIndex * 0.06 }}
                       >
-                        <Star className="h-3.5 w-3.5 fill-accent-500 text-brand-600" />
+                        <Star className="h-3.5 w-3.5 fill-warm-amber text-warm-amber-foreground" />
                       </motion.span>
                     ))}
                   </div>

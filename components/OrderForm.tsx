@@ -72,9 +72,9 @@ export default function OrderForm() {
 
   return (
     <Card className="relative border-border bg-card p-6 shadow-2xl shadow-black/10 backdrop-blur-sm sm:p-8">
-      <h2 className="text-lg font-semibold">Start your order</h2>
+      <h2 className="text-lg font-semibold">Start growing today</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        Choose a platform and quantity to see instant pricing.
+        Choose where your community lives and how many people you want to reach.
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-2">
@@ -120,7 +120,7 @@ export default function OrderForm() {
         </div>
 
         <div>
-          <Label className="mb-1.5 text-xs text-muted-foreground">Quantity</Label>
+          <Label className="mb-1.5 text-xs text-muted-foreground">Audience size</Label>
           <div className="grid grid-cols-4 gap-2">
             {tiers.map((tier) => (
               <motion.button

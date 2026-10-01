@@ -20,7 +20,7 @@ const STEPS = [
   {
     number: "03",
     title: "Watch it grow",
-    desc: "Delivery starts within minutes and paces itself naturally so your growth always looks organic.",
+    desc: "Watch your community grow. Our delivery paces itself naturally so it always feels authentic and real.",
     visual: "grow",
   },
 ];
@@ -105,8 +105,7 @@ export default function HowItWorks() {
             transition={{ duration: 0.4, delay: 0.05 }}
             className="mt-4 text-muted-foreground"
           >
-            Three simple steps to grow your social presence — no hassle, no
-            waiting around.
+            Three simple steps to grow your community. No passwords, no stress, just real connection.
           </motion.p>
         </div>
 

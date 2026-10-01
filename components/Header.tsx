@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { motion } from "motion/react";
-import { Menu, Sparkles } from "lucide-react";
+import { Menu, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CartDrawer from "@/components/cart/CartDrawer";
 import {
@@ -41,7 +41,7 @@ export default function Header() {
             whileHover={{ rotate: 12, scale: 1.05 }}
             className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500"
           >
-            <Sparkles className="h-5 w-5 text-white" />
+            <Heart className="h-5 w-5 text-white" />
           </motion.span>
           <span className="text-lg font-bold tracking-tight">Surgeon</span>
         </Link>
@@ -94,7 +94,7 @@ export default function Header() {
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2 text-left">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-accent-500">
-                  <Sparkles className="h-4 w-4 text-white" />
+                  <Heart className="h-4 w-4 text-white" />
                 </span>
                 Surgeon
               </SheetTitle>

@@ -54,8 +54,7 @@ export default function Pricing() {
           Simple, transparent pricing
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Followers pricing shown below. No subscriptions, no hidden fees —
-          pay once per order.
+          Straightforward pricing for real growth. No subscriptions, no hidden fees — pay once, grow forever.
         </p>
         <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
           <Wallet className="h-3.5 w-3.5 text-brand-600" />
