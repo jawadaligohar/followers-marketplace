@@ -36,10 +36,10 @@ export default function UserMenu({ name, email }: { name?: string | null; email?
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
+        <div className="px-2 py-1.5 text-sm font-medium">
           <div className="text-sm font-medium">{name ?? "Account"}</div>
           <div className="text-xs font-normal text-muted-foreground">{email}</div>
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"

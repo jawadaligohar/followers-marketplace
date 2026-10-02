@@ -35,7 +35,7 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
         title="No orders yet"
         description="Your first order will show up here once you place it."
       >
-        <Button variant="default" className="mt-5" render={<Link href="/dashboard/orders/new" />}>
+        <Button variant="default" className="mt-5" render={<Link href="/dashboard/orders/new" />} nativeButton={false}>
           Place your first order
         </Button>
       </EmptyState>

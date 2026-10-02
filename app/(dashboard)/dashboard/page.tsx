@@ -38,7 +38,7 @@ export default async function DashboardOverviewPage() {
           <h1 className="text-2xl font-bold">Welcome back{session?.user.name ? `, ${session.user.name.split(" ")[0]}` : ""}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Here&apos;s what&apos;s happening with your account.</p>
         </div>
-        <Button variant="default" render={<Link href="/dashboard/orders/new" />} className="gap-2">
+        <Button variant="default" render={<Link href="/dashboard/orders/new" />} nativeButton={false} className="gap-2">
           <PlusCircle className="h-4 w-4" />
           New Order
         </Button>

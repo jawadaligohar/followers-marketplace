@@ -123,7 +123,7 @@ export default function Header() {
           <div className="hidden items-center gap-3 md:flex">
             <CartDrawer />
             {isAuthed ? (
-              <Button variant="default" render={<Link href="/dashboard" />}>
+              <Button variant="default" render={<Link href="/dashboard" />} nativeButton={false}>
                 Go to Dashboard
               </Button>
             ) : (
@@ -134,7 +134,7 @@ export default function Header() {
                 >
                   Log in
                 </Link>
-                <Button variant="default" render={<Link href="/signup" />}>
+                <Button variant="default" render={<Link href="/signup" />} nativeButton={false}>
                   Order now
                 </Button>
               </>
@@ -146,7 +146,7 @@ export default function Header() {
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger
                 render={
-                  <Button variant="ghost" size="icon" aria-label="Toggle menu">
+                  <Button variant="ghost" size="icon" aria-label="Toggle menu" nativeButton={false}>
                     <Menu className="h-5 w-5" />
                   </Button>
                 }
@@ -173,15 +173,15 @@ export default function Header() {
                   ))}
                   <div className="mt-4 flex flex-col gap-3">
                     {isAuthed ? (
-                      <Button variant="default" onClick={() => setOpen(false)} render={<Link href="/dashboard" />}>
+                      <Button variant="default" onClick={() => setOpen(false)} render={<Link href="/dashboard" />} nativeButton={false}>
                         Go to Dashboard
                       </Button>
                     ) : (
                       <>
-                        <Button variant="outline" onClick={() => setOpen(false)} render={<Link href="/login" />}>
+                        <Button variant="outline" onClick={() => setOpen(false)} render={<Link href="/login" />} nativeButton={false}>
                           Log in
                         </Button>
-                        <Button variant="default" onClick={() => setOpen(false)} render={<Link href="/signup" />}>
+                        <Button variant="default" onClick={() => setOpen(false)} render={<Link href="/signup" />} nativeButton={false}>
                           Order now
                         </Button>
                       </>
