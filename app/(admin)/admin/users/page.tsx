@@ -15,7 +15,7 @@ export default async function AdminUsersPage() {
     email: u.email,
     role: u.role,
     walletBalanceCents: u.walletBalanceCents,
-    createdAt: u.createdAt.toISOString(),
+    createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : new Date().toISOString(),
   }));
 
   return (

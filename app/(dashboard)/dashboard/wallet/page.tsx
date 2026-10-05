@@ -23,7 +23,7 @@ export default async function WalletPage() {
     amountCents: tx.amountCents,
     balanceAfterCents: tx.balanceAfterCents,
     note: tx.note,
-    createdAt: tx.createdAt.toISOString(),
+    createdAt: tx.createdAt ? new Date(tx.createdAt).toISOString() : new Date().toISOString(),
   }));
 
   return (

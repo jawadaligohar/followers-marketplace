@@ -20,7 +20,7 @@ export default async function OrdersPage() {
     priceCents: o.priceCents,
     status: o.status,
     paymentSource: o.paymentSource,
-    createdAt: o.createdAt.toISOString(),
+    createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
   }));
 
   return (
