@@ -4,6 +4,7 @@ import { Order } from "@/lib/db/models/Order";
 import { User } from "@/lib/db/models/User";
 import AdminStatCards from "@/components/admin/AdminStatCards";
 import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
+import PeakerrStatusBanner from "@/components/admin/PeakerrStatusBanner";
 import RevenueChart from "@/components/admin/RevenueChart";
 import FadeIn from "@/components/shared/FadeIn";
 
@@ -43,9 +44,13 @@ export default async function AdminOverviewPage() {
     platformLabel: o.platformLabel,
     category: o.category,
     qtyValue: o.qtyValue,
+    targetLink: o.targetLink,
     priceCents: o.priceCents,
     status: o.status,
     paymentSource: o.paymentSource,
+    supplierOrderId: o.supplierOrderId ?? null,
+    supplierStatus: o.supplierStatus ?? null,
+    failureReason: o.failureReason ?? null,
     createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
     userId: o.userId as unknown as { name?: string; email?: string },
   }));
@@ -53,10 +58,15 @@ export default async function AdminOverviewPage() {
   return (
     <div className="space-y-8">
       <FadeIn>
-        <h1 className="text-2xl font-bold">Admin overview</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          A snapshot of how Surgeon is performing right now.
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Admin overview</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              A snapshot of how Surgeon is performing right now.
+            </p>
+          </div>
+          <PeakerrStatusBanner />
+        </div>
       </FadeIn>
       <FadeIn delay={0.05}>
         <AdminStatCards

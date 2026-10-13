@@ -15,6 +15,7 @@ export default async function AdminServicesPage() {
     platformLabel: s.platformLabel,
     category: s.category,
     active: s.active,
+    supplierServiceId: s.supplierServiceId ?? null,
     tiers: s.tiers,
   }));
 

@@ -28,6 +28,7 @@ export type ServiceFormData = {
   platformLabel: string;
   category: string;
   active: boolean;
+  supplierServiceId?: string | null;
   tiers: ServiceFormTier[];
 };
 
@@ -36,6 +37,7 @@ const EMPTY: ServiceFormData = {
   platformLabel: "",
   category: "Followers",
   active: true,
+  supplierServiceId: "",
   tiers: [{ qty: "100", qtyValue: 100, priceCents: 100 }],
 };
 
@@ -83,6 +85,7 @@ export default function ServiceFormModal({
         platformLabel: form.platformLabel,
         category: form.category,
         active: form.active,
+        supplierServiceId: form.supplierServiceId?.trim() || null,
         tiers: form.tiers,
         sortOrder: 0,
       }),
@@ -149,6 +152,22 @@ export default function ServiceFormModal({
               />
               Active
             </label>
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="supplierServiceId" className="text-xs text-muted-foreground">
+                Peakerr Service ID (Automated Fulfillment)
+              </Label>
+              <span className="text-[11px] text-muted-foreground/70">
+                Leave empty for manual processing
+              </span>
+            </div>
+            <Input
+              id="supplierServiceId"
+              value={form.supplierServiceId ?? ""}
+              onChange={(e) => setForm((p) => ({ ...p, supplierServiceId: e.target.value }))}
+              placeholder="e.g. 1001 (from your Peakerr panel)"
+            />
           </div>
         </div>
 

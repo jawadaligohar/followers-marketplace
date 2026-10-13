@@ -5,8 +5,7 @@ import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import { Transaction } from "@/lib/db/models/Transaction";
 import { applyWalletTransaction } from "@/lib/wallet";
-import { supplierClient } from "@/lib/supplier";
-import { Service } from "@/lib/db/models/Service";
+import { fulfillOrder } from "@/lib/supplier/fulfillment";
 
 export const runtime = "nodejs";
 
@@ -85,23 +84,7 @@ export async function POST(req: Request) {
     });
 
     for (const order of orders) {
-      const service = await Service.findById(order.serviceId);
-
-      try {
-        const result = await supplierClient.submitOrder({
-          supplierServiceId: service?.supplierServiceId ?? "mock",
-          link: order.targetLink,
-          quantity: order.qtyValue,
-        });
-        order.supplierOrderId = result.supplierOrderId;
-        order.supplierStatus = result.status;
-        order.status = "processing";
-      } catch {
-        order.status = "failed";
-        order.failureReason = "Supplier submission failed";
-      }
-
-      await order.save();
+      await fulfillOrder(order);
     }
 
     return NextResponse.json({ received: true });

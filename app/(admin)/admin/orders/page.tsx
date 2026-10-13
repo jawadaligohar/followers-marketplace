@@ -1,6 +1,7 @@
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
+import PeakerrStatusBanner from "@/components/admin/PeakerrStatusBanner";
 import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Orders | Surgeon Admin" };
@@ -17,9 +18,13 @@ export default async function AdminOrdersPage() {
     platformLabel: o.platformLabel,
     category: o.category,
     qtyValue: o.qtyValue,
+    targetLink: o.targetLink,
     priceCents: o.priceCents,
     status: o.status,
     paymentSource: o.paymentSource,
+    supplierOrderId: o.supplierOrderId ?? null,
+    supplierStatus: o.supplierStatus ?? null,
+    failureReason: o.failureReason ?? null,
     createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
     userId: o.userId as unknown as { name?: string; email?: string },
   }));
@@ -27,7 +32,10 @@ export default async function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       <FadeIn>
-        <h1 className="text-2xl font-bold">All orders</h1>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-bold">All orders</h1>
+          <PeakerrStatusBanner />
+        </div>
       </FadeIn>
       <FadeIn delay={0.05}>
         <OrdersTable orders={rows} />

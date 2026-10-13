@@ -6,7 +6,7 @@ import { Order } from "@/lib/db/models/Order";
 import { createOrderSchema } from "@/lib/validation/order";
 import { walletPriceCents } from "@/lib/pricing";
 import { applyWalletTransaction, InsufficientBalanceError } from "@/lib/wallet";
-import { supplierClient } from "@/lib/supplier";
+import { fulfillOrder } from "@/lib/supplier/fulfillment";
 import { stripe } from "@/lib/stripe";
 import { nowpayments } from "@/lib/nowpayments";
 
@@ -169,19 +169,9 @@ export async function POST(req: Request) {
     status: "pending",
   });
 
-  try {
-    const result = await supplierClient.submitOrder({
-      supplierServiceId: service.supplierServiceId ?? "mock",
-      link: targetLink,
-      quantity: qtyValue,
-    });
-    order.supplierOrderId = result.supplierOrderId;
-    order.supplierStatus = result.status;
-    order.status = "processing";
-    await order.save();
-  } catch {
+  const fulfillment = await fulfillOrder(order);
+  if (!fulfillment.success && fulfillment.mode === "automated") {
     order.status = "failed";
-    order.failureReason = "Supplier submission failed";
     await order.save();
 
     await applyWalletTransaction({
@@ -189,7 +179,7 @@ export async function POST(req: Request) {
       type: "refund",
       amountCents: chargeCents,
       relatedOrderId: order._id,
-      note: "Refund for failed supplier submission",
+      note: `Refund: ${fulfillment.error || "Supplier submission failed"}`,
     });
   }
 

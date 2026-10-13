@@ -9,6 +9,7 @@ import { User } from "../lib/db/models/User";
 import { Transaction } from "../lib/db/models/Transaction";
 import { nowpayments, getNowpaymentsApiBase, getNowpaymentsIpnSecret } from "../lib/nowpayments";
 import { supplierClient } from "../lib/supplier";
+import { fulfillOrder } from "../lib/supplier/fulfillment";
 import crypto from "crypto";
 
 async function runEndToEndCryptoTest() {
@@ -107,19 +108,8 @@ async function runEndToEndCryptoTest() {
   console.log(`   - Found ${pendingOrders.length} pending order(s) for this crypto checkout.`);
 
   for (const ord of pendingOrders) {
-    const svc = await Service.findById(ord.serviceId);
-    const result = await supplierClient.submitOrder({
-      supplierServiceId: svc?.supplierServiceId ?? "mock",
-      link: ord.targetLink,
-      quantity: ord.qtyValue,
-    });
-
-    ord.supplierOrderId = result.supplierOrderId;
-    ord.supplierStatus = result.status;
-    ord.status = "processing";
-    await ord.save();
-
-    console.log(`   - Order updated to PROCESSING! Supplier Order ID: ${ord.supplierOrderId}`);
+    const fulfillment = await fulfillOrder(ord);
+    console.log(`   - Order fulfillment result: mode=${fulfillment.mode}, status=${fulfillment.status}, supplierOrderId=${fulfillment.supplierOrderId ?? "N/A"}`);
   }
 
   // Verify in DB

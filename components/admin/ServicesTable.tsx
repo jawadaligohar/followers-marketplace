@@ -55,6 +55,7 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
               <TableHead>Platform</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Tiers</TableHead>
+              <TableHead>Fulfillment</TableHead>
               <TableHead>Active</TableHead>
               <TableHead />
             </TableRow>
@@ -71,6 +72,17 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                 <TableCell>{svc.platformLabel}</TableCell>
                 <TableCell className="text-foreground/80">{svc.category}</TableCell>
                 <TableCell className="text-foreground/80">{svc.tiers.length} tiers</TableCell>
+                <TableCell>
+                  {svc.supplierServiceId ? (
+                    <Badge variant="outline" className="border-brand-500/30 bg-brand-500/10 text-brand-400 font-mono text-[11px]">
+                      Peakerr #{svc.supplierServiceId}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px]">
+                      Manual
+                    </Badge>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Badge variant={svc.active ? "completed" : "cancelled"} className="rounded-full">
                     {svc.active ? "Active" : "Inactive"}

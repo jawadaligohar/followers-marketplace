@@ -3,9 +3,8 @@ import { headers } from "next/headers";
 import { nowpayments } from "@/lib/nowpayments";
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
-import { Service } from "@/lib/db/models/Service";
 import { Transaction } from "@/lib/db/models/Transaction";
-import { supplierClient } from "@/lib/supplier";
+import { fulfillOrder } from "@/lib/supplier/fulfillment";
 import mongoose from "mongoose";
 
 export async function POST(req: Request) {
@@ -63,24 +62,8 @@ export async function POST(req: Request) {
       });
     }
 
-    // Submit to supplier
-    const service = await Service.findById(order.serviceId);
-    try {
-      const result = await supplierClient.submitOrder({
-        supplierServiceId: service?.supplierServiceId ?? "mock",
-        link: order.targetLink,
-        quantity: order.qtyValue,
-      });
-      order.supplierOrderId = result.supplierOrderId;
-      order.supplierStatus = result.status;
-      order.status = "processing";
-    } catch (err: unknown) {
-      console.error("Failed to submit order to supplier:", err);
-      order.status = "failed";
-      order.failureReason = "Supplier submission failed after crypto payment";
-    }
-
-    await order.save();
+    // Submit to supplier or queue for manual fulfillment
+    await fulfillOrder(order);
     return NextResponse.json({ received: true });
   } catch (error: unknown) {
     console.error("NOWPayments order webhook error:", error);
