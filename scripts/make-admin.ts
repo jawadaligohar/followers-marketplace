@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 import { dbConnect } from "../lib/db/connect";
 import { User } from "../lib/db/models/User";
 
