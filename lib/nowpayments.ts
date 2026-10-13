@@ -1,12 +1,18 @@
 import crypto from "crypto";
 
-export const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY || "";
-export const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || "";
+export function getNowpaymentsApiKey(): string {
+  return (process.env.NOWPAYMENTS_API_KEY || "").trim();
+}
 
-const API_BASE =
-  process.env.NOWPAYMENTS_SANDBOX === "true"
+export function getNowpaymentsIpnSecret(): string {
+  return (process.env.NOWPAYMENTS_IPN_SECRET || "").trim();
+}
+
+export function getNowpaymentsApiBase(): string {
+  return process.env.NOWPAYMENTS_SANDBOX === "true"
     ? "https://api-sandbox.nowpayments.io/v1"
     : "https://api.nowpayments.io/v1";
+}
 
 export interface CreateInvoiceParams {
   price_amount: number;
@@ -35,18 +41,21 @@ export interface InvoiceResponse {
 
 export const nowpayments = {
   isConfigured(): boolean {
-    return Boolean(NOWPAYMENTS_API_KEY.trim());
+    return Boolean(getNowpaymentsApiKey());
   },
 
   async createInvoice(params: CreateInvoiceParams): Promise<InvoiceResponse> {
-    if (!this.isConfigured()) {
+    const apiKey = getNowpaymentsApiKey();
+    if (!apiKey) {
       throw new Error("NOWPayments API key is not configured. Please add NOWPAYMENTS_API_KEY to your environment variables.");
     }
 
-    const res = await fetch(`${API_BASE}/invoice`, {
+    const apiBase = getNowpaymentsApiBase();
+
+    const res = await fetch(`${apiBase}/invoice`, {
       method: "POST",
       headers: {
-        "x-api-key": NOWPAYMENTS_API_KEY.trim(),
+        "x-api-key": apiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
@@ -66,8 +75,9 @@ export const nowpayments = {
   },
 
   verifySignature(body: Record<string, unknown>, signature: string): boolean {
-    if (!NOWPAYMENTS_IPN_SECRET.trim()) {
-      // In development / testing without secret, accept payload with warning
+    const ipnSecret = getNowpaymentsIpnSecret();
+    if (!ipnSecret) {
+      // In development / testing without secret, accept payload
       return true;
     }
 
@@ -78,7 +88,7 @@ export const nowpayments = {
         return acc;
       }, {});
 
-    const hmac = crypto.createHmac("sha512", NOWPAYMENTS_IPN_SECRET.trim());
+    const hmac = crypto.createHmac("sha512", ipnSecret);
     hmac.update(JSON.stringify(sortedBody));
     const calculatedSignature = hmac.digest("hex");
 

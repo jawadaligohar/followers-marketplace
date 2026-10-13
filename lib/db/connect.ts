@@ -17,12 +17,13 @@ global._mongooseCache = cache;
 export async function dbConnect() {
   if (cache.conn) return cache.conn;
 
-  if (!MONGODB_URI) {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
     throw new Error("MONGODB_URI is not set");
   }
 
   if (!cache.promise) {
-    cache.promise = mongoose.connect(MONGODB_URI);
+    cache.promise = mongoose.connect(uri);
   }
 
   cache.conn = await cache.promise;

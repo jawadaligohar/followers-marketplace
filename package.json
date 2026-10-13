@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "test:crypto": "node --import tsx scripts/e2e-test-crypto.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.3",

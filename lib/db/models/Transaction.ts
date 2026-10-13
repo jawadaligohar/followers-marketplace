@@ -38,8 +38,14 @@ const TransactionSchema = new Schema<ITransaction>(
 );
 
 TransactionSchema.index({ userId: 1, createdAt: -1 });
-TransactionSchema.index({ stripeSessionId: 1 }, { unique: true, sparse: true });
-TransactionSchema.index({ nowpaymentsPaymentId: 1 }, { unique: true, sparse: true });
+TransactionSchema.index(
+  { stripeSessionId: 1 },
+  { unique: true, partialFilterExpression: { stripeSessionId: { $type: "string" } } }
+);
+TransactionSchema.index(
+  { nowpaymentsPaymentId: 1 },
+  { unique: true, partialFilterExpression: { nowpaymentsPaymentId: { $type: "string" } } }
+);
 
 export const Transaction =
   models.Transaction || model<ITransaction>("Transaction", TransactionSchema);
