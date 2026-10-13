@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { Loader2 } from "lucide-react";
+import { Loader2, CreditCard, Bitcoin } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -86,31 +86,61 @@ export default function TopUpForm() {
         </div>
 
         <div className="mt-4 space-y-2">
-          <Label className="text-xs text-muted-foreground">Payment Method</Label>
-          <div className="flex gap-2">
+          <Label className="text-xs font-medium text-muted-foreground">Payment Method</Label>
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => setMethod("stripe")}
-              className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition ${
+              className={`flex flex-col items-start justify-between rounded-xl border p-3 text-left transition ${
                 method === "stripe"
-                  ? "border-brand-500 bg-brand-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:bg-white/5"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground ring-1 ring-brand-500/50"
+                  : "border-border text-muted-foreground hover:bg-card/60"
               }`}
             >
-              Credit / Debit Card
+              <div className="flex w-full items-center justify-between">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/15 text-blue-500">
+                  <CreditCard className="h-3.5 w-3.5" />
+                </span>
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                  Cards
+                </span>
+              </div>
+              <div className="mt-2.5">
+                <div className="text-xs font-semibold text-foreground">Credit / Debit Card</div>
+                <div className="text-[10px] text-muted-foreground/80">Visa, Mastercard, Amex</div>
+              </div>
             </button>
+
             <button
               type="button"
               onClick={() => setMethod("nowpayments")}
-              className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition ${
+              className={`flex flex-col items-start justify-between rounded-xl border p-3 text-left transition ${
                 method === "nowpayments"
-                  ? "border-brand-500 bg-brand-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:bg-white/5"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground ring-1 ring-brand-500/50"
+                  : "border-border text-muted-foreground hover:bg-card/60"
               }`}
             >
-              Crypto (NOWPayments)
+              <div className="flex w-full items-center justify-between">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+                  <Bitcoin className="h-3.5 w-3.5" />
+                </span>
+                <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-amber-500">
+                  Crypto
+                </span>
+              </div>
+              <div className="mt-2.5">
+                <div className="text-xs font-semibold text-foreground">NOWPayments</div>
+                <div className="text-[10px] text-muted-foreground/80">USDT, BTC, ETH +150</div>
+              </div>
             </button>
           </div>
+
+          {method === "nowpayments" && (
+            <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5 text-[11px] text-muted-foreground">
+              <span className="text-xs">⚡</span>
+              <span>Top up instantly with USDT, Bitcoin, Solana, Ethereum, or 150+ supported cryptocurrencies.</span>
+            </div>
+          )}
         </div>
 
         <Button
@@ -121,7 +151,7 @@ export default function TopUpForm() {
           className="mt-5 flex w-full items-center justify-center gap-2 py-5"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          Continue to payment
+          {method === "nowpayments" ? "Continue to Crypto Checkout" : "Continue to payment"}
         </Button>
       </CardContent>
     </Card>

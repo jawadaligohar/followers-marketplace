@@ -192,49 +192,90 @@ export default function CheckoutPageClient() {
       )}
 
       <div className="mt-6">
-        <Label className="mb-2 text-xs text-muted-foreground">Payment method</Label>
-        <div className="grid grid-cols-2 gap-2">
+        <Label className="mb-2 block text-xs font-medium text-muted-foreground">Payment method</Label>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           <motion.button
             type="button"
             onClick={() => isAuthed && setPaymentSource("wallet")}
             disabled={!isAuthed}
-            whileTap={isAuthed ? { scale: 0.97 } : undefined}
-            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
+            whileTap={isAuthed ? { scale: 0.98 } : undefined}
+            className={`flex flex-col items-start justify-between rounded-2xl border p-3.5 text-left transition ${
               paymentSource === "wallet"
-                ? "border-brand-500 bg-brand-500/10 text-foreground"
-                : "border-border text-muted-foreground hover:border-brand-500/30"
+                ? "border-brand-500 bg-brand-500/10 text-foreground ring-1 ring-brand-500/50"
+                : "border-border text-muted-foreground hover:border-brand-500/30 hover:bg-card/60"
             } ${!isAuthed ? "cursor-not-allowed opacity-40" : ""}`}
           >
-            <Wallet className="h-4 w-4" />
-            Wallet {isAuthed ? "(-15%)" : "(sign in)"}
+            <div className="flex w-full items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15 text-brand-500">
+                <Wallet className="h-4 w-4" />
+              </span>
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
+                15% OFF
+              </span>
+            </div>
+            <div className="mt-3">
+              <div className="text-sm font-semibold text-foreground">Wallet</div>
+              <div className="text-xs text-muted-foreground/80">{isAuthed ? "Fast checkout" : "Sign in to use"}</div>
+            </div>
           </motion.button>
+
           <motion.button
             type="button"
             onClick={() => setPaymentSource("card")}
-            whileTap={{ scale: 0.97 }}
-            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition ${
+            whileTap={{ scale: 0.98 }}
+            className={`flex flex-col items-start justify-between rounded-2xl border p-3.5 text-left transition ${
               paymentSource === "card"
-                ? "border-brand-500 bg-brand-500/10 text-foreground"
-                : "border-border text-muted-foreground hover:border-brand-500/30"
+                ? "border-brand-500 bg-brand-500/10 text-foreground ring-1 ring-brand-500/50"
+                : "border-border text-muted-foreground hover:border-brand-500/30 hover:bg-card/60"
             }`}
           >
-            <CreditCard className="h-4 w-4" />
-            Card
+            <div className="flex w-full items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 text-blue-500">
+                <CreditCard className="h-4 w-4" />
+              </span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                Stripe
+              </span>
+            </div>
+            <div className="mt-3">
+              <div className="text-sm font-semibold text-foreground">Card</div>
+              <div className="text-xs text-muted-foreground/80">Visa, Mastercard, Amex</div>
+            </div>
           </motion.button>
+
           <motion.button
             type="button"
             onClick={() => setPaymentSource("crypto")}
-            whileTap={{ scale: 0.97 }}
-            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition col-span-2 ${
+            whileTap={{ scale: 0.98 }}
+            className={`flex flex-col items-start justify-between rounded-2xl border p-3.5 text-left transition ${
               paymentSource === "crypto"
-                ? "border-brand-500 bg-brand-500/10 text-foreground"
-                : "border-border text-muted-foreground hover:border-brand-500/30"
+                ? "border-brand-500 bg-brand-500/10 text-foreground ring-1 ring-brand-500/50"
+                : "border-border text-muted-foreground hover:border-brand-500/30 hover:bg-card/60"
             }`}
           >
-            <Bitcoin className="h-4 w-4" />
-            Crypto
+            <div className="flex w-full items-center justify-between">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-500">
+                <Bitcoin className="h-4 w-4" />
+              </span>
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-500">
+                NOWPayments
+              </span>
+            </div>
+            <div className="mt-3">
+              <div className="text-sm font-semibold text-foreground">Crypto</div>
+              <div className="text-xs text-muted-foreground/80">USDT, BTC, ETH +150</div>
+            </div>
           </motion.button>
         </div>
+
+        {paymentSource === "crypto" && (
+          <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-muted-foreground">
+            <span className="text-sm">⚡</span>
+            <div>
+              <span className="font-semibold text-foreground">Instant crypto checkout:</span> Pay with USDT (TRC20/ERC20/BEP20), Bitcoin, Ethereum, Solana, Toncoin, LTC or any of 150+ cryptocurrencies.
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-6 flex items-center justify-between rounded-xl border border-border bg-muted px-4 py-3">
@@ -253,7 +294,11 @@ export default function CheckoutPageClient() {
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {paymentSource === "wallet" ? "Pay from wallet" : "Continue to payment"}
+          {paymentSource === "crypto"
+            ? "Pay with Crypto"
+            : paymentSource === "card"
+            ? "Continue to payment"
+            : "Pay from wallet"}
         </Button>
       </motion.div>
 

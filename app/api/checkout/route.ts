@@ -89,14 +89,20 @@ export async function POST(req: Request) {
         order_id: cryptoCheckoutId,
         order_description: `${resolved.length} items from cart`,
         ipn_callback_url: `${origin}/api/webhooks/nowpayments-cart`,
-        success_url: `${origin}/checkout/success`,
+        success_url: session?.user
+          ? `${origin}/checkout/success`
+          : `${origin}/checkout/success?guest_email=${encodeURIComponent(guestEmail!)}`,
         cancel_url: `${origin}/checkout/cancel`,
       });
 
       return NextResponse.json({ checkoutUrl: invoice.invoice_url });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Crypto invoice creation failed:", err);
-      return NextResponse.json({ error: "Failed to initialize crypto payment" }, { status: 500 });
+      const errMessage = err instanceof Error ? err.message : "";
+      const errorResponse = errMessage.includes("API key is not configured")
+        ? "Crypto payment gateway is not yet configured with an API key. Please use Card payment or configure NOWPAYMENTS_API_KEY in your environment."
+        : "Failed to initialize crypto payment. Please try again or use Card payment.";
+      return NextResponse.json({ error: errorResponse }, { status: 500 });
     }
   }
 

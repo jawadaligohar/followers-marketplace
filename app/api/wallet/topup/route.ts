@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { topupSchema } from "@/lib/validation/order";
@@ -37,9 +37,13 @@ export async function POST(req: Request) {
       });
 
       return NextResponse.json({ checkoutUrl: invoice.invoice_url });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("NOWPayments invoice creation error:", err);
-      return NextResponse.json({ error: "Failed to create crypto invoice" }, { status: 500 });
+      const errMessage = err instanceof Error ? err.message : "";
+      const errorResponse = errMessage.includes("API key is not configured")
+        ? "Crypto payment gateway is not yet configured with an API key. Please use Card payment or configure NOWPAYMENTS_API_KEY in your environment."
+        : "Failed to create crypto invoice. Please try again or use Card payment.";
+      return NextResponse.json({ error: errorResponse }, { status: 500 });
     }
   }
 

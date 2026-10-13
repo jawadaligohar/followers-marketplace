@@ -1,7 +1,7 @@
 import mongoose, { Schema, models, model } from "mongoose";
 
 export type OrderStatus = "pending" | "processing" | "completed" | "failed" | "cancelled";
-export type PaymentSource = "wallet" | "card";
+export type PaymentSource = "wallet" | "card" | "crypto";
 
 export interface IOrder {
   _id: mongoose.Types.ObjectId;
@@ -36,7 +36,7 @@ const OrderSchema = new Schema<IOrder>(
     qtyValue: { type: Number, required: true },
     targetLink: { type: String, required: true },
     priceCents: { type: Number, required: true },
-    paymentSource: { type: String, enum: ["wallet", "card"], required: true },
+    paymentSource: { type: String, enum: ["wallet", "card", "crypto"], required: true },
     status: {
       type: String,
       enum: ["pending", "processing", "completed", "failed", "cancelled"],
@@ -47,6 +47,7 @@ const OrderSchema = new Schema<IOrder>(
     supplierStatus: { type: String, default: null },
     failureReason: { type: String, default: null },
     stripeSessionId: { type: String, default: null, index: true },
+    cryptoCheckoutId: { type: String, default: null, index: true },
   },
   { timestamps: true, collection: "orders" }
 );

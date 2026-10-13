@@ -3,13 +3,18 @@ import { headers } from "next/headers";
 import { nowpayments } from "@/lib/nowpayments";
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
-import { supplierClient } from "@/lib/supplier";
+import { Service } from "@/lib/db/models/Service";
 import { Transaction } from "@/lib/db/models/Transaction";
+import { supplierClient } from "@/lib/supplier";
 import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    }
+
     const reqHeaders = await headers();
     const sig = reqHeaders.get("x-nowpayments-sig");
 
@@ -20,11 +25,11 @@ export async function POST(req: Request) {
 
     const { payment_id, invoice_id, payment_status, order_id } = body;
 
-    if (payment_status !== "finished") {
+    if (payment_status !== "finished" && payment_status !== "confirmed") {
       return NextResponse.json({ received: true, status: payment_status });
     }
 
-    if (!order_id?.startsWith("order_")) {
+    if (typeof order_id !== "string" || !order_id.startsWith("order_")) {
       return NextResponse.json({ received: true, note: "Ignored, not an order" });
     }
 
@@ -44,25 +49,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, note: "Order already processed" });
     }
 
+    // Ledger entry for tracking & idempotency
+    if (order.userId) {
+      await Transaction.create({
+        userId: order.userId,
+        type: "order_debit",
+        amountCents: 0,
+        balanceAfterCents: 0,
+        relatedOrderId: order._id,
+        nowpaymentsInvoiceId: invoice_id ? String(invoice_id) : null,
+        nowpaymentsPaymentId: payment_id ? String(payment_id) : null,
+        note: "Direct crypto payment confirmed via NOWPayments",
+      });
+    }
+
     // Submit to supplier
+    const service = await Service.findById(order.serviceId);
     try {
       const result = await supplierClient.submitOrder({
-        supplierServiceId: order.serviceId?.toString() ?? "mock",
+        supplierServiceId: service?.supplierServiceId ?? "mock",
         link: order.targetLink,
         quantity: order.qtyValue,
       });
       order.supplierOrderId = result.supplierOrderId;
       order.supplierStatus = result.status;
       order.status = "processing";
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to submit order to supplier:", err);
       order.status = "failed";
-      order.failureReason = "Supplier submission failed after payment";
+      order.failureReason = "Supplier submission failed after crypto payment";
     }
 
     await order.save();
     return NextResponse.json({ received: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("NOWPayments order webhook error:", error);
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }

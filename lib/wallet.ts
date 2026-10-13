@@ -15,6 +15,8 @@ export async function applyWalletTransaction(opts: {
   relatedOrderId?: mongoose.Types.ObjectId | string | null;
   stripeSessionId?: string | null;
   stripePaymentIntentId?: string | null;
+  nowpaymentsInvoiceId?: string | null;
+  nowpaymentsPaymentId?: string | null;
   note?: string | null;
 }) {
   const user = await User.findById(opts.userId);
@@ -37,6 +39,8 @@ export async function applyWalletTransaction(opts: {
     relatedOrderId: opts.relatedOrderId ?? null,
     stripeSessionId: opts.stripeSessionId ?? null,
     stripePaymentIntentId: opts.stripePaymentIntentId ?? null,
+    nowpaymentsInvoiceId: opts.nowpaymentsInvoiceId ?? null,
+    nowpaymentsPaymentId: opts.nowpaymentsPaymentId ?? null,
     note: opts.note ?? null,
   });
 

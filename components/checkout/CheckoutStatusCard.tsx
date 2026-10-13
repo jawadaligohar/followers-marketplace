@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/lib/cart/CartContext";
 
 const ICONS = {
   success: CheckCircle2,
@@ -29,6 +31,13 @@ export default function CheckoutStatusCard({
 }) {
   const Icon = ICONS[status];
   const iconClassName = status === "success" ? "text-brand-600" : "text-muted-foreground/50";
+  const { clear } = useCart();
+
+  useEffect(() => {
+    if (status === "success") {
+      clear();
+    }
+  }, [status, clear]);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-grid px-6">
