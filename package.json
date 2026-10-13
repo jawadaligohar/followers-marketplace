@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
-    "test:crypto": "node --import tsx scripts/e2e-test-crypto.ts"
+    "test:crypto": "node --import tsx scripts/e2e-test-crypto.ts",
+    "test:e2e": "node --import tsx scripts/master-e2e-test.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.3",
