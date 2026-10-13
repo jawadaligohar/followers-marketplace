@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ const PRESETS_CENTS = [1000, 2500, 5000, 10000];
 export default function TopUpForm() {
   const [amountCents, setAmountCents] = useState(2500);
   const [customAmount, setCustomAmount] = useState("");
+  const [method, setMethod] = useState<"stripe" | "nowpayments">("stripe");
   const [loading, setLoading] = useState(false);
 
   async function handleTopUp() {
@@ -28,7 +29,7 @@ export default function TopUpForm() {
     const res = await fetch("/api/wallet/topup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amountCents: value }),
+      body: JSON.stringify({ amountCents: value, method }),
     });
     const data = await res.json().catch(() => ({}));
     setLoading(false);
@@ -82,6 +83,34 @@ export default function TopUpForm() {
             onChange={(e) => setCustomAmount(e.target.value)}
             placeholder="Enter amount in USD"
           />
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <Label className="text-xs text-muted-foreground">Payment Method</Label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setMethod("stripe")}
+              className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition ${
+                method === "stripe"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground"
+                  : "border-border text-muted-foreground hover:bg-white/5"
+              }`}
+            >
+              Credit / Debit Card
+            </button>
+            <button
+              type="button"
+              onClick={() => setMethod("nowpayments")}
+              className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition ${
+                method === "nowpayments"
+                  ? "border-brand-500 bg-brand-500/10 text-foreground"
+                  : "border-border text-muted-foreground hover:bg-white/5"
+              }`}
+            >
+              Crypto (NOWPayments)
+            </button>
+          </div>
         </div>
 
         <Button

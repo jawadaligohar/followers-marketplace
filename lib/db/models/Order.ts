@@ -20,6 +20,7 @@ export interface IOrder {
   supplierStatus: string | null;
   failureReason: string | null;
   stripeSessionId: string | null;
+  cryptoCheckoutId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

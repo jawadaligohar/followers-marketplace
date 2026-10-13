@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
-import { Loader2, Wallet, CreditCard } from "lucide-react";
+import { Loader2, Wallet, CreditCard, Bitcoin } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { walletPriceCents } from "@/lib/pricing";
 import { Label } from "@/components/ui/label";
@@ -38,7 +38,7 @@ export default function NewOrderForm() {
   const [platformId, setPlatformId] = useState<string>("");
   const [qtyValue, setQtyValue] = useState<number | null>(null);
   const [targetLink, setTargetLink] = useState("");
-  const [paymentSource, setPaymentSource] = useState<"wallet" | "card">("wallet");
+  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto">("wallet");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -227,6 +227,19 @@ export default function NewOrderForm() {
             <CreditCard className="h-4 w-4" />
             Card
           </motion.button>
+          <motion.button
+            type="button"
+            onClick={() => setPaymentSource("crypto")}
+            whileTap={{ scale: 0.97 }}
+            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition col-span-2 ${
+              paymentSource === "crypto"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
+            }`}
+          >
+            <Bitcoin className="h-4 w-4" />
+            Crypto
+          </motion.button>
         </div>
       </div>
 
@@ -254,7 +267,7 @@ export default function NewOrderForm() {
           className="flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {paymentSource === "card" ? "Continue to payment" : "Place order"}
+          {paymentSource === "wallet" ? "Place order" : "Continue to payment"}
         </Button>
       </motion.div>
     </form>

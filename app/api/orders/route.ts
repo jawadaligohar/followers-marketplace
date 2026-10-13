@@ -8,6 +8,7 @@ import { walletPriceCents } from "@/lib/pricing";
 import { applyWalletTransaction, InsufficientBalanceError } from "@/lib/wallet";
 import { supplierClient } from "@/lib/supplier";
 import { stripe } from "@/lib/stripe";
+import { nowpayments } from "@/lib/nowpayments";
 
 export async function GET() {
   const session = await auth();
@@ -55,6 +56,40 @@ export async function POST(req: Request) {
   // Price is always re-derived server-side from the Service tier; client-sent price is never trusted.
   const fullPriceCents = tier.priceCents;
   const chargeCents = paymentSource === "wallet" ? walletPriceCents(fullPriceCents) : fullPriceCents;
+
+  if (paymentSource === "crypto") {
+    const order = await Order.create({
+      userId: session.user.id,
+      serviceId: service._id,
+      platformId: service.platformId,
+      platformLabel: service.platformLabel,
+      category: service.category,
+      qtyValue,
+      targetLink,
+      priceCents: chargeCents,
+      paymentSource: "crypto",
+      status: "pending",
+    });
+
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+
+    try {
+      const invoice = await nowpayments.createInvoice({
+        price_amount: chargeCents / 100,
+        price_currency: "usd",
+        order_id: `order_${order._id.toString()}`,
+        order_description: `${service.platformLabel} ${service.category} - ${tier.qty}`,
+        ipn_callback_url: `${origin}/api/webhooks/nowpayments-order`,
+        success_url: `${origin}/checkout/success`,
+        cancel_url: `${origin}/checkout/cancel`,
+      });
+
+      return NextResponse.json({ checkoutUrl: invoice.invoice_url });
+    } catch (err) {
+      console.error("Crypto invoice creation failed:", err);
+      return NextResponse.json({ error: "Failed to initialize crypto payment" }, { status: 500 });
+    }
+  }
 
   if (paymentSource === "card") {
     const order = await Order.create({

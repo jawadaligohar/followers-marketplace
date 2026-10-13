@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { ArrowLeft, Loader2, Wallet, CreditCard, Trash2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2, Wallet, CreditCard, Trash2, ShieldCheck, Bitcoin } from "lucide-react";
 import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { useCart } from "@/lib/cart/CartContext";
 import { walletPriceCents } from "@/lib/pricing";
@@ -30,7 +30,7 @@ export default function CheckoutPageClient() {
   const isAuthed = status === "authenticated";
 
   const [guestEmail, setGuestEmail] = useState("");
-  const [paymentSource, setPaymentSource] = useState<"wallet" | "card">(isAuthed ? "wallet" : "card");
+  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto">(isAuthed ? "wallet" : "card");
   const [submitting, setSubmitting] = useState(false);
 
   const chargeCents =
@@ -221,6 +221,19 @@ export default function CheckoutPageClient() {
             <CreditCard className="h-4 w-4" />
             Card
           </motion.button>
+          <motion.button
+            type="button"
+            onClick={() => setPaymentSource("crypto")}
+            whileTap={{ scale: 0.97 }}
+            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition col-span-2 ${
+              paymentSource === "crypto"
+                ? "border-brand-500 bg-brand-500/10 text-foreground"
+                : "border-border text-muted-foreground hover:border-brand-500/30"
+            }`}
+          >
+            <Bitcoin className="h-4 w-4" />
+            Crypto
+          </motion.button>
         </div>
       </div>
 
@@ -240,7 +253,7 @@ export default function CheckoutPageClient() {
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {paymentSource === "card" ? "Continue to payment" : "Pay from wallet"}
+          {paymentSource === "wallet" ? "Pay from wallet" : "Continue to payment"}
         </Button>
       </motion.div>
 

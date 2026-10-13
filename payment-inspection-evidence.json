@@ -1,0 +1,102 @@
+{
+  "checked_date": "2026-10-12",
+  "method": "Isolated Chrome browser via Chrome DevTools Protocol; checkout navigation, network requests, public frontend bundles and public payment configuration API. No card data entered or payment submitted.",
+  "socialfollowers.uk": {
+    "checkout": "https://www.socialfollowers.uk/cart/",
+    "confirmed_live_card_gateway": "HiPay",
+    "observed_network_requests": [
+      "https://libs.hipay.com/js/sdkjs.js",
+      "https://libs.hipay.com/hostedfields/loader.js?ver=1.49.0",
+      "https://secure-gateway.hipay-tpp.com/rest/v2/available-payment-products.json?eci=7&operation=4&customer_country=&currency=&payment_product=cb,visa,mastercard,american-express,bcmc,maestro&with_options=true"
+    ],
+    "runtime_configuration": "var payment_method = 'hipay';",
+    "note": "Stripe SDK also loads, but this does not establish Stripe as the active card gateway."
+  },
+  "tokboostly.com": {
+    "configuration_endpoint": "https://tokboostly.com/api/payments/available-methods",
+    "http_status": 200,
+    "response": {
+      "ok": true,
+      "methods": {
+        "helcim": false,
+        "paypal": false,
+        "crypto": true,
+        "localBank": false,
+        "jazzcash": true,
+        "easypaisa": false,
+        "manualAdminCredit": true,
+        "square": false,
+        "squareWallet": false,
+        "authnet": false,
+        "authnetWallet": false,
+        "worldpay": false,
+        "gocardless": false,
+        "stripe": false,
+        "whop": false,
+        "airwallex": false,
+        "paykings": true,
+        "paykingsWallet": true,
+        "stripeCheckout": false,
+        "hipay": false,
+        "hipayWallet": false
+      },
+      "gocardlessCheckout": false,
+      "squareCheckout": false,
+      "squareEmbedded": true,
+      "cleengCheckout": false,
+      "paykingsCheckout": true,
+      "hipayCheckout": false,
+      "stripeCheckout": false,
+      "whopCheckout": false,
+      "turnstileRequired": true,
+      "fastCheckout": true
+    },
+    "implemented_card_flow": {
+      "bundle": "https://tokboostly.com/_next/static/chunks/0b_vnmrrayqa8.js",
+      "component": "PaykingsCardModal",
+      "tokenization_library": "CollectJS",
+      "configuration_route": "/api/payments/paykings/config",
+      "charge_route": "/api/payments/paykings/charge",
+      "wallet_charge_route": "/api/wallet/paykings/charge"
+    },
+    "crypto": "Enabled by live API; order bundle identifies the crypto option as Cryptomus. No hosted invoice generated.",
+    "limitations": "PayKings configuration endpoint returns HTTP 401 without authentication; enabled live configuration and implemented flow verified, but tokenization host and acquiring processor were not exposed."
+  },
+  "buzzoid.com": {
+    "checkout": "https://checkout.buzzoid.com/cart/checkout",
+    "confirmed_live_card_collection": "Evervault",
+    "observed_network_requests": [
+      "https://js.evervault.com/v2",
+      "https://keys.evervault.com/team_28853a9fd78d/apps/app_7e20a3682c57?context=default",
+      "https://ui-components.evervault.com/?id=s56qyuygxc&app=app_7e20a3682c57&team=team_28853a9fd78d&component=Card",
+      "https://ui-components.evervault.com/?id=zdcfmrr6wn&app=app_7e20a3682c57&team=team_28853a9fd78d&component=GooglePay"
+    ],
+    "payment_service_reference": {
+      "bundle": "https://checkout.buzzoid.com/_next/static/chunks/app/cart/profiles/page-180c1cfbc0a50f7d.js",
+      "configuration_default": "PAYMENTS_URL defaults to https://pay.socialvirality.ae",
+      "note": "This is a public bundle default, not proof of the server's runtime environment value."
+    },
+    "crypto_integration_reference": "Public bundle includes CRYPTOMUS_KEY_BZ and CRYPTOMUS_MERCHANT_BZ configuration names, without values. This indicates integration code, not a verified active invoice.",
+    "downstream_card_processor": "Unconfirmed; not exposed in observed browser traffic. Evervault is card collection/encryption infrastructure, not sufficient evidence of the downstream processor."
+  },
+  "poprey.com": {
+    "checked_date": "2026-10-12",
+    "confirmed_live_gateway": "HiPay",
+    "methods_verified": [
+      "Credit/debit cards",
+      "Apple Pay"
+    ],
+    "observed_network_requests": [
+      "https://libs.hipay.com/js/sdkjs.js",
+      "https://libs.hipay.com/hostedfields/loader.js?ver=1.49.0",
+      "https://secure-gateway.hipay-tpp.com/rest/v2/available-payment-products.json?eci=7&operation=4&customer_country=&currency=&payment_product=visa,mastercard&with_options=true",
+      "https://libs.hipay.com/hostedfields/apple-pay.html?ver=1.49.0",
+      "https://data.hipay.com/checkout-data"
+    ],
+    "checkout_element_ids": {
+      "cards": "HiPay",
+      "apple_pay": "ApplePay_HiPay"
+    },
+    "limitations": "Cryptocurrency is offered but its provider was not verified. Checkout reached; no card data entered or payment submitted."
+  }
+}

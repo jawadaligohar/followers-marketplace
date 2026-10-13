@@ -9,6 +9,7 @@ import { walletPriceCents } from "@/lib/pricing";
 import { applyWalletTransaction, InsufficientBalanceError } from "@/lib/wallet";
 import { supplierClient } from "@/lib/supplier";
 import { stripe } from "@/lib/stripe";
+import { nowpayments } from "@/lib/nowpayments";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -58,6 +59,46 @@ export async function POST(req: Request) {
   }
 
   const totalChargeCents = resolved.reduce((sum, r) => sum + r.chargeCents, 0);
+
+  if (paymentSource === "crypto") {
+    const cryptoCheckoutId = `cart_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    const orders = await Order.insertMany(
+      resolved.map((r) => ({
+        userId: session?.user?.id ?? null,
+        guestEmail: session?.user ? null : guestEmail,
+        serviceId: r.service._id,
+        platformId: r.service.platformId,
+        platformLabel: r.service.platformLabel,
+        category: r.service.category,
+        qtyValue: r.tier.qtyValue,
+        targetLink: r.targetLink,
+        priceCents: r.chargeCents,
+        paymentSource: "crypto",
+        status: "pending",
+        cryptoCheckoutId,
+      }))
+    );
+
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+
+    try {
+      const invoice = await nowpayments.createInvoice({
+        price_amount: totalChargeCents / 100,
+        price_currency: "usd",
+        order_id: cryptoCheckoutId,
+        order_description: `${resolved.length} items from cart`,
+        ipn_callback_url: `${origin}/api/webhooks/nowpayments-cart`,
+        success_url: `${origin}/checkout/success`,
+        cancel_url: `${origin}/checkout/cancel`,
+      });
+
+      return NextResponse.json({ checkoutUrl: invoice.invoice_url });
+    } catch (err) {
+      console.error("Crypto invoice creation failed:", err);
+      return NextResponse.json({ error: "Failed to initialize crypto payment" }, { status: 500 });
+    }
+  }
 
   if (paymentSource === "card") {
     const orders = await Order.insertMany(
