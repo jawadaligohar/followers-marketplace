@@ -159,7 +159,7 @@ async function runMasterE2ETest() {
   }
 
   const webhookBody = {
-    payment_id: 8877665544,
+    payment_id: Math.floor(Date.now() / 1000) * 1000 + Math.floor(Math.random() * 900) + 100,
     invoice_id: invoiceId,
     payment_status: "finished",
     order_id: cryptoCheckoutId,
@@ -245,7 +245,7 @@ async function runMasterE2ETest() {
     const topupOrderId = `topup_${testUser._id.toString()}_${Date.now()}`;
 
     const topupBody = {
-      payment_id: 7766554433,
+      payment_id: Math.floor(Date.now() / 1000) * 1000 + Math.floor(Math.random() * 900) + 200,
       invoice_id: 99887711,
       payment_status: "finished",
       order_id: topupOrderId,
@@ -299,3 +299,4 @@ runMasterE2ETest().catch((err) => {
   console.error("\n❌ MASTER E2E TEST FAILED:", err);
   process.exit(1);
 });
+

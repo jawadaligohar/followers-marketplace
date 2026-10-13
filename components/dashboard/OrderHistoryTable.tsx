@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/EmptyState";
 import OrderStatusBadge from "./OrderStatusBadge";
+import { formatDateTime } from "@/lib/format";
 
 export type OrderRow = {
   _id: string;
@@ -52,7 +53,7 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
             <TableHead>Payment</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead>Date & Time</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,8 +74,9 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
               <TableCell>
                 <OrderStatusBadge status={order.status} />
               </TableCell>
-              <TableCell className="text-muted-foreground">
-                {new Date(order.createdAt).toLocaleDateString()}
+              <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                <div className="font-medium text-foreground">{formatDateTime(order.createdAt).date}</div>
+                <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(order.createdAt).time}</div>
               </TableCell>
             </motion.tr>
           ))}

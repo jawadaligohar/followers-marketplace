@@ -48,6 +48,8 @@ const OrderSchema = new Schema<IOrder>(
     failureReason: { type: String, default: null },
     stripeSessionId: { type: String, default: null, index: true },
     cryptoCheckoutId: { type: String, default: null, index: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
   },
   { timestamps: true, collection: "orders" }
 );

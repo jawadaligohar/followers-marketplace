@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { formatDateTime } from "@/lib/format";
 
 export type AdminUserRow = {
   _id: string;
@@ -154,8 +155,9 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                   )}
                 </div>
               </TableCell>
-              <TableCell className="text-muted-foreground">
-                {new Date(user.createdAt).toLocaleDateString()}
+              <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                <div className="font-medium text-foreground">{formatDateTime(user.createdAt).date}</div>
+                <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(user.createdAt).time}</div>
               </TableCell>
             </motion.tr>
           ))}

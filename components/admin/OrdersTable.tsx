@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { PackageOpen, ExternalLink, Send, Loader2, AlertCircle } from "lucide-react";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
 import EmptyState from "@/components/shared/EmptyState";
+import { formatDateTime } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -129,7 +130,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
             <TableHead>Price</TableHead>
             <TableHead>Fulfillment</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead>Date & Time</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -271,7 +272,8 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 </TableCell>
 
                 <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                  {new Date(order.createdAt).toLocaleDateString()}
+                  <div className="font-medium text-foreground">{formatDateTime(order.createdAt).date}</div>
+                  <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(order.createdAt).time}</div>
                 </TableCell>
               </motion.tr>
             );

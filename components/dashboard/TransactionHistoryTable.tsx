@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import EmptyState from "@/components/shared/EmptyState";
+import { formatDateTime } from "@/lib/format";
 
 export type TransactionRow = {
   _id: string;
@@ -49,7 +50,7 @@ export default function TransactionHistoryTable({ transactions }: { transactions
             <TableHead>Note</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Balance</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead>Date & Time</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -70,8 +71,9 @@ export default function TransactionHistoryTable({ transactions }: { transactions
                 ${(tx.amountCents / 100).toFixed(2)}
               </TableCell>
               <TableCell className="text-foreground/80">${(tx.balanceAfterCents / 100).toFixed(2)}</TableCell>
-              <TableCell className="text-muted-foreground">
-                {new Date(tx.createdAt).toLocaleDateString()}
+              <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                <div className="font-medium text-foreground">{formatDateTime(tx.createdAt).date}</div>
+                <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(tx.createdAt).time}</div>
               </TableCell>
             </motion.tr>
           ))}
