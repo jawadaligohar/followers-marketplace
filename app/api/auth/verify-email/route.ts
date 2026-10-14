@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -7,8 +8,9 @@ import { Order } from "@/lib/db/models/Order";
 import { EmailOutbox } from "@/lib/db/models/Benefits";
 import { orderAccessToken, verifyOrderAccessToken } from "@/lib/orderAccess";
 import { sendMail } from "@/lib/mailer";
+import { trustedAppOrigin } from "@/lib/security/request";
 const schema = z.object({ token: z.string().max(512).optional() });
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   const session = await auth();
   if (!session?.user)
     return NextResponse.json(
@@ -51,10 +53,7 @@ export async function POST(request: Request) {
   const token = orderAccessToken(
     `verify-email:${user._id}:${Date.now() + 86400000}:${user.email}`,
   );
-  const origin =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.NEXTAUTH_URL ||
-    new URL(request.url).origin;
+  const origin = trustedAppOrigin(request);
   const message = await EmailOutbox.findOneAndUpdate(
     { key: `verify:${user._id}:${new Date().toISOString().slice(0, 10)}` },
     {
@@ -85,3 +84,5 @@ export async function POST(request: Request) {
   }
   return NextResponse.json({ queued: true, sent });
 }
+
+export const POST = secureRoute(postHandler);

@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import Link from "next/link";
 import { getAdminMetrics, getAdminOrders } from "@/lib/adminQueries";
 import AdminStatCards from "@/components/admin/AdminStatCards";
@@ -8,6 +9,7 @@ import { Card } from "@/components/ui/card";
 export const metadata = { title: "Admin | Surgeon" };
 const dollars = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 export default async function AdminOverviewPage() {
+  await requireAdminPage();
   const [metrics, recent] = await Promise.all([
     getAdminMetrics(),
     getAdminOrders({}),

@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { randomUUID } from "node:crypto";
 import { createWalletOrders, fulfillWalletOrders } from "@/lib/walletCheckout";
 import { orderAccessToken } from "@/lib/orderAccess";
@@ -10,9 +11,11 @@ import { checkoutSchema } from "@/lib/validation/checkout";
 import { resolveLine, LineItemError, type ResolvedLine } from "@/lib/orderLine";
 import { InsufficientBalanceError } from "@/lib/wallet";
 import { stripe } from "@/lib/stripe";
-import { nowpayments } from "@/lib/nowpayments";
+import { trustedAppOrigin } from "@/lib/security/request";
+import { createTrackedCryptoInvoice } from "@/lib/security/cryptoPayment";
+import { customerOrder } from "@/lib/security/customerOrder";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const session = await auth();
 
   const body = await req.json().catch(() => null);
@@ -62,8 +65,7 @@ export async function POST(req: Request) {
 
   const checkoutGroupId = "checkout_" + randomUUID();
   const trackingToken = orderAccessToken(checkoutGroupId);
-  const checkoutOrigin =
-    process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+  const checkoutOrigin = trustedAppOrigin(req);
   if (paymentSource === "bank") {
     if (!bankInstructions())
       return NextResponse.json(
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
     });
   }
   if (paymentSource === "crypto") {
-    const cryptoCheckoutId = `cart_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const cryptoCheckoutId = `cart_${randomUUID()}`;
 
     await Order.insertMany(
       resolved.map((r) => ({
@@ -98,10 +100,10 @@ export async function POST(req: Request) {
       })),
     );
 
-    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+    const origin = trustedAppOrigin(req);
 
     try {
-      const invoice = await nowpayments.createInvoice({
+      const invoice = await createTrackedCryptoInvoice({
         price_amount: totalChargeCents / 100,
         price_currency: "usd",
         order_id: cryptoCheckoutId,
@@ -111,7 +113,7 @@ export async function POST(req: Request) {
           ? `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}`
           : `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}&guest_email=${encodeURIComponent(guestEmail!)}`,
         cancel_url: `${origin}/checkout/cancel`,
-      });
+      }, totalChargeCents, session?.user?.id);
 
       return NextResponse.json({ checkoutUrl: invoice.invoice_url });
     } catch (err: unknown) {
@@ -137,7 +139,7 @@ export async function POST(req: Request) {
       })),
     );
 
-    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+    const origin = trustedAppOrigin(req);
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -179,7 +181,7 @@ export async function POST(req: Request) {
       checkoutGroupId,
     );
     await fulfillWalletOrders(orders);
-    return NextResponse.json({ orders });
+    return NextResponse.json({ orders: orders.map(customerOrder) });
   } catch (error) {
     if (error instanceof InsufficientBalanceError)
       return NextResponse.json(
@@ -192,3 +194,5 @@ export async function POST(req: Request) {
     throw error;
   }
 }
+
+export const POST = secureRoute(postHandler);

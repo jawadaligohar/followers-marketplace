@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/adminGuard";
@@ -15,7 +16,7 @@ const dispatchSchema = z.object({
   provider: z.enum(PROVIDERS).optional(),
 });
 
-export async function POST(
+async function postHandler(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -61,3 +62,5 @@ export async function POST(
     order,
   });
 }
+
+export const POST = secureRoute(postHandler);

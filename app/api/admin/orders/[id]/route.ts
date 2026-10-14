@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/adminGuard";
@@ -8,7 +9,7 @@ const patchSchema = z.object({
   status: z.enum(["pending", "processing", "completed", "failed", "cancelled"]),
 });
 
-export async function PATCH(
+async function patchHandler(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -52,3 +53,5 @@ export async function PATCH(
 
   return NextResponse.json({ order });
 }
+
+export const PATCH = secureRoute(patchHandler);

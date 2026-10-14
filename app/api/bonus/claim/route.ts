@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -5,6 +6,7 @@ import { Order } from "@/lib/db/models/Order";
 import { dbConnect } from "@/lib/db/connect";
 import { claimBonus } from "@/lib/benefits";
 import { orderGroupKey, verifyOrderAccessToken } from "@/lib/orderAccess";
+import { normalizeSocialTarget } from "@/lib/security/socialTarget";
 const schema = z.object({
   token: z.string().max(512).optional(),
   orderId: z
@@ -13,7 +15,7 @@ const schema = z.object({
     .optional(),
   targetLink: z.url().max(2048),
 });
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success)
     return NextResponse.json(
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
     )
       throw new Error("Use a public post URL on the bonus platform");
     return NextResponse.json(
-      await claimBonus(groupKey, parsed.data.targetLink),
+      await claimBonus(groupKey, normalizeSocialTarget(parsed.data.targetLink, source.platformId, "post")),
     );
   } catch (error) {
     return NextResponse.json(
@@ -75,3 +77,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = secureRoute(postHandler);

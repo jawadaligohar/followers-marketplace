@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { dbConnect } from "@/lib/db/connect";
@@ -7,7 +8,7 @@ import {
   validProviderPlatform,
 } from "@/lib/validation/service";
 
-export async function PATCH(
+async function patchHandler(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -44,7 +45,7 @@ export async function PATCH(
   return NextResponse.json({ service });
 }
 
-export async function DELETE(
+async function deleteHandler(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -57,3 +58,6 @@ export async function DELETE(
   await Service.findByIdAndDelete(id);
   return NextResponse.json({ ok: true });
 }
+
+export const PATCH = secureRoute(patchHandler);
+export const DELETE = secureRoute(deleteHandler);

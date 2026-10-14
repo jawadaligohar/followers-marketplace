@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import mongoose from "mongoose";
@@ -19,6 +20,7 @@ export default async function UserPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<AdminSearch>;
 }) {
+  await requireAdminPage();
   const { id } = await params;
   if (!/^[a-f\d]{24}$/i.test(id)) notFound();
   await dbConnect();

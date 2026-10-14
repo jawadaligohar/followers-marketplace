@@ -1,5 +1,7 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { clientIdentity } from "@/lib/security/rateLimit";
 import {
   fetchSocialPreview,
   socialPreviewConfigured,
@@ -12,10 +14,10 @@ const schema = z.object({
     .max(31)
     .transform((value) => value.replace(/^@/, "")),
 });
-export async function GET() {
+async function getHandler() {
   return NextResponse.json({ enabled: socialPreviewConfigured() });
 }
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   const data = schema.safeParse(await request.json().catch(() => null));
   if (!data.success)
     return NextResponse.json(
@@ -44,8 +46,7 @@ export async function POST(request: Request) {
       posts: await fetchSocialPreview(
         platform,
         username,
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          "local",
+        clientIdentity(request),
       ),
     });
   } catch (error) {
@@ -60,3 +61,6 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const GET = secureRoute(getHandler);
+export const POST = secureRoute(postHandler);

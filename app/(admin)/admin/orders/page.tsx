@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import OrdersTable from "@/components/admin/OrdersTable";
 import SupplierStatusBanner from "@/components/admin/SupplierStatusBanner";
 import AdminPagination from "@/components/admin/AdminPagination";
@@ -13,6 +14,7 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<AdminSearch>;
 }) {
+  await requireAdminPage();
   const search = await searchParams;
   const result = await getAdminOrders(search);
   return (

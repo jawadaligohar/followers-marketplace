@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -5,9 +6,13 @@ import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import { BankTransfer, BonusClaim } from "@/lib/db/models/Benefits";
 import { bankInstructions } from "@/lib/bankTransfer";
+import { sendMail } from "@/lib/mailer";
+import { consumeLimit } from "@/lib/security/rateLimit";
+import { trustedAppOrigin } from "@/lib/security/request";
 import {
   groupQuery,
   orderGroupKey,
+  orderAccessToken,
   verifyOrderAccessToken,
 } from "@/lib/orderAccess";
 const schema = z.object({
@@ -16,9 +21,9 @@ const schema = z.object({
     .string()
     .regex(/^[a-f\d]{24}$/i)
     .optional(),
-  email: z.email().optional(),
+  email: z.string().trim().max(254).email().optional(),
 });
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   const data = schema.safeParse(await request.json().catch(() => null));
   if (!data.success)
     return NextResponse.json(
@@ -36,15 +41,20 @@ export async function POST(request: Request) {
   let orders;
   if (key) orders = await Order.find(groupQuery(key)).sort({ _id: 1 }).lean();
   else if (data.data.orderId) {
-    orders = await Order.find({
-      _id: data.data.orderId,
-      $or: [
-        ...(session?.user ? [{ userId: session.user.id }] : []),
-        ...(data.data.email
-          ? [{ userId: null, guestEmail: data.data.email.toLowerCase() }]
-          : []),
-      ],
-    }).lean();
+    orders = session?.user ? await Order.find({ _id: data.data.orderId, userId: session.user.id }).lean() : [];
+    if (!orders.length && data.data.email) {
+      const email = data.data.email.toLowerCase();
+      const limit = await consumeLimit("guest-tracking-email", email, 3, 3600000);
+      if (limit.allowed) {
+        const guest = await Order.findOne({ _id: data.data.orderId, userId: null, guestEmail: email }).lean();
+        if (guest) {
+          try {
+            await sendMail({ to: email, subject: "Your private Surgeon tracking link", text: `Open your private order tracking link:\n${trustedAppOrigin(request)}/track-order?token=${encodeURIComponent(orderAccessToken(orderGroupKey(guest)))}`, idempotencyKey: `tracking:${guest._id}:${Math.floor(Date.now() / 3600000)}` });
+          } catch { /* Keep the same public response for missing accounts or mail failures. */ }
+        }
+      }
+      return NextResponse.json({ verificationRequired: true, message: "If these details match a guest order, a private tracking link has been queued for your checkout email. Use that link to view the order." });
+    }
   } else
     return NextResponse.json(
       { error: "Enter your order details" },
@@ -88,3 +98,5 @@ export async function POST(request: Request) {
     }),
   });
 }
+
+export const POST = secureRoute(postHandler);

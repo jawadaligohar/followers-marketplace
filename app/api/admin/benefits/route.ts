@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/adminGuard";
@@ -26,7 +27,7 @@ const schema = z.discriminatedUnion("action", [
     id: z.string().regex(/^[a-f\d]{24}$/i),
   }),
 ]);
-export async function GET() {
+async function getHandler() {
   if (!(await requireAdmin()))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   await dbConnect();
@@ -46,7 +47,7 @@ export async function GET() {
     ),
   });
 }
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   if (!(await requireAdmin()))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
@@ -93,3 +94,6 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const GET = secureRoute(getHandler);
+export const POST = secureRoute(postHandler);

@@ -52,7 +52,7 @@ export async function fulfillWalletOrders(
 ) {
   await markOrdersPaid(orders.map((order) => String(order._id)));
   for (const order of orders) {
-    const fulfillment = await fulfillOrder(order);
+    const fulfillment = await fulfillOrder(String(order._id));
     if (!fulfillment.success && fulfillment.mode === "automated") {
       order.status = "failed";
       await order.save();

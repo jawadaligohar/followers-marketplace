@@ -16,9 +16,9 @@ export const checkoutItemSchema = lineExtrasSchema.extend({
 
 export const checkoutSchema = z.object({
   expectedTotalCents: z.number().int().nonnegative().optional(),
-  items: z.array(checkoutItemSchema).min(1, "Your cart is empty"),
+  items: z.array(checkoutItemSchema).min(1, "Your cart is empty").max(20, "A checkout can contain at most 20 items"),
   paymentSource: z.enum(["wallet", "card", "crypto", "bank"]),
-  guestEmail: z.string().email().optional(),
+  guestEmail: z.string().trim().max(254).email().optional(),
 });
 
 export type CheckoutItemInput = z.infer<typeof checkoutItemSchema>;

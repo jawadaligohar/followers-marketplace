@@ -33,6 +33,7 @@ export async function sendMail(opts: {
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      redirect: "error",
       signal: AbortSignal.timeout(10000),
       headers: {
         Authorization: `Bearer ${key}`,

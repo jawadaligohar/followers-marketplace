@@ -9,6 +9,7 @@ import { Order } from "../lib/db/models/Order";
 import { User } from "../lib/db/models/User";
 import { Transaction } from "../lib/db/models/Transaction";
 import { nowpayments, getNowpaymentsApiBase, getNowpaymentsIpnSecret } from "../lib/nowpayments";
+import { createTrackedCryptoInvoice } from "../lib/security/cryptoPayment";
 import { fulfillOrder } from "../lib/supplier/fulfillment";
 import crypto from "crypto";
 
@@ -57,7 +58,7 @@ async function runEndToEndCryptoTest() {
 
   // 5. Create real NOWPayments Sandbox Invoice
   console.log(`\n💳 Step 5: Generating live Invoice on NOWPayments (${getNowpaymentsApiBase()})...`);
-  const invoice = await nowpayments.createInvoice({
+  const invoice = await createTrackedCryptoInvoice({
     price_amount: tier.priceCents / 100,
     price_currency: "usd",
     order_id: cryptoCheckoutId,
@@ -65,7 +66,7 @@ async function runEndToEndCryptoTest() {
     ipn_callback_url: "http://localhost:3000/api/webhooks/nowpayments-cart",
     success_url: "http://localhost:3000/checkout/success",
     cancel_url: "http://localhost:3000/checkout/cancel",
-  });
+  }, tier.priceCents, user ? String(user._id) : undefined);
 
   console.log(`✅ Invoice generated!`);
   console.log(`   - Invoice ID:  ${invoice.id}`);

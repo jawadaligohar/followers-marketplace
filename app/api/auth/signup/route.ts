@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { groupQuery, verifyOrderAccessToken } from "@/lib/orderAccess";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
@@ -6,7 +7,7 @@ import { User } from "@/lib/db/models/User";
 import { Order } from "@/lib/db/models/Order";
 import { signupSchema } from "@/lib/validation/auth";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = signupSchema.safeParse(body);
 
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
 
   const user = await User.create({
     name,
@@ -49,3 +50,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
+export const POST = secureRoute(postHandler);

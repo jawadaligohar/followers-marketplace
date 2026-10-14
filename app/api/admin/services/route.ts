@@ -1,10 +1,11 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { dbConnect } from "@/lib/db/connect";
 import { Service } from "@/lib/db/models/Service";
 import { serviceSchema } from "@/lib/validation/service";
 
-export async function GET() {
+async function getHandler() {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -13,7 +14,7 @@ export async function GET() {
   return NextResponse.json({ services });
 }
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -30,3 +31,6 @@ export async function POST(req: Request) {
   const service = await Service.create(parsed.data);
   return NextResponse.json({ service });
 }
+
+export const GET = secureRoute(getHandler);
+export const POST = secureRoute(postHandler);

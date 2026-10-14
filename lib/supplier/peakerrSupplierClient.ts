@@ -141,6 +141,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      redirect: "error",
       signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -198,6 +199,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      redirect: "error",
       signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -246,6 +248,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      redirect: "error",
       signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -289,6 +292,7 @@ export class PeakerrSupplierClient implements SupplierClient {
     });
     const response = await fetch(this.endpoint, {
       method: "POST",
+      redirect: "error",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
       signal: AbortSignal.timeout(20000),
@@ -327,6 +331,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      redirect: "error",
       signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

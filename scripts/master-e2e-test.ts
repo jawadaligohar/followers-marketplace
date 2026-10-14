@@ -8,6 +8,7 @@ import { Service } from "../lib/db/models/Service";
 import { Order } from "../lib/db/models/Order";
 import { User } from "../lib/db/models/User";
 import { getNowpaymentsIpnSecret } from "../lib/nowpayments";
+import { CryptoInvoice } from "../lib/db/models/CryptoInvoice";
 import { getPeakerrClient } from "../lib/supplier";
 import { fulfillOrder } from "../lib/supplier/fulfillment";
 import crypto from "crypto";
@@ -246,6 +247,7 @@ async function runMasterE2ETest() {
     const initialBalance = testUser.walletBalanceCents;
     const topupCents = 1500; // $15.00
     const topupOrderId = `topup_${testUser._id.toString()}_${Date.now()}`;
+    await CryptoInvoice.create({ orderId: topupOrderId, userId: testUser._id, amountCents: topupCents, invoiceId: "99887711" });
 
     const topupBody = {
       payment_id: Math.floor(Date.now() / 1000) * 1000 + Math.floor(Math.random() * 900) + 200,

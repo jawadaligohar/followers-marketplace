@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { nowpayments } from "@/lib/nowpayments";
@@ -6,8 +7,9 @@ import { User } from "@/lib/db/models/User";
 import { Transaction } from "@/lib/db/models/Transaction";
 import { applyWalletTransaction } from "@/lib/wallet";
 import mongoose from "mongoose";
+import { validateCryptoPayment } from "@/lib/security/cryptoPayment";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -22,10 +24,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const { payment_id, invoice_id, payment_status, order_id, price_amount, pay_currency } = body;
+    const { payment_id, invoice_id, payment_status, order_id, pay_currency } = body;
 
     // In NOWPayments, 'confirmed' or 'finished' indicates full blockchain confirmation
-    if (payment_status !== "finished" && payment_status !== "confirmed") {
+    if (payment_status !== "finished") {
       return NextResponse.json({ received: true, status: payment_status });
     }
 
@@ -33,8 +35,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, note: "Ignored, not a topup" });
     }
 
-    const parts = order_id.split("_");
-    const userIdStr = parts[1];
+    const invoice = await validateCryptoPayment(body);
+    const userIdStr = invoice.userId ? String(invoice.userId) : null;
     if (!userIdStr || !mongoose.Types.ObjectId.isValid(userIdStr)) {
       return NextResponse.json({ error: "Invalid userId in order_id" }, { status: 400 });
     }
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const amountCents = Math.round(Number(price_amount) * 100);
+    const amountCents = invoice.amountCents;
     if (amountCents <= 0) {
       return NextResponse.json({ error: "Invalid payment amount" }, { status: 400 });
     }
@@ -72,3 +74,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }
 }
+
+export const POST = secureRoute(postHandler);

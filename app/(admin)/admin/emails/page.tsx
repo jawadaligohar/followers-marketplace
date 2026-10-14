@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import { adminEmailActivity } from "@/lib/adminActivity";
 import { searchValue, type AdminSearch } from "@/lib/adminQueries";
 import AdminPagination from "@/components/admin/AdminPagination";
@@ -8,6 +9,7 @@ export default async function EmailPage({
 }: {
   searchParams: Promise<AdminSearch>;
 }) {
+  await requireAdminPage();
   const search = await searchParams;
   const result = await adminEmailActivity(search);
   return (

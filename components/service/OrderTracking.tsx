@@ -45,6 +45,7 @@ export default function OrderTracking({
   const { status } = useSession();
   const [data, setData] = useState<TrackingData | null>(null);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(Boolean(token));
   const [orderId, setOrderId] = useState(initialOrderId || "");
   const [email, setEmail] = useState("");
@@ -60,7 +61,8 @@ export default function OrderTracking({
     const result = await response.json();
     if (!response.ok)
       throw new Error(result.error || "Could not find the order");
-    setData(result);
+    if (result.verificationRequired) { setNotice(result.message); setData(null); }
+    else { setNotice(""); setData(result); }
   }
   useEffect(() => {
     if (!token && !initialOrderId) return;
@@ -73,7 +75,10 @@ export default function OrderTracking({
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        if (!cancelled) setData(result);
+        if (!cancelled) {
+          if (result.verificationRequired) { setNotice(result.message); setData(null); }
+          else { setNotice(""); setData(result); }
+        }
       })
       .catch((e) => {
         if (!cancelled) setError(e.message || "Could not load your order");
@@ -143,6 +148,7 @@ export default function OrderTracking({
           <Button type="submit" disabled={busy}>
             Find order
           </Button>
+          <p className="text-xs text-muted-foreground">Guest orders are accessed through a private link sent to the checkout email.</p>
         </form>
       )}
       {busy && (
@@ -153,6 +159,7 @@ export default function OrderTracking({
           {error}
         </p>
       )}
+      {notice && <p role="status" className="text-sm text-muted-foreground">{notice}</p>}
       {data?.bankTransfer && (
         <Card className="p-5">
           <h2 className="font-semibold">

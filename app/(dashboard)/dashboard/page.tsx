@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PlusCircle, ListOrdered, ShieldCheck, User } from "lucide-react";
 import { auth } from "@/lib/auth";
@@ -13,6 +14,7 @@ export const metadata = { title: "Dashboard | Surgeon" };
 
 export default async function DashboardOverviewPage() {
   const session = await auth();
+  if (!session?.user) redirect("/login?callbackUrl=/dashboard");
   await dbConnect();
   const totalOrders = await Order.countDocuments({ userId: session!.user.id });
 

@@ -97,7 +97,7 @@ async function main() {
     const item = (slug: string, qtyValue: number) => ({
       serviceId: String(get(slug)._id),
       qtyValue,
-      targetLink: "https://instagram.com/example",
+      targetLink: `https://${get(slug).platformId === "twitter" ? "x.com" : get(slug).platformId + ".com"}/example`,
     });
     const normal = await resolveLine(item("instagram-likes", 5000), "card");
     const wallet = await resolveLine(item("instagram-likes", 5000), "wallet");

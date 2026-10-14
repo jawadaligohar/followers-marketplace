@@ -1,7 +1,9 @@
+import { secureRoute } from "@/lib/security/request";
 import { connection, NextResponse } from "next/server";
 import { localTestDatabaseName } from "@/lib/testing";
-export async function GET() {
+async function getHandler() {
   await connection();
+  if (process.env.NODE_ENV === "production" && process.env.ENABLE_TEST_ENDPOINT !== "true") return NextResponse.json({ error: "Not found" }, { status: 404 });
   const database = localTestDatabaseName();
   if (!database)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -11,3 +13,5 @@ export async function GET() {
     cryptoSandbox: process.env.NOWPAYMENTS_SANDBOX === "true",
   });
 }
+
+export const GET = secureRoute(getHandler);

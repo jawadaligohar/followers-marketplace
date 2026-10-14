@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { getProviderClient } from "@/lib/supplier";
@@ -14,7 +15,7 @@ import {
   PROVIDER_LABELS,
   providerConfig,
 } from "@/lib/supplier/providers";
-export async function GET() {
+async function getHandler() {
   if (!(await requireAdmin()))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   await dbConnect();
@@ -83,3 +84,5 @@ export async function GET() {
     routing,
   });
 }
+
+export const GET = secureRoute(getHandler);

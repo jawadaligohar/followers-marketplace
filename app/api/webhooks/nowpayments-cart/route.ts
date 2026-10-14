@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { markOrdersPaid } from "@/lib/benefits";
 import { recordExternalRefund } from "@/lib/refunds";
 import { User } from "@/lib/db/models/User";
@@ -8,8 +9,9 @@ import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import { Transaction } from "@/lib/db/models/Transaction";
 import { fulfillOrder } from "@/lib/supplier/fulfillment";
+import { validateCryptoPayment } from "@/lib/security/cryptoPayment";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -36,18 +38,21 @@ export async function POST(req: Request) {
       await dbConnect();
       const orders = await Order.find({
         cryptoCheckoutId: order_id,
+        paymentSource: "crypto",
         paymentConfirmedAt: { $ne: null },
       });
-      if (orders.length)
+      if (orders.length) {
+        await validateCryptoPayment(body, orders.reduce((sum, order) => sum + order.priceCents, 0));
         await recordExternalRefund(
           orders.map((order) => String(order._id)),
           orders.reduce((sum, order) => sum + order.priceCents, 0),
           `crypto:${order_id}`,
         );
+      }
       return NextResponse.json({ received: true });
     }
 
-    if (payment_status !== "finished" && payment_status !== "confirmed") {
+    if (payment_status !== "finished") {
       return NextResponse.json({ received: true, status: payment_status });
     }
 
@@ -57,13 +62,14 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
-    const orders = await Order.find({ cryptoCheckoutId: order_id });
+    const orders = await Order.find({ cryptoCheckoutId: order_id, paymentSource: "crypto" });
     if (orders.length === 0) {
       return NextResponse.json({
         received: true,
         note: "Orders already processed or not found",
       });
     }
+    await validateCryptoPayment(body, orders.reduce((sum, order) => sum + order.priceCents, 0));
 
     // Ledger entry for auditing/idempotency tracking if order has an authenticated user
     const firstOrder = orders[0];
@@ -93,7 +99,7 @@ export async function POST(req: Request) {
 
     await markOrdersPaid(orders.map((order) => String(order._id)));
     for (const order of orders) {
-      if (order.status === "pending") await fulfillOrder(order);
+      if (order.status === "pending") await fulfillOrder(String(order._id));
     }
 
     return NextResponse.json({ received: true });
@@ -105,3 +111,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export const POST = secureRoute(postHandler);

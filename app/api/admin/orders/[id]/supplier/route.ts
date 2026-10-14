@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/adminGuard";
@@ -26,7 +27,7 @@ const schema = z.object({
     .regex(/^[\w-]{1,100}$/)
     .optional(),
 });
-export async function POST(
+async function postHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -74,3 +75,5 @@ export async function POST(
     );
   }
 }
+
+export const POST = secureRoute(postHandler);

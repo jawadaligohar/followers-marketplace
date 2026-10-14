@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { markOrdersPaid } from "@/lib/benefits";
 import { recordExternalRefund } from "@/lib/refunds";
 import { groupQuery, orderGroupKey } from "@/lib/orderAccess";
@@ -13,7 +14,7 @@ import { fulfillOrder } from "@/lib/supplier/fulfillment";
 
 export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -115,6 +116,7 @@ export async function POST(req: Request) {
     const orders = await Order.find({
       ...(checkoutGroupId ? { checkoutGroupId } : { _id: { $in: orderIds } }),
       paymentSource: "card",
+      stripeSessionId: checkoutSession.id,
     });
     if (orders.length === 0) {
       return NextResponse.json({ received: true });
@@ -169,7 +171,7 @@ export async function POST(req: Request) {
       );
     await markOrdersPaid(orders.map((order) => String(order._id)));
     for (const order of orders) {
-      if (order.status === "pending") await fulfillOrder(order);
+      if (order.status === "pending") await fulfillOrder(String(order._id));
     }
 
     return NextResponse.json({ received: true });
@@ -177,3 +179,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ received: true });
 }
+
+export const POST = secureRoute(postHandler);

@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
@@ -6,7 +7,7 @@ import { DRAW_ENTRY_CENTS } from "@/lib/benefitMath";
 import { Order } from "@/lib/db/models/Order";
 import { orderGroupKey } from "@/lib/orderAccess";
 import { BonusClaim } from "@/lib/db/models/Benefits";
-export async function GET() {
+async function getHandler() {
   const session = await auth();
   if (!session?.user)
     return NextResponse.json(
@@ -65,7 +66,7 @@ export async function GET() {
     bonuses: [...groups.values()].reverse(),
   });
 }
-export async function POST() {
+async function postHandler() {
   const session = await auth();
   if (!session?.user)
     return NextResponse.json(
@@ -86,3 +87,6 @@ export async function POST() {
     );
   }
 }
+
+export const GET = secureRoute(getHandler);
+export const POST = secureRoute(postHandler);

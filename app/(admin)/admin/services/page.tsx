@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import { dbConnect } from "@/lib/db/connect";
 import { Service } from "@/lib/db/models/Service";
 import ServicesTable, {
@@ -8,6 +9,7 @@ import FadeIn from "@/components/shared/FadeIn";
 export const metadata = { title: "Services | Surgeon Admin" };
 
 export default async function AdminServicesPage() {
+  await requireAdminPage();
   await dbConnect();
   const services = await Service.find({}).sort({ sortOrder: 1 }).lean();
 

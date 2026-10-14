@@ -1,3 +1,4 @@
+import { secureRoute } from "@/lib/security/request";
 import { markOrdersPaid } from "@/lib/benefits";
 import { recordExternalRefund } from "@/lib/refunds";
 import { User } from "@/lib/db/models/User";
@@ -9,8 +10,9 @@ import { Order } from "@/lib/db/models/Order";
 import { Transaction } from "@/lib/db/models/Transaction";
 import { fulfillOrder } from "@/lib/supplier/fulfillment";
 import mongoose from "mongoose";
+import { validateCryptoPayment } from "@/lib/security/cryptoPayment";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
@@ -35,7 +37,8 @@ export async function POST(req: Request) {
       /^order_[a-f\d]{24}$/i.test(order_id)
     ) {
       await dbConnect();
-      const order = await Order.findById(order_id.slice(6));
+      const order = await Order.findOne({ _id: order_id.slice(6), paymentSource: "crypto" });
+      if (order) await validateCryptoPayment(body, order.priceCents);
       if (order?.paymentConfirmedAt)
         await recordExternalRefund(
           [String(order._id)],
@@ -45,7 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true });
     }
 
-    if (payment_status !== "finished" && payment_status !== "confirmed") {
+    if (payment_status !== "finished") {
       return NextResponse.json({ received: true, status: payment_status });
     }
 
@@ -63,10 +66,11 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
-    const order = await Order.findById(orderIdStr);
+    const order = await Order.findOne({ _id: orderIdStr, paymentSource: "crypto" });
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
+    await validateCryptoPayment(body, order.priceCents);
 
     // Ledger entry for tracking & idempotency
     if (order.userId) {
@@ -92,7 +96,7 @@ export async function POST(req: Request) {
 
     // Submit to supplier or queue for manual fulfillment
     await markOrdersPaid([String(order._id)]);
-    if (order.status === "pending") await fulfillOrder(order);
+    if (order.status === "pending") await fulfillOrder(String(order._id));
     return NextResponse.json({ received: true });
   } catch (error: unknown) {
     console.error("NOWPayments order webhook error:", error);
@@ -102,3 +106,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export const POST = secureRoute(postHandler);

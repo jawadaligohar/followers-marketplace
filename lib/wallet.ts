@@ -24,6 +24,8 @@ export async function applyWalletTransaction(
   },
   existingSession?: mongoose.ClientSession,
 ) {
+  if (!Number.isSafeInteger(opts.amountCents) || (["topup", "refund", "reward_credit"].includes(opts.type) && opts.amountCents <= 0) || (opts.type === "order_debit" && opts.amountCents > 0)) throw new Error("Invalid wallet amount");
+  await Transaction.init();
   const session = existingSession || (await mongoose.startSession());
   if (opts.type === "refund") await RefundRecord.init();
   let nextBalance = 0;
@@ -87,7 +89,18 @@ export async function applyWalletTransaction(
   };
   try {
     if (existingSession) await execute();
-    else await session.withTransaction(execute);
+    else {
+      try { await session.withTransaction(execute); }
+      catch (error) {
+        const reference = opts.stripeSessionId ? { stripeSessionId: opts.stripeSessionId } : opts.nowpaymentsPaymentId ? { nowpaymentsPaymentId: opts.nowpaymentsPaymentId } : null;
+        if (!(error && typeof error === "object" && "code" in error && error.code === 11000 && reference && opts.type === "topup")) throw error;
+        // The losing transaction rolled its balance update back. A matching
+        // committed receipt makes concurrent webhook delivery a successful no-op.
+        const recorded = await Transaction.findOne(reference).lean();
+        if (!recorded || String(recorded.userId) !== String(opts.userId) || recorded.type !== opts.type || recorded.amountCents !== opts.amountCents) throw error;
+        nextBalance = recorded.balanceAfterCents;
+      }
+    }
   } finally {
     if (!existingSession) await session.endSession();
   }

@@ -1,10 +1,9 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { dbConnect } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { consumePasswordReset } from "@/lib/security/passwordReset";
 import { resetPasswordSchema } from "@/lib/validation/auth";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const body = await req.json().catch(() => null);
   const parsed = resetPasswordSchema.safeParse(body);
 
@@ -15,24 +14,15 @@ export async function POST(req: Request) {
     );
   }
 
-  await dbConnect();
-
-  const user = await User.findOne({
-    resetPasswordToken: parsed.data.token,
-    resetPasswordTokenExpiry: { $gt: new Date() },
-  });
-
-  if (!user) {
+  if (!(await consumePasswordReset(parsed.data.token, parsed.data.password))) {
     return NextResponse.json(
       { error: "This reset link is invalid or has expired" },
       { status: 400 }
     );
   }
 
-  user.passwordHash = await bcrypt.hash(parsed.data.password, 10);
-  user.resetPasswordToken = null;
-  user.resetPasswordTokenExpiry = null;
-  await user.save();
 
   return NextResponse.json({ ok: true });
 }
+
+export const POST = secureRoute(postHandler);

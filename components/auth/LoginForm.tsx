@@ -11,15 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import GoogleButton from "./GoogleButton";
+import { safeCallbackPath } from "@/lib/security/redirect";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestedCallback = searchParams.get("callbackUrl");
-  const callbackUrl =
-    requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//")
-      ? requestedCallback
-      : "/dashboard";
+  const callbackUrl = safeCallbackPath(requestedCallback);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

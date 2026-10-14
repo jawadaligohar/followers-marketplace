@@ -5,6 +5,7 @@ import type { PaymentSource } from "@/lib/db/models/Order";
 import { INCLUDED_AUTO_POSTS, POLL_OPTIONS } from "@/lib/catalog";
 import { walletPriceCents } from "@/lib/pricing";
 import { serviceAvailability } from "@/lib/serviceAvailability";
+import { normalizeSocialTarget } from "@/lib/security/socialTarget";
 
 export class LineItemError extends Error {
   constructor(message: string, public status: number) {
@@ -90,6 +91,10 @@ export async function resolveLine(item: CheckoutItemInput, paymentSource: Paymen
   }
 
   const chargeCents = paymentSource === "wallet" ? walletPriceCents(fullPriceCents) : fullPriceCents;
+  if (!Number.isSafeInteger(chargeCents) || chargeCents < 1) throw new LineItemError("Invalid package price", 400);
+  let targetLink: string;
+  try { targetLink = normalizeSocialTarget(item.targetLink, service.platformId, service.target); }
+  catch (error) { throw new LineItemError(error instanceof Error ? error.message : "Invalid target URL", 400); }
 
   return {
     service,
@@ -103,7 +108,7 @@ export async function resolveLine(item: CheckoutItemInput, paymentSource: Paymen
       platformLabel: service.platformLabel,
       category: service.category,
       qtyValue: tier.qtyValue,
-      targetLink: item.targetLink.trim(),
+      targetLink,
       serviceKind: service.kind,
       postsCovered,
       comments,

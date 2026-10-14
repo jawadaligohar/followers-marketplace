@@ -21,6 +21,7 @@ import {
 import { groupQuery, orderAccessToken, orderGroupKey } from "@/lib/orderAccess";
 import { sendMail } from "@/lib/mailer";
 import { fulfillOrder } from "@/lib/supplier/fulfillment";
+import { trustedAppOrigin } from "@/lib/security/request";
 
 export async function markOrdersPaid(ids: string[]) {
   await dbConnect();
@@ -40,10 +41,7 @@ export async function markOrdersPaid(ids: string[]) {
     first.guestEmail ||
     (first.userId ? (await User.findById(first.userId))?.email : null);
   if (!email) return;
-  const origin =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.NEXTAUTH_URL ||
-    "http://localhost:3000";
+  const origin = trustedAppOrigin();
   const token = orderAccessToken(groupKey);
   const message = await EmailOutbox.findOneAndUpdate(
     { key: `paid:${groupKey}` },

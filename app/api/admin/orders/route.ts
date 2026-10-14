@@ -1,8 +1,9 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { getAdminOrders } from "@/lib/adminQueries";
 
-export async function GET(request: Request) {
+async function getHandler(request: Request) {
   const session = await requireAdmin();
   if (!session)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -17,3 +18,5 @@ export async function GET(request: Request) {
     pages: result.pages,
   });
 }
+
+export const GET = secureRoute(getHandler);

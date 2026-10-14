@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
@@ -8,6 +9,7 @@ export const metadata = { title: "Orders | Surgeon" };
 
 export default async function OrdersPage() {
   const session = await auth();
+  if (!session?.user) redirect("/login?callbackUrl=/dashboard");
   await dbConnect();
 
   const orders = await Order.find({ userId: session!.user.id }).sort({ createdAt: -1 }).lean();

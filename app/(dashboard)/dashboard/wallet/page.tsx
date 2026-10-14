@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
 import { Transaction } from "@/lib/db/models/Transaction";
@@ -10,6 +11,7 @@ export const metadata = { title: "Wallet | Surgeon" };
 
 export default async function WalletPage() {
   const session = await auth();
+  if (!session?.user) redirect("/login?callbackUrl=/dashboard");
   await dbConnect();
 
   const transactions = await Transaction.find({ userId: session!.user.id })

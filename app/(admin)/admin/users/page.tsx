@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/adminGuard";
 import UsersTable from "@/components/admin/UsersTable";
 import AdminPagination from "@/components/admin/AdminPagination";
 import {
@@ -11,6 +12,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: Promise<AdminSearch>;
 }) {
+  await requireAdminPage();
   const search = await searchParams;
   const result = await getAdminUsers(search);
   return (

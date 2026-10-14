@@ -1,11 +1,14 @@
+import { secureRoute } from "@/lib/security/request";
 import { createBankTransfer, bankInstructions } from "@/lib/bankTransfer";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { topupSchema } from "@/lib/validation/order";
-import { nowpayments } from "@/lib/nowpayments";
+import { trustedAppOrigin } from "@/lib/security/request";
+import { createTrackedCryptoInvoice } from "@/lib/security/cryptoPayment";
+import { randomUUID } from "node:crypto";
 
-export async function POST(req: Request) {
+async function postHandler(req: Request) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +23,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+  const origin = trustedAppOrigin(req);
   const { amountCents, method } = parsed.data;
 
   if (method === "bank") {
@@ -30,9 +33,9 @@ export async function POST(req: Request) {
   }
   if (method === "nowpayments") {
     try {
-      const orderId = `topup_${session.user.id}_${Date.now()}`;
+      const orderId = `topup_${randomUUID()}`;
       
-      const invoice = await nowpayments.createInvoice({
+      const invoice = await createTrackedCryptoInvoice({
         price_amount: amountCents / 100, // convert cents to dollars
         price_currency: "usd",
         order_id: orderId,
@@ -40,7 +43,7 @@ export async function POST(req: Request) {
         ipn_callback_url: `${origin}/api/webhooks/nowpayments`,
         success_url: `${origin}/checkout/success`,
         cancel_url: `${origin}/checkout/cancel`,
-      });
+      }, amountCents, session.user.id);
 
       return NextResponse.json({ checkoutUrl: invoice.invoice_url });
     } catch (err: unknown) {
@@ -75,3 +78,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ checkoutUrl: checkoutSession.url });
 }
+
+export const POST = secureRoute(postHandler);

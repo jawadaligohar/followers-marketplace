@@ -17,6 +17,7 @@ export function orderGroupKey(
 function signingSecret() {
   const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
   if (!secret) throw new Error("Authentication secret is required");
+  if (process.env.NODE_ENV === "production" && Buffer.byteLength(secret) < 32) throw new Error("Authentication secret must be at least 32 bytes");
   return secret;
 }
 export function orderAccessToken(groupKey: string) {

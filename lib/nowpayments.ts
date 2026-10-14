@@ -54,6 +54,8 @@ export const nowpayments = {
 
     const res = await fetch(`${apiBase}/invoice`, {
       method: "POST",
+      signal: AbortSignal.timeout(20000),
+      redirect: "error",
       headers: {
         "x-api-key": apiKey,
         "Content-Type": "application/json",
@@ -62,12 +64,12 @@ export const nowpayments = {
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`NOWPayments error (${res.status}): ${errorText}`);
+      throw new Error(`NOWPayments invoice request failed (${res.status})`);
     }
 
     const data = (await res.json()) as InvoiceResponse;
-    if (!data.invoice_url) {
+    const checkoutUrl = data.invoice_url ? new URL(data.invoice_url) : null;
+    if (!checkoutUrl || checkoutUrl.protocol !== "https:" || checkoutUrl.username || checkoutUrl.password || !["nowpayments.io", "sandbox.nowpayments.io"].includes(checkoutUrl.hostname)) {
       throw new Error("NOWPayments did not return an invoice URL");
     }
 
@@ -77,21 +79,16 @@ export const nowpayments = {
   verifySignature(body: Record<string, unknown>, signature: string): boolean {
     const ipnSecret = getNowpaymentsIpnSecret();
     if (!ipnSecret) {
-      // In development / testing without secret, accept payload
-      return true;
+      return false;
     }
+    if (!/^[a-f\d]{128}$/i.test(signature) || !body || typeof body !== "object" || Array.isArray(body)) return false;
 
-    const sortedBody = Object.keys(body)
-      .sort()
-      .reduce<Record<string, unknown>>((acc, key) => {
-        acc[key] = body[key];
-        return acc;
-      }, {});
+    const sortedBody = Object.fromEntries(Object.keys(body).sort().map(key => [key, body[key]]));
 
     const hmac = crypto.createHmac("sha512", ipnSecret);
     hmac.update(JSON.stringify(sortedBody));
     const calculatedSignature = hmac.digest("hex");
 
-    return calculatedSignature.toLowerCase() === signature.toLowerCase();
+    return crypto.timingSafeEqual(Buffer.from(calculatedSignature, "hex"), Buffer.from(signature, "hex"));
   },
 };

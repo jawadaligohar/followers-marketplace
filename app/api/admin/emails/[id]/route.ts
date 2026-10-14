@@ -1,8 +1,9 @@
+import { secureRoute } from "@/lib/security/request";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { dbConnect } from "@/lib/db/connect";
 import { EmailOutbox } from "@/lib/db/models/Benefits";
-export async function GET(
+async function getHandler(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -19,3 +20,5 @@ export async function GET(
     ? NextResponse.json({ message })
     : NextResponse.json({ error: "Message not found" }, { status: 404 });
 }
+
+export const GET = secureRoute(getHandler);
