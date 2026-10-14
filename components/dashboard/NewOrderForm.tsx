@@ -160,7 +160,7 @@ export default function NewOrderForm() {
             <Label className="mb-2 text-xs text-muted-foreground">
               Quantity{currentService.kind === "auto" && " (per post)"}
             </Label>
-            <TierPicker tiers={currentService.tiers} value={selectedTier.qtyValue} onChange={draft.setQtyValue} showPrices />
+            <TierPicker slug={currentService.slug} tiers={currentService.tiers} value={selectedTier.qtyValue} onChange={draft.setQtyValue} showPrices />
           </div>
           <DraftExtras service={currentService} draft={draft} idPrefix="dash" />
           <LinkField service={currentService} id="target-link" value={draft.targetLink} onChange={draft.setTargetLink} />
@@ -274,7 +274,7 @@ export default function NewOrderForm() {
         <Button
           type="submit"
           variant="default"
-          disabled={submitting}
+          disabled={submitting || Boolean(draft.unavailable)}
           className="flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}

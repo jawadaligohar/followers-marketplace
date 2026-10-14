@@ -42,4 +42,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+/reports/provider-catalogs/backups/
 next-env.d.ts

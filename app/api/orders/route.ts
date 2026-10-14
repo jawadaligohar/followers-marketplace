@@ -20,6 +20,7 @@ export async function GET() {
 
   await dbConnect();
   const orders = await Order.find({ userId: session.user.id })
+    .select("-merchantRefill -merchantRefillHistory")
     .sort({ createdAt: -1 })
     .lean();
 

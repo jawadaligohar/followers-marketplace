@@ -23,6 +23,7 @@ async function main() {
     );
   }
   process.env.PEAKERR_SANDBOX = "true";
+  process.env.SMM_DISPATCH_ENABLED = "true";
   await dbConnect();
   await mongoose.connection.dropDatabase();
   try {
@@ -91,7 +92,7 @@ async function main() {
         }
       }
     }
-    assert.equal(packages, 222);
+    assert.equal(packages, 219);
     const get = (slug: string) => all.find((s) => s.slug === slug)!;
     const item = (slug: string, qtyValue: number) => ({
       serviceId: String(get(slug)._id),
@@ -122,6 +123,7 @@ async function main() {
       "card",
     );
     for (const invalid of [
+      { ...item("instagram-uk-likes", 5000) },
       { ...item("instagram-likes", 123) },
       { ...item("instagram-auto-likes", 1000), postsCovered: 45 },
       { ...item("instagram-comments", 10), comments: [" "] },
@@ -159,7 +161,7 @@ async function main() {
       assert.deepEqual([...saved.comments], line.orderFields.comments);
     }
     console.log(
-      "PASS: 34 services, 222 USD prices, auto upgrades, legacy migration, seed idempotence, validation, wallet pricing, and sandbox fulfillment.",
+      "PASS: 34 services, 219 USD prices, auto upgrades, legacy migration, seed idempotence, validation, wallet pricing, and sandbox fulfillment.",
     );
   } finally {
     await mongoose.connection.dropDatabase();

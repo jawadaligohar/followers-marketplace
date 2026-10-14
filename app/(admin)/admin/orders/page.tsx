@@ -52,7 +52,7 @@ export default async function AdminOrdersPage({
           {
             name: "queue",
             title: "All queues",
-            options: ["manual", "attention", "unpaid"],
+            options: ["manual", "attention", "unpaid", "replacements"],
           },
         ].map((filter) => (
           <select

@@ -3,6 +3,7 @@ import { getProviderClient } from "@/lib/supplier";
 import type { ProviderId } from "./providers";
 import { dbConnect } from "@/lib/db/connect";
 import { ProviderRejectedError } from "./peakerrSupplierClient";
+import { SUPPLIER_ROUTES } from "./routing";
 
 async function claimAction(
   orderId: string,
@@ -14,7 +15,7 @@ async function claimAction(
       _id: orderId,
       supplierActionPending: null,
       ...(action === "refill"
-        ? { supplierRefillId: null }
+        ? { supplierRefillId: null, merchantRefill: null }
         : { supplierStatus: { $ne: "cancel_requested" } }),
     },
     { $set: { supplierActionPending: action } },
@@ -66,6 +67,18 @@ export async function supplierOrderAction(
   }
   if (!order.supplierOrderId)
     throw new Error("This order has not been submitted to a provider");
+  if (
+    action === "refill" &&
+    Object.values(SUPPLIER_ROUTES).some(
+      (route) =>
+        route.merchantRefill &&
+        route.provider === order.supplierProvider &&
+        route.id === order.supplierServiceIdUsed,
+    )
+  )
+    throw new Error(
+      "This listing uses merchant-funded replacements. Queue a verified merchant replacement instead.",
+    );
   const client = getProviderClient(order.supplierProvider || "peakerr");
   if (action === "sync") {
     const result = await client.getOrderStatus(order.supplierOrderId);

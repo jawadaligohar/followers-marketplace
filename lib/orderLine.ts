@@ -4,6 +4,7 @@ import type { CheckoutItemInput } from "@/lib/validation/checkout";
 import type { PaymentSource } from "@/lib/db/models/Order";
 import { INCLUDED_AUTO_POSTS, POLL_OPTIONS } from "@/lib/catalog";
 import { walletPriceCents } from "@/lib/pricing";
+import { serviceAvailability } from "@/lib/serviceAvailability";
 
 export class LineItemError extends Error {
   constructor(message: string, public status: number) {
@@ -47,6 +48,8 @@ export async function resolveLine(item: CheckoutItemInput, paymentSource: Paymen
   if (!tier) {
     throw new LineItemError("Invalid quantity for one of your order items", 400);
   }
+  const unavailable = serviceAvailability(service.slug, item.qtyValue);
+  if (unavailable) throw new LineItemError(unavailable, 409);
 
   const title = `${service.platformLabel} ${service.category}`;
   let fullPriceCents = tier.priceCents;

@@ -3,8 +3,23 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/adminGuard";
 import { supplierOrderAction } from "@/lib/supplier/orderActions";
 import { PROVIDERS } from "@/lib/supplier/providers";
+import {
+  requestMerchantRefill,
+  completeMerchantRefill,
+} from "@/lib/supplier/merchantRefill";
 const schema = z.object({
-  action: z.enum(["sync", "cancel", "refill", "refillStatus", "reconcile"]),
+  action: z.enum([
+    "sync",
+    "cancel",
+    "refill",
+    "refillStatus",
+    "reconcile",
+    "requestReplacement",
+    "completeReplacement",
+  ]),
+  quantity: z.number().int().positive().optional(),
+  reason: z.string().trim().min(1).max(1000).optional(),
+  targetLink: z.string().url().optional(),
   provider: z.enum(PROVIDERS).optional(),
   supplierOrderId: z
     .string()
@@ -22,6 +37,22 @@ export async function POST(
   if (!/^[a-f\d]{24}$/i.test(id) || !data.success)
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   try {
+    if (data.data.action === "requestReplacement") {
+      const result = await requestMerchantRefill(
+        id,
+        data.data.quantity ?? 0,
+        data.data.reason || "",
+        data.data.targetLink,
+      );
+      return NextResponse.json({ result });
+    }
+    if (data.data.action === "completeReplacement") {
+      const result = await completeMerchantRefill(
+        id,
+        data.data.supplierOrderId || "",
+      );
+      return NextResponse.json({ result });
+    }
     const result = await supplierOrderAction(
       id,
       data.data.action,

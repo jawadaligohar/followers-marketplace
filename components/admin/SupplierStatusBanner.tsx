@@ -15,6 +15,20 @@ type Status = {
 export default function SupplierStatusBanner() {
   const [statuses, setStatuses] = useState<Status[]>([]);
   const [loading, setLoading] = useState(true);
+  const [enabled, setEnabled] = useState(false);
+  const [routing, setRouting] = useState<
+    {
+      slug: string;
+      packages: {
+        quantity: number;
+        provider: string;
+        serviceId: string | null;
+        hold: string | null;
+        refillPolicy?: string;
+        durationMinutes?: number;
+      }[];
+    }[]
+  >([]);
   const [error, setError] = useState("");
   async function refresh() {
     setLoading(true);
@@ -24,6 +38,8 @@ export default function SupplierStatusBanner() {
       if (!response.ok) throw new Error();
       const data = await response.json();
       setStatuses(data.providers || []);
+      setEnabled(data.dispatchEnabled === true);
+      setRouting(data.routing || []);
     } catch {
       setError("Unable to check supplier balances");
     } finally {
@@ -38,7 +54,11 @@ export default function SupplierStatusBanner() {
         return response.json();
       })
       .then((data) => {
-        if (active) setStatuses(data.providers || []);
+        if (active) {
+          setStatuses(data.providers || []);
+          setEnabled(data.dispatchEnabled === true);
+          setRouting(data.routing || []);
+        }
       })
       .catch(() => {
         if (active) setError("Unable to check supplier balances");
@@ -62,6 +82,40 @@ export default function SupplierStatusBanner() {
         </Button>
       </div>
       {error && <p role="alert">{error}</p>}
+      <p className="text-muted-foreground">
+        Dispatch {enabled ? "enabled" : "paused"}.{" "}
+        {enabled
+          ? "Held packages still require staff review."
+          : "Paid orders queue for staff until SMM_DISPATCH_ENABLED=true. Sandbox settings do not override this."}
+      </p>
+      {routing.length > 0 && (
+        <details>
+          <summary className="cursor-pointer">
+            Service routing and package holds ({routing.length} services)
+          </summary>
+          <div className="mt-3 max-h-96 space-y-3 overflow-auto">
+            {routing.map((service) => (
+              <div key={service.slug} className="rounded border p-2">
+                <p className="font-medium">{service.slug}</p>
+                {service.packages.map((tier) => (
+                  <p
+                    key={tier.quantity}
+                    className="text-xs text-muted-foreground"
+                  >
+                    {tier.quantity.toLocaleString()}: {tier.provider} #
+                    {tier.serviceId || "unmapped"} —{" "}
+                    {tier.hold ||
+                      "Mapped; API catalog and delivery test still required"}
+                    {tier.refillPolicy && ` · ${tier.refillPolicy}`}
+                    {tier.durationMinutes &&
+                      ` · ${tier.durationMinutes} minutes`}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
       <div className="grid gap-2 sm:grid-cols-3">
         {statuses.map((status) => (
           <div

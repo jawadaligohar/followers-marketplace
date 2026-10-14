@@ -1,0 +1,35 @@
+{
+  "status": "draft_not_applied",
+  "provider": "peakerr",
+  "storefrontSlug": "instagram-followers",
+  "proposedServiceId": "32867",
+  "proposedDefaultProvider": "peakerr",
+  "quantities": [
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000
+  ],
+  "ratePer1000": 2.183,
+  "minimum": 1,
+  "maximum": 1000000,
+  "currencyCode": null,
+  "comparison": {
+    "japServiceId": "2946",
+    "japDisplayedRatePer1000": 2.75,
+    "peakerrDisplayedRatePer1000": 2.183,
+    "lowerRatePercent": 20.62,
+    "condition": "Only comparable as monetary cost after both billing currencies are confirmed equal"
+  },
+  "conditions": [
+    "Supplier claims only; actual delivery, retention and refill not tested.",
+    "Description says real-looking accounts; do not treat as proof of genuine active users.",
+    "Use the slower description speed of 5000-10000/day instead of title speed20000/day when planning.",
+    "Explicit billing currency and a separately authorized small paid test are still required."
+  ],
+  "liveDatabaseModified": false,
+  "apiKeysConfigured": false
+}

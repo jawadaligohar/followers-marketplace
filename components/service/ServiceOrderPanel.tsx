@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { DraftExtras, LinkField, TierPicker } from "./ServiceFields";
 import { useLineDraft } from "./useLineDraft";
 import ProfilePostPicker from "./ProfilePostPicker";
+import { serviceAvailability } from "@/lib/serviceAvailability";
 
 function unitPrice(service: ServiceDoc, priceCents: number, qtyValue: number) {
   if (service.kind === "auto") return "30-day plan";
@@ -35,8 +36,7 @@ export default function ServiceOrderPanel({
   if (!tier) return null;
 
   const tierIndex = service.tiers.indexOf(tier);
-  const upsell =
-    service.kind === "standard" ? service.tiers[tierIndex + 1] : undefined;
+  const upsell = service.kind === "standard" ? service.tiers.slice(tierIndex + 1).find(next => !serviceAvailability(service.slug, next.qtyValue)) : undefined;
   const perPost = service.kind === "auto" ? " per post" : "";
 
   function add(goToCheckout: boolean) {
@@ -68,6 +68,7 @@ export default function ServiceOrderPanel({
             )}
           </p>
           <TierPicker
+            slug={service.slug}
             tiers={service.tiers}
             value={tier.qtyValue}
             onChange={draft.setQtyValue}
@@ -163,6 +164,7 @@ export default function ServiceOrderPanel({
             type="button"
             variant="outline"
             onClick={() => add(false)}
+            disabled={Boolean(draft.unavailable)}
             className="flex items-center gap-2 py-5"
           >
             <ShoppingCart className="h-4 w-4" />
@@ -172,6 +174,7 @@ export default function ServiceOrderPanel({
             type="button"
             variant="default"
             onClick={() => add(true)}
+            disabled={Boolean(draft.unavailable)}
             className="flex items-center gap-2 py-5"
           >
             Buy now

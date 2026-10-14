@@ -29,6 +29,18 @@ export interface IOrder {
   supplierLastCheckedAt: Date | null;
   supplierRefillId: string | null;
   supplierActionPending: string | null;
+  merchantRefill: {
+    requestId: string;
+    status: "requested" | "completed";
+    quantity: number;
+    targetLink: string;
+    reason: string;
+    provider: ProviderId;
+    externalOrderId?: string;
+    requestedAt: Date;
+    completedAt?: Date;
+  } | null;
+  merchantRefillHistory: NonNullable<IOrder["merchantRefill"]>[];
   supplierStatus: string | null;
   failureReason: string | null;
   stripeSessionId: string | null;
@@ -41,6 +53,18 @@ export interface IOrder {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const MerchantRefillSchema = new Schema({
+  requestId: { type: String, required: true },
+  status: { type: String, enum: ["requested", "completed"], required: true },
+  quantity: { type: Number, required: true },
+  targetLink: { type: String, required: true },
+  reason: { type: String, required: true },
+  provider: { type: String, enum: PROVIDERS, required: true },
+  externalOrderId: String,
+  requestedAt: { type: Date, required: true },
+  completedAt: Date,
+}, { _id: false });
 
 const OrderSchema = new Schema<IOrder>(
   {
@@ -91,6 +115,11 @@ const OrderSchema = new Schema<IOrder>(
     supplierLastCheckedAt: { type: Date, default: null },
     supplierRefillId: { type: String, default: null },
     supplierActionPending: { type: String, default: null },
+    merchantRefill: {
+      type: MerchantRefillSchema,
+      default: null,
+    },
+    merchantRefillHistory: { type: [MerchantRefillSchema], default: [] },
     supplierStatus: { type: String, default: null },
     failureReason: { type: String, default: null },
     stripeSessionId: { type: String, default: null, index: true },
@@ -104,12 +133,13 @@ const OrderSchema = new Schema<IOrder>(
 
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ guestEmail: 1, createdAt: -1 });
+OrderSchema.index({ "merchantRefill.status": 1, createdAt: -1 });
 
 // Development refresh can otherwise retain the schema from before new order fields existed.
 if (
   process.env.NODE_ENV === "development" &&
   models.Order &&
-  !models.Order.schema.path("supplierActionPending")
+  !models.Order.schema.path("merchantRefillHistory")
 )
   mongoose.deleteModel("Order");
 export const Order = models.Order || model<IOrder>("Order", OrderSchema);

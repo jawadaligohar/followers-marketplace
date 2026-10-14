@@ -1,0 +1,270 @@
+{
+  "provider": "tiksta",
+  "source": "https://tiksta.com/services",
+  "access": "Refreshed in connected Chrome after user confirmed sign-in; this catalog is also publicly accessible",
+  "collectedAt": "2026-10-14T10:09:27.626Z",
+  "scope": "TikTok follower listings only",
+  "authenticatedNavigation": false,
+  "currency": {
+    "code": "USD",
+    "symbol": "$",
+    "evidence": "USD $"
+  },
+  "services": [
+    {
+      "id": "210",
+      "category": "TikTok Zero Drop Services [%0 Drop] [High Quality Aged Accounts]",
+      "name": "⛋ TikTok Organic Followers | %0 Drop | Speed: 1-10K/Day | Max 100K |",
+      "rateDisplay": "$28.00",
+      "originalRateDisplay": "$28.00",
+      "minimum": 100,
+      "maximum": 100000,
+      "descriptionSpecs": [
+        "Geo: Global",
+        "Start: 0–6h",
+        "Refill: Non Drop",
+        "Speed: 1–10K / day",
+        "Min – Max:  100 – 100.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 28
+    },
+    {
+      "id": "211",
+      "category": "TikTok Zero Drop Services [%0 Drop] [High Quality Aged Accounts]",
+      "name": "⛋ 🇺🇸 TikTok Organic Followers | USA | %0 Drop | Speed: 1-10K/Day | Max 1K |",
+      "rateDisplay": "$120.00",
+      "originalRateDisplay": "$120.00",
+      "minimum": 100,
+      "maximum": 1000,
+      "descriptionSpecs": [
+        "Geo: USA",
+        "Start: 0–6h",
+        "Refill: Non Drop",
+        "Speed: 1–10K / day",
+        "Min – Max:  10 – 1.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 120
+    },
+    {
+      "id": "1",
+      "category": "TikTok Followers",
+      "name": "◎ TikTok Followers | No Refill | Speed: 1-10K/Day | Max 1M |",
+      "rateDisplay": "$0.78",
+      "originalRateDisplay": "$0.78",
+      "minimum": 50,
+      "maximum": 10000000,
+      "descriptionSpecs": [
+        "Geo: Global",
+        "Start: 0–6h",
+        "Refill: None",
+        "Speed: 1–10K/ day",
+        "Min – Max:  10 – 1.000.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Eco",
+      "ratePer1000": 0.78
+    },
+    {
+      "id": "2",
+      "category": "TikTok Followers",
+      "name": "◎ TikTok Followers | 30 Day Refill | Speed: 5-10K/Day | Max 1M |",
+      "rateDisplay": "$0.99",
+      "originalRateDisplay": "$0.99",
+      "minimum": 10,
+      "maximum": 10000000,
+      "descriptionSpecs": [
+        "Geo: Global",
+        "Start: 0–6h",
+        "Refill: 30 Days",
+        "Speed: 5-10K / day",
+        "Min – Max:  10 – 1.000.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Eco",
+      "ratePer1000": 0.99
+    },
+    {
+      "id": "3",
+      "category": "TikTok Followers",
+      "name": "⛋ TikTok Followers | 30 Day Refill | Speed: 1-5K/Day | Max 750K | Real Looking Accounts |",
+      "rateDisplay": "$4.39",
+      "originalRateDisplay": "$4.39",
+      "minimum": 10,
+      "maximum": 750000,
+      "descriptionSpecs": [
+        "Geo: Global",
+        "Start: 0–6h",
+        "Refill: 30 Days",
+        "Speed: 5–10K / day",
+        "Min – Max:  10 – 750.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 4.39
+    },
+    {
+      "id": "4",
+      "category": "TikTok Followers",
+      "name": "⛋ TikTok Followers | 30 Day Refill | Speed: 1-3K/Day | Max 10K | Aged Accounts |",
+      "rateDisplay": "$4.80",
+      "originalRateDisplay": "$4.80",
+      "minimum": 10,
+      "maximum": 50000,
+      "descriptionSpecs": [
+        "Geo: Global",
+        "Start: 0–6h",
+        "Refill: 30 Days",
+        "Speed: 1-3K / day",
+        "Min – Max:  10 – 10.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 4.8
+    },
+    {
+      "id": "218",
+      "category": "TikTok Followers [Country Targeted]",
+      "name": "⛋ 🇹🇷 TikTok Followers | Turkish | No Refill | Speed: 1-5K/Day | Max 500K |",
+      "rateDisplay": "$4.51",
+      "originalRateDisplay": "$4.51",
+      "minimum": 100,
+      "maximum": 500000,
+      "descriptionSpecs": [
+        "Geo: Turkish",
+        "Start: 0–6h",
+        "Refill: None",
+        "Speed: 1–5K / day",
+        "Min – Max:  10 – 500.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 4.51
+    },
+    {
+      "id": "12",
+      "category": "TikTok Followers [Country Targeted]",
+      "name": "⛋ 🇰🇷 TikTok Followers | South Korea | Speed 1-5K/Day | Max 500K |",
+      "rateDisplay": "$4.59",
+      "originalRateDisplay": "$4.59",
+      "minimum": 100,
+      "maximum": 500000,
+      "descriptionSpecs": [
+        "Geo: South Korea",
+        "Start: 0–6h",
+        "Refill: None",
+        "Speed: 1–5K / day",
+        "Min – Max:  100 – 500.000",
+        "⛓ Link format: tiktok.com/@username"
+      ],
+      "requiresPublicProfile": true,
+      "qualityTier": "Pro",
+      "ratePer1000": 4.59
+    },
+    {
+      "id": "219",
+      "category": "TikTok Followers [Country Targeted]",
+      "name": "⛋ TikTok Mix Followers | Asia/Usa | 30 Day Refill | Speed: 1-10K/Day | Max 75K | Low Drop |",
+      "rateDisplay": "$5.05",
+      "originalRateDisplay": "$5.05",
+      "minimum": 10,
+      "maximum": 75000,
+      "descriptionSpecs": [],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": 5.05
+    },
+    {
+      "id": "132",
+      "category": "TikTok Followers [Verified]",
+      "name": "⛋ TikTok Verified Followers | 30 Day Refill | Speed 1/Day ⌉ 1 Follower |",
+      "rateDisplay": "$6.75",
+      "originalRateDisplay": "$6.75",
+      "minimum": 1,
+      "maximum": 1,
+      "descriptionSpecs": [
+        "Refill: 30 Day",
+        "Speed: 1 Daily"
+      ],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": null
+    },
+    {
+      "id": "133",
+      "category": "TikTok Followers [Verified]",
+      "name": "⛋ TikTok Verified Followers | 30 Day Refill | Speed 2/Day ⌉ 2 Followers |",
+      "rateDisplay": "$10.80",
+      "originalRateDisplay": "$10.80",
+      "minimum": 1,
+      "maximum": 1,
+      "descriptionSpecs": [
+        "Refill: 30 Day",
+        "Speed: 2 Daily"
+      ],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": null
+    },
+    {
+      "id": "134",
+      "category": "TikTok Followers [Verified]",
+      "name": "⛋ TikTok Verified Followers | 30 Day Refill | Speed 3/Day | 3 Followers |",
+      "rateDisplay": "$16.20",
+      "originalRateDisplay": "$16.20",
+      "minimum": 1,
+      "maximum": 1,
+      "descriptionSpecs": [
+        "Refill: 30 Day",
+        "Speed: 3 Daily"
+      ],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": null
+    },
+    {
+      "id": "135",
+      "category": "TikTok Followers [Verified]",
+      "name": "⛋ TikTok Verified Followers | 30 Day Refill | Speed 4/Day | 4 Followers |",
+      "rateDisplay": "$18.90",
+      "originalRateDisplay": "$18.90",
+      "minimum": 1,
+      "maximum": 1,
+      "descriptionSpecs": [
+        "Refill: 30 Day",
+        "Speed: 4 Daily"
+      ],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": null
+    },
+    {
+      "id": "136",
+      "category": "TikTok Followers [Verified]",
+      "name": "⛋ TikTok Verified Followers | 30 Day Refill | Speed 5/Day | 5 Followers |",
+      "rateDisplay": "$27.00",
+      "originalRateDisplay": "$27.00",
+      "minimum": 1,
+      "maximum": 1,
+      "descriptionSpecs": [
+        "Refill: 30 Day",
+        "Speed: 5 Daily"
+      ],
+      "requiresPublicProfile": null,
+      "qualityTier": null,
+      "ratePer1000": null
+    }
+  ],
+  "noOrdersPlaced": true,
+  "noLiveMappingsChanged": true
+}

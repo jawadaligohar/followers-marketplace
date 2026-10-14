@@ -16,6 +16,7 @@ import type { LineDraft } from "./useLineDraft";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { serviceAvailability } from "@/lib/serviceAvailability";
 
 const chip = (active: boolean) =>
   cn(
@@ -30,11 +31,13 @@ export function TierPicker({
   value,
   onChange,
   showPrices = false,
+  slug = "",
 }: {
   tiers: TierDoc[];
   value: number;
   onChange: (qtyValue: number) => void;
   showPrices?: boolean;
+  slug?: string;
 }) {
   return (
     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -42,17 +45,20 @@ export function TierPicker({
         <motion.button
           key={tier.qtyValue}
           type="button"
+          disabled={Boolean(serviceAvailability(slug, tier.qtyValue))}
+          title={serviceAvailability(slug, tier.qtyValue) || undefined}
           onClick={() => onChange(tier.qtyValue)}
           whileTap={{ scale: 0.95 }}
           aria-pressed={value === tier.qtyValue}
-          className={cn(chip(value === tier.qtyValue), showPrices && "py-2.5")}
+          className={cn(chip(value === tier.qtyValue), showPrices && "py-2.5", "disabled:opacity-40 disabled:cursor-not-allowed")}
         >
-          {showPrices && tier.highlight && (
+          {showPrices && tier.highlight && !serviceAvailability(slug, tier.qtyValue) && (
             <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-500 px-1.5 text-[9px] font-semibold uppercase tracking-wide text-white">
               Popular
             </span>
           )}
           <span className="block text-sm font-semibold text-foreground">{compactQty(tier.qtyValue)}</span>
+          {serviceAvailability(slug, tier.qtyValue) && <span className="block text-[10px]">Unavailable</span>}
           {showPrices && <span className="block text-[11px]">${centsToUsd(tier.priceCents)}</span>}
         </motion.button>
       ))}
@@ -189,6 +195,7 @@ export function DraftExtras({
   idPrefix: string;
 }) {
   if (!draft.tier) return null;
+  if (draft.unavailable) return <p role="status" className="text-sm text-amber-600">{draft.unavailable}</p>;
   switch (service.kind) {
     case "auto":
       return <PostsLimitPicker tier={draft.tier} value={draft.postsCovered} onChange={draft.setPostsCovered} />;

@@ -7,6 +7,7 @@ import { Transaction } from "@/lib/db/models/Transaction";
 import { BankTransfer, EmailOutbox } from "@/lib/db/models/Benefits";
 import type { AdminOrderRow } from "@/components/admin/OrdersTable";
 import type { IOrder } from "@/lib/db/models/Order";
+import { SUPPLIER_ROUTES } from "@/lib/supplier/routing";
 export type AdminSearch = Record<string, string | string[] | undefined>;
 export function searchValue(search: AdminSearch, key: string) {
   return typeof search[key] === "string"
@@ -282,6 +283,7 @@ export function adminOrderRow(
     category: order.category,
     qtyValue: order.qtyValue,
     targetLink: order.targetLink,
+    serviceKind: order.serviceKind,
     postsCovered: order.postsCovered ?? null,
     pollOption: order.pollOption ?? null,
     comments: order.comments || [],
@@ -298,6 +300,9 @@ export function adminOrderRow(
     supplierOrderId: order.supplierOrderId,
     supplierProvider: order.supplierProvider,
     supplierRefillId: order.supplierRefillId,
+    merchantRefill: order.merchantRefill,
+    merchantRefillHistory: order.merchantRefillHistory || [],
+    merchantRefillPolicy: Object.values(SUPPLIER_ROUTES).some(route => route.merchantRefill && route.provider === order.supplierProvider && route.id === order.supplierServiceIdUsed),
     supplierServiceIdUsed: order.supplierServiceIdUsed,
     supplierActionPending: order.supplierActionPending,
     supplierStatus: order.supplierStatus,
@@ -342,6 +347,7 @@ export async function getAdminOrders(search: AdminSearch, userId?: string) {
   if (["jap", "peakerr", "tiksta"].includes(provider))
     query.supplierProvider = provider as IOrder["supplierProvider"];
   const queue = searchValue(search, "queue");
+  if (queue === "replacements") query["merchantRefill.status"] = "requested";
   if (queue === "manual") {
     query.supplierOrderId = null;
     query.status = { $in: ["pending", "processing"] };

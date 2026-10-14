@@ -1,0 +1,991 @@
+[
+  {
+    "slug": "instagram-followers",
+    "route": {
+      "provider": "peakerr",
+      "id": "32867",
+      "min": 1,
+      "max": 1000000,
+      "rate": 2.183
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "32867",
+      "category": "INSTAGRAM - Followers [ 10k-30k Speed ] [ Updated Server ] P1",
+      "name": "Instagram Followers [ Real Accounts ] [ Start Time - 0-10min ] [ Speed 20k/day ] [ 30 Days refill ♻️ ]",
+      "rateDisplay": "$2.183",
+      "ratePer1000": 2.183,
+      "minimum": 1,
+      "maximum": 1000000,
+      "averageTime": "8 hours 44 minutes",
+      "description": "",
+      "hasDetails": true,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "instagram-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "31241",
+      "min": 1,
+      "max": 1000000,
+      "rate": 0.0402
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "31241",
+      "category": "Instagram Likes [ 100% HQ Accounts ] [ FAST ] NEW",
+      "name": "Instagram Likes [ Max 1M ] | 100% HQ Accounts | Non Drop | 60 Days ♻️ | Instant Start | Day 200K 🚀",
+      "rateDisplay": "$0.0402",
+      "ratePer1000": 0.0402,
+      "minimum": 1,
+      "maximum": 10000000,
+      "averageTime": "33 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "instagram-uk-followers",
+    "route": {
+      "provider": "jap",
+      "id": "7864",
+      "min": 10,
+      "max": 100000,
+      "rate": 4.75
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "7864",
+      "category": "Instagram Followers [Targeted]",
+      "name": "🇬🇧 Instagram Followers [UK] [Refill: 30D] [Max: 100K] [Start Time: 0 - 24 Hrs] [Speed: Up to 10K/D] 💧⛔♻️",
+      "rateDisplay": "$4.75",
+      "ratePer1000": 4.75,
+      "minimum": 10,
+      "maximum": 1000000000,
+      "averageTime": "9 hours 23 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": 12
+    }
+  },
+  {
+    "slug": "instagram-views",
+    "route": {
+      "provider": "peakerr",
+      "id": "22136",
+      "min": 100,
+      "max": 1000000000,
+      "rate": 0.001
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "22136",
+      "category": "Instagram - Views",
+      "name": "Instagram - Video Views | MQ 1B | Reel or Tv - Emergency",
+      "rateDisplay": "$0.001",
+      "ratePer1000": 0.001,
+      "minimum": 100,
+      "maximum": 2147483647,
+      "averageTime": "42 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "instagram-comments",
+    "route": {
+      "provider": "peakerr",
+      "id": "26590",
+      "min": 10,
+      "max": 10000,
+      "rate": 4.13,
+      "kind": "comments"
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "26590",
+      "category": "Instagram Comments [ Cheapest ✨ ] NEW",
+      "name": "Instagram - Custom Comments | MQ 1M | No Drop | HQ Profiles | Superfast",
+      "rateDisplay": "$4.13",
+      "ratePer1000": 4.13,
+      "minimum": 10,
+      "maximum": 10000,
+      "averageTime": "3 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "2"
+    }
+  },
+  {
+    "slug": "instagram-auto-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "34466",
+      "min": 50,
+      "max": 200000,
+      "rate": 0.0952,
+      "kind": "auto"
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "34466",
+      "category": "Instagram Auto Likes [Working Fast - Different Bases]",
+      "name": "Instagram Auto Likes [Mix Quality] [Refill: 30 Days] [No Drop] [200K/D] [Instant]",
+      "rateDisplay": "$0.0952",
+      "ratePer1000": 0.0952,
+      "minimum": 50,
+      "maximum": 200000,
+      "averageTime": "66 hours 23 minutes",
+      "description": "",
+      "hasDetails": true,
+      "providerType": "100"
+    }
+  },
+  {
+    "slug": "instagram-auto-views",
+    "route": {
+      "provider": "peakerr",
+      "id": "36189",
+      "min": 100,
+      "max": 100000000,
+      "rate": 0.0012,
+      "kind": "auto"
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "36189",
+      "category": "Instagram Auto Views",
+      "name": "Instagram Auto Views [ID 2829]",
+      "rateDisplay": "$0.0012",
+      "ratePer1000": 0.0012,
+      "minimum": 100,
+      "maximum": 100000000,
+      "averageTime": "1 hour 47 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "100"
+    }
+  },
+  {
+    "slug": "instagram-female-followers",
+    "route": {
+      "provider": "peakerr",
+      "id": "16329",
+      "min": 10,
+      "max": 100000,
+      "rate": 4.1688
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "16329",
+      "category": "Instagram - Followers | Refill",
+      "name": "Instagram - Followers | Female Based | MQ 200K | Instant | Speed 5-10K/Hour | Cancel Button | RB30🔥🔥🔝",
+      "rateDisplay": "$4.1688",
+      "ratePer1000": 4.1688,
+      "minimum": 10,
+      "maximum": 100000,
+      "averageTime": "1 hour 30 minutes",
+      "description": "",
+      "hasDetails": true,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "instagram-reel-views",
+    "route": {
+      "provider": "peakerr",
+      "id": "22136",
+      "min": 100,
+      "max": 1000000000,
+      "rate": 0.001
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "22136",
+      "category": "Instagram - Views",
+      "name": "Instagram - Video Views | MQ 1B | Reel or Tv - Emergency",
+      "rateDisplay": "$0.001",
+      "ratePer1000": 0.001,
+      "minimum": 100,
+      "maximum": 2147483647,
+      "averageTime": "42 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "instagram-uk-likes",
+    "route": {
+      "provider": "jap",
+      "id": "1037",
+      "min": 20,
+      "max": 2000,
+      "rate": 4.125,
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "1037",
+      "category": "Instagram Likes [Targeted]",
+      "name": "Instagram Likes [Max: 2K] [UK 🇬🇧 ] [Refill: No] [Speed: 2K/Day] [Start Time: 0 - 1 Hours]",
+      "rateDisplay": "$4.125",
+      "ratePer1000": 4.125,
+      "minimum": 20,
+      "maximum": 2000,
+      "averageTime": "12 minutes",
+      "description": "UK Authentic HQ Instagram Likes 🇬🇧",
+      "hasDetails": false,
+      "providerType": 12
+    }
+  },
+  {
+    "slug": "instagram-uk-auto-likes",
+    "route": {
+      "provider": "jap",
+      "id": "1771",
+      "min": 20,
+      "max": 2000,
+      "rate": 4.125,
+      "kind": "auto",
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "1771",
+      "category": "Instagram Auto Likes",
+      "name": "Instagram Auto Likes [Max: 2K] [UK 🇬🇧 ] [Refill: No] [Speed: 2K/Day] [Start Time: 0 - 1 Hours]",
+      "rateDisplay": "$4.125",
+      "ratePer1000": 4.125,
+      "minimum": 20,
+      "maximum": 2000,
+      "averageTime": "19 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "100"
+    }
+  },
+  {
+    "slug": "tiktok-followers",
+    "route": {
+      "provider": "tiksta",
+      "id": "3",
+      "min": 10,
+      "max": 750000,
+      "rate": 4.39
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "3",
+      "category": "TikTok Followers",
+      "name": "⛋ TikTok Followers | 30 Day Refill | Speed: 1-5K/Day | Max 750K | Real Looking Accounts |",
+      "rateDisplay": "$4.39",
+      "ratePer1000": 4.39,
+      "minimum": 10,
+      "maximum": 750000,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: Global\nStart: 0–6h\nRefill: 30 Days\nSpeed: 5–10K / day\nMin – Max:  10 – 750.000\n➲ Before you order: set the profile to public or delivery won't\nstart.\n⛓ Link format: tiktok.com/@username\nrefill and a success rate we stand behind. Choose Pro when the account",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-likes",
+    "route": {
+      "provider": "tiksta",
+      "id": "14",
+      "min": 50,
+      "max": 100000,
+      "rate": 3.95
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "14",
+      "category": "TikTok Likes",
+      "name": "⛋ TikTok Likes | 30 Day Refill | Speed: 1-5K/Day | Max 100K |",
+      "rateDisplay": "$3.95",
+      "ratePer1000": 3.95,
+      "minimum": 50,
+      "maximum": 100000,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: Global\nStart: 0–6h\nRefill: 30 Days\nSpeed: 10-50K / day\nMin – Max:  10 – 1.000.000\n➲ Before you order: set the profile to public or delivery won't\nstart.\n⛓ Link format: tiktok.com/@username/video/1234567890\nrefill and a success rate we stand behind. Choose Pro when the account",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-views",
+    "route": {
+      "provider": "tiksta",
+      "id": "47",
+      "min": 100,
+      "max": 100000000,
+      "rate": 0.06
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "47",
+      "category": "TikTok Views",
+      "name": "⛋ TikTok Video Views | 30 Day Refill | Speed: 10-100K/Day | Max 100M |",
+      "rateDisplay": "$0.06",
+      "ratePer1000": 0.06,
+      "minimum": 100,
+      "maximum": 2147483647,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: Global\nStart: 0–6h\nRefill: 30 Days\nSpeed: 10–100K / day\nMin – Max:  100 – 100.000.000\n➲ Before you order: set the profile to public or delivery won't\nstart.\n⛓ Link format: tiktok.com/@username/video/1234567890\nrefill and a success rate we stand behind. Choose Pro when the account",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-comments",
+    "route": {
+      "provider": "tiksta",
+      "id": "90",
+      "min": 10,
+      "max": 50000,
+      "rate": 6.25,
+      "kind": "comments",
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "90",
+      "category": "TikTok Comments [Comment Likes]",
+      "name": "⛋ TikTok Comments | Custom | Speed 1-5K/Day | Max 50K |",
+      "rateDisplay": "$6.25",
+      "ratePer1000": 6.25,
+      "minimum": 10,
+      "maximum": 50000,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: Global\nStart: 0–6h\nRefill: None\nSpeed: 1–5K / day\nMin – Max:  5 – 500.000\n➲ Before you order: set the profile to public or delivery won't\nstart.\n❕ Custom comments: submit your own list, one comment per line.\n⛓ Link format: tiktok.com/@username/video/1234567890\nrefill and a success rate we stand behind. Choose Pro when the account",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-live-stream-views",
+    "route": {
+      "provider": "tiksta",
+      "id": "65",
+      "min": 50,
+      "max": 50000,
+      "rate": 1.32,
+      "durationMinutes": 30
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "65",
+      "category": "TikTok Live Stream Views",
+      "name": "⛋ TikTok Live Stream Views | 30 Minutes | Max 50K |",
+      "rateDisplay": "$1.32",
+      "ratePer1000": 1.32,
+      "minimum": 10,
+      "maximum": 50000,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: Global\nStart: 0–6h\nRefill: None\nSpeed: —\nDuration: 30 Minutes\nMin – Max:  50 – 100.000\n➲ Before you order: the stream has to be live and public when\n⛓ Link format: tiktok.com/@username/live\nrefill and a success rate we stand behind. Choose Pro when the account",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-uk-views",
+    "route": {
+      "provider": "tiksta",
+      "id": "166",
+      "min": 100,
+      "max": 5000000,
+      "rate": 0.01,
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://tiksta.com/services",
+      "collectedAt": "2026-10-14T10:33:36.555Z",
+      "currency": {
+        "code": "USD",
+        "symbol": "$"
+      },
+      "id": "166",
+      "category": "TikTok Views [Geo Targeted]",
+      "name": "◎ 🇬🇧 TikTok Video Views | UK | Speed 1-10K/Day | Max 100M |",
+      "rateDisplay": "$0.01",
+      "ratePer1000": 0.01,
+      "minimum": 100,
+      "maximum": 5000000,
+      "averageTime": null,
+      "description": "dump-and-drop. Just flow that looks like it belongs.\nGeo: UK\nStart: 0–6h\nRefill: None\nSpeed: 1–10K / day\nMin – Max:  100 – 100.000.000\n➲ Before you order: set the profile to public or delivery won't\nstart.\n⛓ Link format: tiktok.com/@username/video/1234567890\nno refill, and while we'll always do our best to help with drops or\nguarantees.",
+      "hasDetails": false
+    }
+  },
+  {
+    "slug": "tiktok-uk-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "32791",
+      "min": 10,
+      "max": 100000,
+      "rate": 1.4868
+    },
+    "evidence": {
+      "source": "https://peakerr.com/",
+      "collectedAt": "2026-10-14T10:55:10.305Z",
+      "currency": {
+        "symbol": "$",
+        "code": null
+      },
+      "id": "32791",
+      "name": "England Tiktok Like 100 K ( HQ - 30 Days Refill)",
+      "category": "🌂Tiktok Provider Country Like Provider 🔥",
+      "type": "0",
+      "min": "10",
+      "max": "100000",
+      "rate": "1.4868",
+      "description": "⭐ Startup time: Instant ⭐ Location: England Users ⭐ Link: Post Link ⭐ Transfer Rate: 1 min 20K ⭐ Warranty Period: 30 days",
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "tiktok-auto-likes",
+    "route": {
+      "provider": "jap",
+      "id": "10264",
+      "min": 10,
+      "max": 1000000,
+      "rate": 0.27,
+      "kind": "auto",
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/",
+      "collectedAt": "2026-10-14T10:55:10.305Z",
+      "currency": {
+        "symbol": "$",
+        "code": null
+      },
+      "id": "10264",
+      "name": "TikTok Auto Likes [HQ] [Refill : No] [Max: 1M] [Start Time: 0 - 1 Hr] [Speed: Up to 10K/D] 💧⛔️",
+      "type": "100",
+      "min": "10",
+      "max": "100000000",
+      "rate": "0.27",
+      "description": "",
+      "providerType": "100"
+    }
+  },
+  {
+    "slug": "tiktok-auto-views",
+    "route": {
+      "provider": "jap",
+      "id": "10265",
+      "min": 100,
+      "max": 30000000,
+      "rate": 0.055,
+      "kind": "auto"
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/",
+      "collectedAt": "2026-10-14T10:55:10.305Z",
+      "currency": {
+        "symbol": "$",
+        "code": null
+      },
+      "id": "10265",
+      "name": "TikTok Auto Views [Max: 30M] [Refill: 30D] [Start Time: 0-2 Hrs] [Speed: 10M/D] 💧♻️",
+      "type": "100",
+      "min": "100",
+      "max": "100000000",
+      "rate": "0.055",
+      "description": "",
+      "providerType": "100"
+    }
+  },
+  {
+    "slug": "facebook-followers",
+    "route": {
+      "provider": "peakerr",
+      "id": "32122",
+      "min": 50,
+      "max": 100000,
+      "rate": 0.2136
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "32122",
+      "category": "Facebook Followers [Mostly Instant - Very Stable Server] [Different Warranty Periods]",
+      "name": "Facebook Followers | HQ+Real | Low Drop | Day 50K | 30 Days Refill",
+      "rateDisplay": "$0.2136",
+      "ratePer1000": 0.2136,
+      "minimum": 50,
+      "maximum": 100000,
+      "averageTime": "41 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-page-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "34353",
+      "min": 10,
+      "max": 500000,
+      "rate": 0.3399
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "34353",
+      "category": "Facebook Page Likes [Cheapest Stable Services]",
+      "name": "Facebook Page Likes + Followers | HQ | Low Drop | Day 50K | 30 Days Refill",
+      "rateDisplay": "$0.3399",
+      "ratePer1000": 0.3399,
+      "minimum": 10,
+      "maximum": 500000,
+      "averageTime": "16 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-post-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "29578",
+      "min": 10,
+      "max": 1000000,
+      "rate": 0.3894
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "29578",
+      "category": "Facebook Post Likes [ Low Drops ] [ Provider 🚀 ] NEW",
+      "name": "Facebook Post Likes [ Max 1M ] | HQ Accounts | Cancel Enable | Low Drop | 30 Days ♻️ | Instant Start | Day 100K 🚀",
+      "rateDisplay": "$0.3894",
+      "ratePer1000": 0.3894,
+      "minimum": 10,
+      "maximum": 1000000,
+      "averageTime": "3 minutes",
+      "description": "",
+      "hasDetails": true,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-video-views",
+    "route": {
+      "provider": "peakerr",
+      "id": "32194",
+      "min": 1,
+      "max": 1000000000,
+      "rate": 0.0228
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "32194",
+      "category": "Facebook - Views / Plays [ ULTRA SUPERFAST ]",
+      "name": "SV7 - Facebook - Video / Reel Views / Plays [ Instant ] [ 1M-10M/Hour ] [ Lifetime Refill ]",
+      "rateDisplay": "$0.0228",
+      "ratePer1000": 0.0228,
+      "minimum": 1,
+      "maximum": 1000000000,
+      "averageTime": "7 hours 27 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-uk-page-likes",
+    "route": {
+      "provider": "jap",
+      "id": "6649",
+      "min": 10,
+      "max": 1500,
+      "rate": 12.922
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "6649",
+      "category": "🇪🇺 🇬🇧 Facebook Page Likes / Post Likes / Followers / Comments / Shares [Western Europe]",
+      "name": "Facebook Page Likes [UK] [Max:1.5K] [Refill: 30 Days] [Start Time: 1-12 Hour] [Speed:150/Day]",
+      "rateDisplay": "$12.922",
+      "ratePer1000": 12.922,
+      "minimum": 10,
+      "maximum": 5000,
+      "averageTime": "36 hours 8 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-uk-post-likes",
+    "route": {
+      "provider": "jap",
+      "id": "6618",
+      "min": 10,
+      "max": 500,
+      "rate": 12.922
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "6618",
+      "category": "🇪🇺 🇬🇧 Facebook Page Likes / Post Likes / Followers / Comments / Shares [Western Europe]",
+      "name": "Facebook Post Likes [Uk] [Max:500] [Refill: 30 Days] [Start Time: 1-12 Hour] [Speed:200/Day]",
+      "rateDisplay": "$12.922",
+      "ratePer1000": 12.922,
+      "minimum": 10,
+      "maximum": 500,
+      "averageTime": "3 hours 59 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "facebook-uk-followers",
+    "route": {
+      "provider": "jap",
+      "id": "6657",
+      "min": 10,
+      "max": 2000,
+      "rate": 12.922
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "6657",
+      "category": "🇪🇺 🇬🇧 Facebook Page Likes / Post Likes / Followers / Comments / Shares [Western Europe]",
+      "name": "Facebook Followers [Profile / Page ] [UK] [Max:2K] [Refill: 30 Days] [Start Time: 1-12 Hour] [Speed:100/Day]",
+      "rateDisplay": "$12.922",
+      "ratePer1000": 12.922,
+      "minimum": 10,
+      "maximum": 10000,
+      "averageTime": "38 hours 3 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "twitter-followers",
+    "route": {
+      "provider": "peakerr",
+      "id": "33608",
+      "min": 50,
+      "max": 100000,
+      "rate": 6.2304
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "33608",
+      "category": "Twitter Followers [No Drop So Far]",
+      "name": "Twitter Followers [No Drop So Far] [Refill: 30 Days Working Button] [50K/D] [Instant]",
+      "rateDisplay": "$6.2304",
+      "ratePer1000": 6.2304,
+      "minimum": 50,
+      "maximum": 100000,
+      "averageTime": "3 hours 42 minutes",
+      "description": "",
+      "hasDetails": true,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "twitter-likes",
+    "route": {
+      "provider": "peakerr",
+      "id": "33696",
+      "min": 10,
+      "max": 20000,
+      "rate": 3.0586
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "33696",
+      "category": "Twitter Services [Cheap - Low Drop Rate]",
+      "name": "Twitter Likes [Low Drop] [30 Days Refill] [20K/D] [Instant]",
+      "rateDisplay": "$3.0586",
+      "ratePer1000": 3.0586,
+      "minimum": 10,
+      "maximum": 20000,
+      "averageTime": "58 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "twitter-retweets",
+    "route": {
+      "provider": "jap",
+      "id": "8861",
+      "min": 10,
+      "max": 15000,
+      "rate": 0.5
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "8861",
+      "category": "X - Twitter Retweets",
+      "name": "Twitter Retweets [Refill: 30D] [Max: 15K] [Start Time: 0 - 1 Hr] [Speed: 15K/Day] 💧♻️",
+      "rateDisplay": "$0.50",
+      "ratePer1000": 0.5,
+      "minimum": 10,
+      "maximum": 1000000,
+      "averageTime": "1 minute",
+      "description": "",
+      "hasDetails": false,
+      "providerType": 12
+    }
+  },
+  {
+    "slug": "twitter-views",
+    "route": {
+      "provider": "peakerr",
+      "id": "31492",
+      "min": 100,
+      "max": 100000000,
+      "rate": 0.0048
+    },
+    "evidence": {
+      "source": "https://peakerr.com/services",
+      "collectedAt": "2026-10-14T10:33:25.619Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "31492",
+      "category": "Twitter (x.com) ➜ Tweet Views",
+      "name": "🔴 Twitter Tweet Views | No Drop | 🔥 FAST",
+      "rateDisplay": "$0.0048",
+      "ratePer1000": 0.0048,
+      "minimum": 100,
+      "maximum": 100000000,
+      "averageTime": "8 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "twitter-votes",
+    "route": {
+      "provider": "jap",
+      "id": "9015",
+      "min": 100,
+      "max": 20000,
+      "rate": 0.1,
+      "kind": "poll",
+      "pollInLink": true
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "9015",
+      "category": "X - Twitter Poll Votes",
+      "name": "Twitter Poll Votes [Refill: 30D] [Max: 20K] [Start Time: 0-2 Hours] [Speed: 20K/Day]",
+      "rateDisplay": "$0.10",
+      "ratePer1000": 0.1,
+      "minimum": 100,
+      "maximum": 20000,
+      "averageTime": null,
+      "description": "Example Link: https://twitter.com/elonmusk/status/1590612193590259712?vote=1\n\n- No Refund After Order Starts\n- Don't add duplicate Links",
+      "hasDetails": false,
+      "providerType": "0"
+    }
+  },
+  {
+    "slug": "twitter-female-followers",
+    "route": {
+      "provider": "jap",
+      "id": "1879",
+      "min": 100,
+      "max": 100000,
+      "rate": 10.625,
+      "merchantRefill": true
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "1879",
+      "category": "X - Twitter Followers",
+      "name": "Twitter Followers [NFT Female] [Max: 100K] [Refill: No] [Start Time: 0 - 1 Hour] [Speed: 3K/Day] ⛔",
+      "rateDisplay": "$10.625",
+      "ratePer1000": 10.625,
+      "minimum": 100,
+      "maximum": 100000,
+      "averageTime": "17 hours 33 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": 12
+    }
+  },
+  {
+    "slug": "twitter-space-listeners",
+    "route": {
+      "provider": "jap",
+      "id": "2251",
+      "min": 50,
+      "max": 10001,
+      "rate": 0.2921,
+      "durationMinutes": 30
+    },
+    "evidence": {
+      "source": "https://justanotherpanel.com/services",
+      "collectedAt": "2026-10-14T10:33:34.093Z",
+      "currency": {
+        "code": null,
+        "symbol": "$"
+      },
+      "id": "2251",
+      "category": "X - Twitter Space Listeners",
+      "name": "Twitter Space Listeners [30 Minutes] [Max: 20K] [Start Time: 0 - 1 Hour] [Speed: 2K/Hour]",
+      "rateDisplay": "$0.2921",
+      "ratePer1000": 0.2921,
+      "minimum": 50,
+      "maximum": 10001,
+      "averageTime": "30 minutes",
+      "description": "",
+      "hasDetails": false,
+      "providerType": 12
+    }
+  }
+]

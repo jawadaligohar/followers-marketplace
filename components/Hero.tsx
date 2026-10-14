@@ -46,7 +46,7 @@ export default function Hero() {
       
       <AnimatedBackground />
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-6 pb-20 pt-10 lg:grid-cols-2 lg:items-center lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto grid max-w-7xl items-start gap-12 px-6 pb-20 pt-10 lg:grid-cols-2 lg:pb-28 lg:pt-16">
         <motion.div variants={container} initial="hidden" animate="show">
           <div className="mb-6 flex items-center gap-4">
             <motion.div

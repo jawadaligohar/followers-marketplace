@@ -49,9 +49,19 @@ export type AdminOrderRow = OrderExtrasData & {
   priceCents: number;
   status: string;
   paymentSource: string;
+  serviceKind?: "standard" | "auto" | "comments" | "poll";
   supplierOrderId?: string | null;
   supplierProvider?: ProviderId | null;
   supplierRefillId?: string | null;
+  merchantRefillPolicy?: boolean;
+  merchantRefillHistory?: NonNullable<AdminOrderRow["merchantRefill"]>[];
+  merchantRefill?: {
+    status: "requested" | "completed";
+    quantity: number;
+    targetLink: string;
+    reason: string;
+    externalOrderId?: string;
+  } | null;
   platformId?: string;
   customerEmail?: string;
   paymentConfirmedAt?: string | null;
@@ -79,6 +89,26 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
   >({});
 
   async function providerAction(order: AdminOrderRow, action: string) {
+    let quantity: number | undefined;
+    let reason: string | undefined;
+    let targetLink: string | undefined;
+    if (action === "requestReplacement") {
+      const input = prompt(
+        `Verified missing quantity (1–${order.qtyValue}). This queues a merchant-funded replacement; it does not place a paid order.`,
+      );
+      if (!input) return;
+      quantity = Number(input);
+      reason =
+        prompt("How did you verify the drop or missing delivery?") || undefined;
+      if (!reason) return;
+      targetLink =
+        order.serviceKind === "auto"
+          ? prompt(
+              "Public post URL needing the replacement (verify it belongs to the customer)",
+            ) || undefined
+          : order.targetLink;
+      if (!targetLink) return;
+    }
     if (
       ["cancel", "refill"].includes(action) &&
       !confirm(
@@ -86,13 +116,18 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
       )
     )
       return;
-    const supplierOrderId =
-      action === "reconcile"
-        ? prompt(
-            "Enter the verified order ID from the provider account originally used. This links it without placing another order.",
-          )
-        : undefined;
-    if (action === "reconcile" && !supplierOrderId) return;
+    const supplierOrderId = ["reconcile", "completeReplacement"].includes(
+      action,
+    )
+      ? prompt(
+          "Enter the verified order ID from the provider account originally used. This links it without placing another order.",
+        )
+      : undefined;
+    if (
+      ["reconcile", "completeReplacement"].includes(action) &&
+      !supplierOrderId
+    )
+      return;
     setDispatchingId(order._id);
     try {
       const response = await fetch(`/api/admin/orders/${order._id}/supplier`, {
@@ -102,6 +137,9 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
           action,
           provider: order.supplierProvider,
           supplierOrderId,
+          quantity,
+          reason,
+          targetLink,
         }),
       });
       const data = await response.json();
@@ -453,23 +491,77 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                             Cancel at provider
                           </Button>
                         )}
-                        {order.status === "completed" && (
+                        {order.status === "completed" &&
+                          (!order.merchantRefillPolicy ||
+                            order.supplierRefillId) &&
+                          !order.merchantRefill && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              disabled={isDispatching}
+                              onClick={() =>
+                                providerAction(
+                                  order,
+                                  order.supplierRefillId
+                                    ? "refillStatus"
+                                    : "refill",
+                                )
+                              }
+                            >
+                              {order.supplierRefillId
+                                ? "Refill status"
+                                : "Request refill"}
+                            </Button>
+                          )}
+                        {(order.status === "completed" ||
+                          (order.serviceKind === "auto" &&
+                            order.status === "processing")) &&
+                          !order.supplierRefillId &&
+                          order.merchantRefill?.status !== "requested" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={isDispatching}
+                              onClick={() =>
+                                providerAction(order, "requestReplacement")
+                              }
+                            >
+                              Queue merchant replacement
+                            </Button>
+                          )}
+                        {order.merchantRefill && (
+                          <p className="text-xs text-muted-foreground">
+                            Merchant replacement: {order.merchantRefill.status},{" "}
+                            {order.merchantRefill.quantity} units.{" "}
+                            {order.merchantRefill.reason}
+                          </p>
+                        )}
+                        {Boolean(order.merchantRefillHistory?.length) && (
+                          <details className="text-xs text-muted-foreground">
+                            <summary>
+                              Previous replacements (
+                              {order.merchantRefillHistory!.length})
+                            </summary>
+                            {order.merchantRefillHistory!.map(
+                              (entry, index) => (
+                                <p key={index}>
+                                  {entry.quantity} units · {entry.targetLink} ·{" "}
+                                  {entry.reason} · #{entry.externalOrderId}
+                                </p>
+                              ),
+                            )}
+                          </details>
+                        )}
+                        {order.merchantRefill?.status === "requested" && (
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             disabled={isDispatching}
                             onClick={() =>
-                              providerAction(
-                                order,
-                                order.supplierRefillId
-                                  ? "refillStatus"
-                                  : "refill",
-                              )
+                              providerAction(order, "completeReplacement")
                             }
                           >
-                            {order.supplierRefillId
-                              ? "Refill status"
-                              : "Request refill"}
+                            Verify completed replacement
                           </Button>
                         )}
                       </>

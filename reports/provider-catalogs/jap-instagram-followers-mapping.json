@@ -1,0 +1,47 @@
+{
+  "status": "draft_not_applied",
+  "provider": "jap",
+  "storefrontSlug": "instagram-followers",
+  "proposedDefaultProvider": "jap",
+  "proposedServiceId": "2946",
+  "quantities": [
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000
+  ],
+  "candidates": [
+    {
+      "serviceId": "10362",
+      "ratePer1000": 6,
+      "rateDisplay": "$6.00",
+      "minimum": 10,
+      "maximum": 100000
+    },
+    {
+      "serviceId": "10242",
+      "ratePer1000": 2.25,
+      "rateDisplay": "$2.25",
+      "minimum": 10,
+      "maximum": 1000000
+    },
+    {
+      "serviceId": "2946",
+      "ratePer1000": 2.75,
+      "rateDisplay": "$2.75",
+      "minimum": 100,
+      "maximum": 10000000
+    }
+  ],
+  "conditions": [
+    "Confirm billing currency before relying on USD margins.",
+    "Validate actual fulfillment with a small separately authorized paid test later.",
+    "No country targeting is promised for 2946.",
+    "Supplier quality, drop and refill claims are not independently verified."
+  ],
+  "apiKeysConfigured": false,
+  "liveDatabaseModified": false
+}

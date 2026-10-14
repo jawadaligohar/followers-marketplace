@@ -7,6 +7,10 @@ import { fulfillOrder } from "../lib/supplier/fulfillment";
 import { resolveProviderMapping, PROVIDERS } from "../lib/supplier/providers";
 import { supplierOrderAction } from "../lib/supplier/orderActions";
 import {
+  requestMerchantRefill,
+  completeMerchantRefill,
+} from "../lib/supplier/merchantRefill";
+import {
   serviceSchema,
   validProviderPlatform,
 } from "../lib/validation/service";
@@ -18,6 +22,7 @@ import {
 } from "../lib/socialPreview";
 
 async function main() {
+  process.env.SMM_DISPATCH_ENABLED = "true";
   if (
     !/^mongodb:\/\/(127\.0\.0\.1|localhost):\d+\/followers_suppliers_test(?:\?|$)/.test(
       process.env.MONGODB_URI || "",
@@ -37,6 +42,9 @@ async function main() {
     action: string;
     service: string | null;
     order: string | null;
+    link: string | null;
+    posts: string | null;
+    username: string | null;
   }[] = [];
   let behavior = "ok";
   globalThis.fetch = async (input, options) => {
@@ -46,6 +54,9 @@ async function main() {
       action: body.get("action")!,
       service: body.get("service"),
       order: body.get("order") || body.get("orders"),
+      link: body.get("link"),
+      posts: body.get("posts"),
+      username: body.get("username"),
     });
     if (behavior === "timeout")
       throw new Error("Simulated ambiguous connection failure");
@@ -64,6 +75,23 @@ async function main() {
         return Response.json({ status: "Completed" });
       case "balance":
         return Response.json({ balance: "24.00", currency: "USD" });
+      case "services":
+        return Response.json([
+          {
+            service: "10265",
+            type: "Subscriptions",
+            min: "100",
+            max: "30000000",
+            rate: "0.055",
+          },
+          {
+            service: "9015",
+            type: "Default",
+            min: "100",
+            max: "20000",
+            rate: "0.1",
+          },
+        ]);
       default:
         return Response.json([]);
     }
@@ -139,6 +167,17 @@ async function main() {
       });
     const unpaid = await makeOrder(100, false);
     assert.equal((await fulfillOrder(unpaid)).success, false);
+    const paused = await Order.create({
+      ...unpaid.toObject(),
+      _id: new mongoose.Types.ObjectId(),
+      paymentConfirmedAt: new Date(),
+    });
+    process.env.SMM_DISPATCH_ENABLED = "false";
+    const callsBeforePause = calls.length;
+    assert.equal((await fulfillOrder(paused)).mode, "manual");
+    assert.equal(calls.length, callsBeforePause);
+    assert.match((await Order.findById(paused._id))!.failureReason!, /paused/);
+    process.env.SMM_DISPATCH_ENABLED = "true";
     assert.equal(calls.length, 0);
     for (const provider of PROVIDERS) {
       const order = await makeOrder();
@@ -214,6 +253,27 @@ async function main() {
       "submission_error",
     );
     behavior = "ok";
+    const pollService = await Service.create({
+      slug: "twitter-votes",
+      platformId: "twitter",
+      platformLabel: "X",
+      category: "Votes",
+      kind: "poll",
+      defaultProvider: "jap",
+      providerMappings: { jap: "9015" },
+    });
+    const pollOrder = await Order.create({
+      ...(await makeOrder()).toObject(),
+      _id: new mongoose.Types.ObjectId(),
+      serviceId: pollService._id,
+      platformId: "twitter",
+      targetLink: "https://x.com/example/status/1",
+      serviceKind: "poll",
+      pollOption: 2,
+    });
+    assert.equal((await fulfillOrder(pollOrder)).mode, "automated");
+    assert.equal(calls.at(-1)?.action, "add");
+    assert.equal(new URL(calls.at(-1)!.link!).searchParams.get("vote"), "2");
     delete process.env.JAP_API_KEY;
     const manual = await makeOrder();
     const initial = calls.length;
@@ -227,6 +287,109 @@ async function main() {
     assert.equal(
       (await Order.findById(cancelled._id)).supplierStatus,
       "cancel_requested",
+    );
+    const nativeAutoService = await Service.create({
+      slug: "tiktok-auto-views",
+      platformId: "tiktok",
+      platformLabel: "TikTok",
+      category: "Auto Views",
+      kind: "auto",
+      defaultProvider: "jap",
+      providerMappings: { jap: "10265" },
+    });
+    const nativeAuto = await Order.create({
+      ...(await makeOrder()).toObject(),
+      _id: new mongoose.Types.ObjectId(),
+      serviceId: nativeAutoService._id,
+      serviceKind: "auto",
+      postsCovered: 120,
+      targetLink: "https://tiktok.com/@example",
+    });
+    assert.equal((await fulfillOrder(nativeAuto)).mode, "automated");
+    assert.equal(calls.at(-1)?.username, "example");
+    assert.equal(calls.at(-1)?.posts, "120");
+    assert.equal(calls.at(-1)?.link, null);
+    await assert.rejects(
+      requestMerchantRefill(
+        String(nativeAuto._id),
+        10,
+        "Verified missing likes",
+        "https://tiktok.com/@example",
+      ),
+      /specific public post/,
+    );
+    await requestMerchantRefill(
+      String(nativeAuto._id),
+      10,
+      "Verified missing views on delivered post",
+      "https://tiktok.com/@example/video/2",
+    );
+    assert.equal(
+      (await Order.findById(nativeAuto._id)).merchantRefill.status,
+      "requested",
+    );
+
+    const replacementParent = await makeOrder();
+    await fulfillOrder(replacementParent);
+    await supplierOrderAction(String(replacementParent._id), "sync");
+    const parentId = String(replacementParent._id);
+    await assert.rejects(
+      requestMerchantRefill(parentId, 101, "Verified drop"),
+      /quantity/,
+    );
+    const beforeReplacement = calls.filter(
+      (call) => call.action === "add",
+    ).length;
+    const replacements = await Promise.allSettled([
+      requestMerchantRefill(parentId, 10, "Count verified by support"),
+      requestMerchantRefill(parentId, 10, "Count verified by support"),
+    ]);
+    assert.equal(
+      replacements.filter((result) => result.status === "fulfilled").length,
+      1,
+    );
+    assert.equal(
+      calls.filter((call) => call.action === "add").length,
+      beforeReplacement,
+    );
+    assert.equal(
+      (await Order.findById(parentId)).merchantRefill.status,
+      "requested",
+    );
+    await assert.rejects(
+      supplierOrderAction(parentId, "refill"),
+      /already pending/,
+    );
+    await assert.rejects(
+      completeMerchantRefill(parentId, replacementParent.supplierOrderId!),
+      /separate/,
+    );
+    await completeMerchantRefill(parentId, "staff-verified-replacement");
+    assert.equal(
+      (await Order.findById(parentId)).merchantRefill.status,
+      "completed",
+    );
+    assert.equal(
+      (await Order.findById(parentId)).supplierOrderId,
+      replacementParent.supplierOrderId,
+    );
+    await assert.rejects(
+      requestMerchantRefill(parentId, 91, "Another verified drop"),
+      /Cumulative/,
+    );
+    await requestMerchantRefill(parentId, 20, "Another verified drop");
+    assert.equal(
+      (await Order.findById(parentId)).merchantRefillHistory.length,
+      1,
+    );
+    await assert.rejects(
+      completeMerchantRefill(parentId, "staff-verified-replacement"),
+      /separate/,
+    );
+    await completeMerchantRefill(parentId, "staff-verified-replacement-2");
+    assert.equal(
+      calls.filter((call) => call.action === "add").length,
+      beforeReplacement,
     );
     assert.equal(
       safePostUrl("https://instagram.com.evil.invalid/post/1", "instagram"),

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { INCLUDED_AUTO_POSTS } from "@/lib/catalog";
+import { serviceAvailability } from "@/lib/serviceAvailability";
 import type { CartItem } from "@/lib/cart/CartContext";
 import {
   defaultTier,
@@ -23,7 +24,8 @@ export function useLineDraft(service: ServiceDoc | undefined, initialQty?: numbe
   const [comments, setComments] = useState<string[]>([]);
   const [pollOption, setPollOption] = useState<number | undefined>();
 
-  const tier = service ? service.tiers.find((t) => t.qtyValue === qtyValue) ?? defaultTier(service) : undefined;
+  const tier = service ? service.tiers.find((t) => t.qtyValue === qtyValue) ?? defaultTier({ ...service, tiers: service.tiers.filter(t => !serviceAvailability(service.slug, t.qtyValue)) }) ?? service.tiers[0] : undefined;
+  const unavailable = service && tier ? serviceAvailability(service.slug, tier.qtyValue) : null;
   const isAuto = service?.kind === "auto";
   const posts =
     isAuto && tier?.postsOptions?.some((o) => o.posts === postsCovered) ? postsCovered : INCLUDED_AUTO_POSTS;
@@ -32,6 +34,7 @@ export function useLineDraft(service: ServiceDoc | undefined, initialQty?: numbe
   /** Returns an error message, or null when the line is ready for the cart. */
   function validate(requireLink: boolean): string | null {
     if (!service || !tier) return "Choose a service first";
+    if (unavailable) return unavailable;
     if (!service._id) return "Services are still loading, try again in a moment";
     if (requireLink && !targetLink.trim()) return "Enter your link first";
     return lineExtrasError(service.kind, tier.qtyValue, { comments, pollOption });
@@ -59,6 +62,7 @@ export function useLineDraft(service: ServiceDoc | undefined, initialQty?: numbe
 
   return {
     tier,
+    unavailable,
     priceCents,
     postsCovered: posts,
     targetLink,

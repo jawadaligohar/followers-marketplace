@@ -187,7 +187,7 @@ export const CATALOG: CatalogService[] = [
     kind: "standard",
     target: "profile",
     tagline: "Female-profile followers",
-    description: "Followers from female-presenting profiles, sourced from premium USA and EU accounts.",
+    description: "Followers from female-presenting profiles on your public Instagram account.",
     tiers: [
       { qty: 250, gbp: 17.99 },
       { qty: 500, gbp: 33.99 },
@@ -226,10 +226,7 @@ export const CATALOG: CatalogService[] = [
       { qty: 500, gbp: 14.99 },
       { qty: 1000, gbp: 24.99 },
       { qty: 1500, gbp: 34.99 },
-      { qty: 2500, gbp: 54.99, highlight: true },
-      { qty: 3000, gbp: 64.99 },
-      { qty: 4000, gbp: 84.99 },
-      { qty: 5000, gbp: 99.99 },
+      { qty: 2000, gbp: 44.99, highlight: true },
     ],
   },
   {
@@ -624,7 +621,7 @@ export const CATALOG: CatalogService[] = [
     kind: "standard",
     target: "profile",
     tagline: "Female-profile followers",
-    description: "Followers from female-presenting profiles on any public X (Twitter) account.",
+    description: "Female-presenting, NFT-focused profiles following your public X (Twitter) account.",
     tiers: [
       { qty: 100, gbp: 6.47 },
       { qty: 500, gbp: 10.45 },

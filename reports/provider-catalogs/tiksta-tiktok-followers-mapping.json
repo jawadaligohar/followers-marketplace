@@ -1,0 +1,56 @@
+{
+  "status": "draft_not_applied",
+  "provider": "tiksta",
+  "storefrontSlug": "tiktok-followers",
+  "currency": "USD",
+  "source": "https://tiksta.com/services",
+  "sourceType": "Public advertised catalog; account-specific discounts not verified",
+  "proposedServiceId": "3",
+  "proposedDefaultProvider": "tiksta",
+  "budgetAlternativeServiceId": "2",
+  "quantities": [
+    100,
+    250,
+    500,
+    1000,
+    2000,
+    5000,
+    10000
+  ],
+  "candidates": [
+    {
+      "serviceId": "2",
+      "tier": "Eco",
+      "ratePer1000": 0.99,
+      "minimum": 10,
+      "maximum": 10000000,
+      "refillDays": 30
+    },
+    {
+      "serviceId": "3",
+      "tier": "Pro",
+      "ratePer1000": 4.39,
+      "minimum": 10,
+      "maximum": 750000,
+      "refillDays": 30
+    },
+    {
+      "serviceId": "4",
+      "tier": "Pro",
+      "ratePer1000": 4.8,
+      "minimum": 10,
+      "maximum": 50000,
+      "refillDays": 30
+    }
+  ],
+  "conditions": [
+    "Choose quality tier after small separately authorized live tests.",
+    "Supplier quality, speed, drop and refill statements are unverified claims.",
+    "No UK or female targeting is established for the global candidates.",
+    "Compare only against TikTok Followers from JAP/Peakerr, not their Instagram rates.",
+    "Account-specific final rates and service availability must be rechecked before activation."
+  ],
+  "liveDatabaseModified": false,
+  "apiKeysConfigured": false,
+  "noOrdersPlaced": true
+}

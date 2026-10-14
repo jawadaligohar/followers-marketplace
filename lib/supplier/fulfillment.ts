@@ -9,6 +9,13 @@ import {
 } from "./providers";
 import { ProviderRejectedError } from "./peakerrSupplierClient";
 import { INCLUDED_AUTO_POSTS } from "@/lib/catalog";
+import {
+  dispatchEnabled,
+  SUPPLIER_ROUTES,
+  routeHold,
+  supplierLink,
+} from "./routing";
+import { validateLiveListing } from "./preflight";
 
 /** "https://instagram.com/name/", "@name" or "name" -> "name" */
 export function usernameFromLink(link: string) {
@@ -107,9 +114,57 @@ export async function fulfillOrder(
     };
   }
   const { provider, serviceId: supplierServiceId } = mapping;
+  const reviewedRoute = service?.slug
+    ? SUPPLIER_ROUTES[service.slug]
+    : undefined;
+  const matchingRoute =
+    reviewedRoute?.provider === provider &&
+    reviewedRoute?.id === supplierServiceId
+      ? reviewedRoute
+      : undefined;
+  let hold = !dispatchEnabled()
+    ? "Supplier dispatch is paused (SMM_DISPATCH_ENABLED is not true)"
+    : matchingRoute
+      ? routeHold(
+          matchingRoute,
+          order.qtyValue,
+          order.postsCovered ?? INCLUDED_AUTO_POSTS,
+          order.priceCents,
+        )
+      : null;
+  if (
+    !hold &&
+    matchingRoute &&
+    providerConfig(provider).configured &&
+    !providerConfig(provider).sandbox
+  ) {
+    try {
+      const client = getProviderClient(provider);
+      const [listings, balance] = await Promise.all([
+        client.getServices(),
+        client.getBalance(),
+      ]);
+      hold = validateLiveListing(
+        matchingRoute,
+        listings.find((item) => String(item.service) === supplierServiceId),
+        balance.currency,
+        order.qtyValue,
+        order.postsCovered ?? INCLUDED_AUTO_POSTS,
+        order.priceCents,
+      );
+    } catch {
+      hold =
+        "Unable to validate the live supplier catalog and currency; no order submitted";
+    }
+  }
 
   // Missing credentials or mappings cannot silently simulate paid delivery.
-  if (!supplierServiceId || !providerConfig(provider).configured) {
+  if (hold || !supplierServiceId || !providerConfig(provider).configured) {
+    const reason =
+      hold ||
+      (!supplierServiceId
+        ? reviewedRoute?.hold || "No supplier mapping"
+        : "Provider credentials are not configured");
     const queued = await Order.findOneAndUpdate(
       {
         _id: order._id,
@@ -121,7 +176,7 @@ export async function fulfillOrder(
         $set: {
           supplierStatus: "manual_fulfillment_required",
           status: "processing",
-          failureReason: null,
+          failureReason: reason,
           supplierProvider: provider,
         },
       },
@@ -135,13 +190,14 @@ export async function fulfillOrder(
       };
     order.supplierStatus = "manual_fulfillment_required";
     order.status = "processing";
-    order.failureReason = null;
+    order.failureReason = reason;
     order.supplierProvider = provider;
 
     return {
       success: true,
       mode: "manual",
       status: "processing",
+      error: reason,
     };
   }
 
@@ -174,7 +230,7 @@ export async function fulfillOrder(
   try {
     const result = await getProviderClient(provider).submitOrder({
       supplierServiceId,
-      link: order.targetLink,
+      link: supplierLink(order.targetLink, order.pollOption, matchingRoute),
       quantity: order.qtyValue,
       ...(order.serviceKind === "comments" && { comments: order.comments }),
       ...(order.serviceKind === "poll" &&
