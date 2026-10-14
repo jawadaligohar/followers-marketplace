@@ -1,31 +1,54 @@
-import { dbConnect } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
-import UsersTable, { AdminUserRow } from "@/components/admin/UsersTable";
-import FadeIn from "@/components/shared/FadeIn";
-
+import UsersTable from "@/components/admin/UsersTable";
+import AdminPagination from "@/components/admin/AdminPagination";
+import {
+  getAdminUsers,
+  searchValue,
+  type AdminSearch,
+} from "@/lib/adminQueries";
 export const metadata = { title: "Users | Surgeon Admin" };
-
-export default async function AdminUsersPage() {
-  await dbConnect();
-  const users = await User.find({}).sort({ createdAt: -1 }).lean();
-
-  const rows: AdminUserRow[] = users.map((u) => ({
-    _id: u._id.toString(),
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    walletBalanceCents: u.walletBalanceCents,
-    createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : new Date().toISOString(),
-  }));
-
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<AdminSearch>;
+}) {
+  const search = await searchParams;
+  const result = await getAdminUsers(search);
   return (
-    <div className="space-y-6">
-      <FadeIn>
+    <div className="space-y-5">
+      <div>
         <h1 className="text-2xl font-bold">All users</h1>
-      </FadeIn>
-      <FadeIn delay={0.05}>
-        <UsersTable users={rows} />
-      </FadeIn>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Registered accounts, order history, net paid spending and wallet
+          balances. Guest purchases appear in Orders.
+        </p>
+      </div>
+      <form className="flex flex-wrap gap-2">
+        <input
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+          name="q"
+          aria-label="Search users"
+          placeholder="Search name or email"
+          defaultValue={searchValue(search, "q")}
+        />
+        <select
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+          name="role"
+          aria-label="User role"
+          defaultValue={searchValue(search, "role")}
+        >
+          <option value="">All roles</option>
+          <option value="customer">Customer</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button
+          className="rounded-lg border border-border px-4 py-2 text-sm"
+          type="submit"
+        >
+          Find users
+        </button>
+      </form>
+      <UsersTable key={JSON.stringify(search)} users={result.rows} />
+      <AdminPagination base="/admin/users" search={search} {...result} />
     </div>
   );
 }

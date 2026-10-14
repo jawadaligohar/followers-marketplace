@@ -12,6 +12,7 @@
     "test:catalog": "tsx scripts/test-catalog.ts",
     "test:benefits": "tsx scripts/test-benefits.ts",
     "test:suppliers": "tsx scripts/test-suppliers.ts",
+    "test:admin": "tsx scripts/test-admin.ts",
     "audit:competitor": "tsx scripts/audit-competitor.ts",
     "test:crypto": "node --import tsx scripts/e2e-test-crypto.ts",
     "test:e2e": "node --import tsx scripts/master-e2e-test.ts"

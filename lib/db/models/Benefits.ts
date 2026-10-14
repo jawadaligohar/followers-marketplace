@@ -51,6 +51,11 @@ const EmailOutboxSchema = new Schema(
     subject: { type: String, required: true },
     text: { type: String, required: true },
     status: { type: String, enum: ["pending", "sent"], default: "pending" },
+    attempts: { type: Number, default: 0 },
+    lastAttemptAt: { type: Date, default: null },
+    sentAt: { type: Date, default: null },
+    lastError: { type: String, default: null },
+    providerMessageId: { type: String, default: null },
   },
   { timestamps: true, collection: "email_outbox" },
 );
@@ -74,6 +79,12 @@ export const RewardRedemption =
   models.RewardRedemption || model("RewardRedemption", RewardRedemptionSchema);
 export const LuckyDraw =
   models.LuckyDraw || model("LuckyDraw", LuckyDrawSchema);
+if (
+  process.env.NODE_ENV === "development" &&
+  models.EmailOutbox &&
+  !models.EmailOutbox.schema.path("attempts")
+)
+  delete models.EmailOutbox;
 export const EmailOutbox =
   models.EmailOutbox || model("EmailOutbox", EmailOutboxSchema);
 export const BankTransfer =

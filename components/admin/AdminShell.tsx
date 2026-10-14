@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, ListOrdered, Users, Boxes } from "lucide-react";
+import {
+  Sparkles,
+  LayoutDashboard,
+  ListOrdered,
+  Users,
+  Boxes,
+  Mail,
+  Wallet,
+} from "lucide-react";
 import SidebarNav from "@/components/shared/SidebarNav";
 import UserMenu from "@/components/shared/UserMenu";
 
@@ -9,6 +17,8 @@ const NAV_ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Orders", href: "/admin/orders", icon: ListOrdered },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Wallet ledger", href: "/admin/transactions", icon: Wallet },
+  { label: "Email activity", href: "/admin/emails", icon: Mail },
   { label: "Services", href: "/admin/services", icon: Boxes },
   { label: "Payments & rewards", href: "/admin/benefits", icon: Sparkles },
 ];
@@ -35,6 +45,20 @@ export default function AdminShell({
           <UserMenu name={name} email={email} />
         </div>
       </header>
+      <nav
+        aria-label="Mobile admin navigation"
+        className="flex gap-2 overflow-x-auto border-b border-border px-4 py-3 md:hidden"
+      >
+        {NAV_ITEMS.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="shrink-0 rounded-lg border border-border px-3 py-2 text-xs"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
 
       <div className="mx-auto flex max-w-7xl gap-8 px-6 py-8">
         <aside className="hidden w-56 shrink-0 md:block">

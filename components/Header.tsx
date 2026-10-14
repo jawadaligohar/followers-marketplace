@@ -68,8 +68,12 @@ export default function Header() {
   const [servicesOpen, setServicesOpen] = useState(false);
   const servicesTrigger = useRef<HTMLButtonElement>(null);
   const [menuPlatform, setMenuPlatform] = useState<PlatformId>("instagram");
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const isAuthed = status === "authenticated";
+  const dashboardHref =
+    session?.user?.role === "admin" ? "/admin" : "/dashboard";
+  const dashboardLabel =
+    session?.user?.role === "admin" ? "Admin dashboard" : "Go to Dashboard";
 
   return (
     <motion.header
@@ -258,10 +262,10 @@ export default function Header() {
             {isAuthed ? (
               <Button
                 variant="default"
-                render={<Link href="/dashboard" />}
+                render={<Link href={dashboardHref} />}
                 nativeButton={false}
               >
-                Go to Dashboard
+                {dashboardLabel}
               </Button>
             ) : (
               <>
@@ -344,10 +348,10 @@ export default function Header() {
                       <Button
                         variant="default"
                         onClick={() => setOpen(false)}
-                        render={<Link href="/dashboard" />}
+                        render={<Link href={dashboardHref} />}
                         nativeButton={false}
                       >
-                        Go to Dashboard
+                        {dashboardLabel}
                       </Button>
                     ) : (
                       <>

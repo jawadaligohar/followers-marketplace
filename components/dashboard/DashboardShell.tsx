@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, ListOrdered, PlusCircle, Wallet } from "lucide-react";
+import {
+  Sparkles,
+  LayoutDashboard,
+  ListOrdered,
+  PlusCircle,
+  Wallet,
+} from "lucide-react";
 import SidebarNav from "@/components/shared/SidebarNav";
 import UserMenu from "@/components/shared/UserMenu";
 
@@ -18,11 +24,13 @@ export default function DashboardShell({
   name,
   email,
   walletBalanceCents,
+  isAdmin = false,
 }: {
   children: React.ReactNode;
   name?: string | null;
   email?: string | null;
   walletBalanceCents: number;
+  isAdmin?: boolean;
 }) {
   return (
     <div className="min-h-screen bg-background">
@@ -36,11 +44,20 @@ export default function DashboardShell({
           </Link>
 
           <div className="flex items-center gap-4">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white"
+              >
+                Admin dashboard
+              </Link>
+            )}
             <Link
               href="/dashboard/wallet"
               className="hidden items-center gap-2 rounded-full border border-border bg-muted px-4 py-1.5 text-sm font-medium text-brand-600 sm:flex"
             >
-              <Wallet className="h-3.5 w-3.5" />${(walletBalanceCents / 100).toFixed(2)}
+              <Wallet className="h-3.5 w-3.5" />$
+              {(walletBalanceCents / 100).toFixed(2)}
             </Link>
             <UserMenu name={name} email={email} />
           </div>

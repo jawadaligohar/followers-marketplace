@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
-import { dbConnect } from "@/lib/db/connect";
-import { Order } from "@/lib/db/models/Order";
+import { getAdminOrders } from "@/lib/adminQueries";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session)
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  await dbConnect();
-  const orders = await Order.find({})
-    .sort({ createdAt: -1 })
-    .populate("userId", "name email")
-    .lean();
-
-  return NextResponse.json({ orders });
+  const result = await getAdminOrders(
+    Object.fromEntries(new URL(request.url).searchParams),
+  );
+  return NextResponse.json({
+    orders: result.rows,
+    total: result.total,
+    page: result.page,
+    pages: result.pages,
+  });
 }

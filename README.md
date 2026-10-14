@@ -34,6 +34,14 @@ The supplier layer supports JAP, Peakerr and Tiksta. Configure each provider's s
 
 Optional profile preview uses your own `SOCIAL_FETCH_API_URL` and `SOCIAL_FETCH_API_KEY`. Preview stays hidden when unconfigured and manual post URLs always work. See [the architecture review](reports/smm-architecture-review.md) for verified competitor evidence, integration contracts and deployment requirements. `npm run test:suppliers` runs isolated provider-routing and preview tests against a local `followers_suppliers_test` replica-set database.
 
+## Administration
+
+`/admin` reports confirmed paid order sales, recorded refunds, customer wallet balances, top-ups, rewards, payment-method/platform totals and processing alerts. Free bonuses and unconfirmed payments are excluded from sales. Wallet top-ups are reported separately to avoid counting them again as sales. The 30-day chart uses confirmation dates in UTC and shows paid order values net of refunds recorded against those orders. This is an operational sales view, not a profit report; supplier costs and payment fees are not recorded.
+
+`/admin/orders` provides searchable, paginated payment/queue/provider filters and customer/guest emails, processor references and fulfillment details. `/admin/users` lists every registered account through pagination and links to individual order and wallet histories. Guest orders are available in Orders. `/admin/transactions` shows the wallet ledger. `/admin/emails` provides queued/accepted transactional messages, private previews, provider references, attempts and errors, and an explicit send action for queued messages. Provider acceptance does not establish delivery or inbox placement. Historical email attempts/references are only available where recorded.
+
+Admin access is checked against the current database role. Account APIs return only public account fields, and wallet adjustments require a reason retained in the ledger. `npm run test:admin` requires a local replica-set database named `followers_admin_test`; it tests revenue/refund calculations, queues, guest visibility, account pagination, safe response fields and email tracking without contacting a real email provider.
+
 ## Local development
 
 Install dependencies with `npm ci`, copy `.env.example` to `.env`, and configure the database and authentication settings.

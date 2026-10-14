@@ -53,6 +53,15 @@ export type AdminOrderRow = OrderExtrasData & {
   supplierProvider?: ProviderId | null;
   supplierRefillId?: string | null;
   platformId?: string;
+  customerEmail?: string;
+  paymentConfirmedAt?: string | null;
+  refundedCents?: number;
+  checkoutGroupId?: string | null;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  cryptoCheckoutId?: string | null;
+  supplierServiceIdUsed?: string | null;
+  supplierActionPending?: string | null;
   supplierStatus?: string | null;
   failureReason?: string | null;
   createdAt: string;
@@ -132,7 +141,8 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
       setRows((prev) => prev.map((r) => (r._id === id ? { ...r, status } : r)));
       toast.success("Order status updated");
     } else {
-      toast.error("Failed to update order status");
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error || "Failed to update order status");
     }
   }
 
@@ -226,10 +236,13 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
               >
                 <TableCell>
                   <div className="font-medium text-foreground">
-                    {user?.name ?? "—"}
+                    {user?.name ?? "Guest"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {user?.email}
+                    {order.customerEmail || user?.email || "Email not recorded"}
+                  </div>
+                  <div className="mt-1 break-all font-mono text-[10px] text-muted-foreground">
+                    {order._id}
                   </div>
                 </TableCell>
 
@@ -239,6 +252,41 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                     {order.category}
                   </span>
                   <OrderExtras order={order} showComments />
+                  <details className="mt-2 text-xs">
+                    <summary className="cursor-pointer text-brand-600">
+                      Payment & processing details
+                    </summary>
+                    <dl className="mt-2 max-w-72 space-y-1 break-all text-muted-foreground">
+                      {[
+                        ["Checkout", order.checkoutGroupId],
+                        [
+                          "Processor",
+                          order.paymentSource === "card"
+                            ? "Stripe"
+                            : order.paymentSource === "crypto"
+                              ? "NOWPayments"
+                              : order.paymentSource,
+                        ],
+                        ["Stripe session", order.stripeSessionId],
+                        ["Payment intent", order.stripePaymentIntentId],
+                        ["Crypto checkout", order.cryptoCheckoutId],
+                        ["Supplier service ID", order.supplierServiceIdUsed],
+                        ["Supplier status", order.supplierStatus],
+                        [
+                          "Pending supplier action",
+                          order.supplierActionPending,
+                        ],
+                        ["Processing error", order.failureReason],
+                      ]
+                        .filter(([, value]) => value)
+                        .map(([label, value]) => (
+                          <div key={label}>
+                            <dt className="font-medium">{label}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ))}
+                    </dl>
+                  </details>
                 </TableCell>
 
                 <TableCell className="max-w-[200px]">
@@ -279,6 +327,18 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
 
                 <TableCell className="text-foreground/80 font-medium">
                   ${(order.priceCents / 100).toFixed(2)}
+                  <div className="text-[10px] text-muted-foreground">
+                    {order.paymentSource === "bonus"
+                      ? "Free bonus"
+                      : order.paymentConfirmedAt
+                        ? "Payment confirmed"
+                        : "Payment unconfirmed"}
+                  </div>
+                  {!!order.refundedCents && (
+                    <div className="text-[10px] text-amber-600">
+                      ${(order.refundedCents / 100).toFixed(2)} refunded
+                    </div>
+                  )}
                 </TableCell>
 
                 <TableCell>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,11 @@ import GoogleButton from "./GoogleButton";
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+  const requestedCallback = searchParams.get("callbackUrl");
+  const callbackUrl =
+    requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//")
+      ? requestedCallback
+      : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +42,8 @@ export default function LoginForm() {
       return;
     }
 
-    router.push(callbackUrl);
+    const session = requestedCallback ? null : await getSession();
+    router.push(session?.user?.role === "admin" ? "/admin" : callbackUrl);
     router.refresh();
   }
 
@@ -72,7 +77,10 @@ export default function LoginForm() {
             <Label htmlFor="password" className="text-xs text-muted-foreground">
               Password
             </Label>
-            <Link href="/forgot-password" className="text-xs text-brand-600 hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-xs text-brand-600 hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
@@ -99,7 +107,10 @@ export default function LoginForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-medium text-brand-600 hover:underline">
+        <Link
+          href="/signup"
+          className="font-medium text-brand-600 hover:underline"
+        >
           Sign up
         </Link>
       </p>

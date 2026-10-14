@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { Loader2 } from "lucide-react";
@@ -30,7 +31,12 @@ export type AdminUserRow = {
   email: string;
   role: "customer" | "admin";
   walletBalanceCents: number;
-  createdAt: string;
+  createdAt: string | null;
+  orderCount?: number;
+  spentCents?: number;
+  emailVerified?: boolean;
+  provider?: string;
+  lastOrderAt?: string | null;
 };
 
 export default function UsersTable({ users }: { users: AdminUserRow[] }) {
@@ -38,6 +44,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
   const [adjusting, setAdjusting] = useState<string | null>(null);
   const [adjustAmount, setAdjustAmount] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [adjustNote, setAdjustNote] = useState<Record<string, string>>({});
 
   async function handleRoleChange(id: string, role: string) {
     setBusy(id);
@@ -48,7 +55,11 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
     });
     setBusy(null);
     if (res.ok) {
-      setRows((prev) => prev.map((u) => (u._id === id ? { ...u, role: role as "customer" | "admin" } : u)));
+      setRows((prev) =>
+        prev.map((u) =>
+          u._id === id ? { ...u, role: role as "customer" | "admin" } : u,
+        ),
+      );
       toast.success("Role updated");
     } else {
       toast.error("Failed to update role");
@@ -58,20 +69,31 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
   async function handleWalletAdjust(id: string) {
     const raw = adjustAmount[id];
     const dollars = parseFloat(raw ?? "");
-    if (isNaN(dollars) || dollars === 0) return;
+    if (!Number.isFinite(dollars) || dollars === 0) return;
+    if (!adjustNote[id]?.trim()) {
+      toast.error("Enter a reason for the wallet adjustment");
+      return;
+    }
 
     setBusy(id);
     const res = await fetch(`/api/admin/users/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ walletAdjustmentCents: Math.round(dollars * 100) }),
+      body: JSON.stringify({
+        walletAdjustmentCents: Math.round(dollars * 100),
+        reason: adjustNote[id].trim(),
+      }),
     });
     const data = await res.json().catch(() => ({}));
     setBusy(null);
 
     if (res.ok && data.user) {
       setRows((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, walletBalanceCents: data.user.walletBalanceCents } : u))
+        prev.map((u) =>
+          u._id === id
+            ? { ...u, walletBalanceCents: data.user.walletBalanceCents }
+            : u,
+        ),
       );
       setAdjustAmount((prev) => ({ ...prev, [id]: "" }));
       setAdjusting(null);
@@ -89,6 +111,7 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
             <TableHead>User</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Wallet</TableHead>
+            <TableHead>Orders / net paid</TableHead>
             <TableHead>Joined</TableHead>
           </TableRow>
         </TableHeader>
@@ -102,27 +125,46 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
               className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
             >
               <TableCell>
-                <div>{user.name}</div>
-                <div className="text-xs text-muted-foreground">{user.email}</div>
+                <Link
+                  href={`/admin/users/${user._id}`}
+                  className="font-medium hover:underline"
+                >
+                  {user.name}
+                </Link>
+                <div className="text-xs text-muted-foreground">
+                  {user.email}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {user.emailVerified ? "Verified email" : "Email unverified"} ·{" "}
+                  {user.provider || "credentials"}
+                </div>
               </TableCell>
               <TableCell>
                 <Select
                   value={user.role}
                   disabled={busy === user._id}
-                  onValueChange={(value) => handleRoleChange(user._id, value as string)}
+                  onValueChange={(value) =>
+                    handleRoleChange(user._id, value as string)
+                  }
                 >
                   <SelectTrigger size="sm" className="h-7 text-xs capitalize">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="customer" className="text-xs">customer</SelectItem>
-                    <SelectItem value="admin" className="text-xs">admin</SelectItem>
+                    <SelectItem value="customer" className="text-xs">
+                      customer
+                    </SelectItem>
+                    <SelectItem value="admin" className="text-xs">
+                      admin
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <span className="text-foreground/80">${(user.walletBalanceCents / 100).toFixed(2)}</span>
+                  <span className="text-foreground/80">
+                    ${(user.walletBalanceCents / 100).toFixed(2)}
+                  </span>
                   {adjusting === user._id ? (
                     <div className="flex items-center gap-1">
                       <Input
@@ -131,7 +173,10 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                         placeholder="+/- $"
                         value={adjustAmount[user._id] ?? ""}
                         onChange={(e) =>
-                          setAdjustAmount((prev) => ({ ...prev, [user._id]: e.target.value }))
+                          setAdjustAmount((prev) => ({
+                            ...prev,
+                            [user._id]: e.target.value,
+                          }))
                         }
                         className="h-7 w-24 text-xs"
                       />
@@ -142,8 +187,31 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                         disabled={busy === user._id}
                         className="h-7"
                       >
-                        {busy === user._id ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
+                        {busy === user._id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          "Apply"
+                        )}
                       </Button>
+                      <Input
+                        aria-label="Wallet adjustment reason"
+                        placeholder="Reason required"
+                        value={adjustNote[user._id] || ""}
+                        onChange={(event) =>
+                          setAdjustNote((previous) => ({
+                            ...previous,
+                            [user._id]: event.target.value,
+                          }))
+                        }
+                        className="h-7 w-40 text-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setAdjusting(null)}
+                        className="text-xs"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   ) : (
                     <button
@@ -155,9 +223,32 @@ export default function UsersTable({ users }: { users: AdminUserRow[] }) {
                   )}
                 </div>
               </TableCell>
+              <TableCell>
+                <div>{user.orderCount || 0} orders</div>
+                <div className="text-xs text-muted-foreground">
+                  ${((user.spentCents || 0) / 100).toFixed(2)} net paid
+                </div>
+                {user.lastOrderAt && (
+                  <div className="text-[10px] text-muted-foreground">
+                    Last order {formatDateTime(user.lastOrderAt).date}
+                  </div>
+                )}
+                <Link
+                  className="text-xs text-brand-600 hover:underline"
+                  href={`/admin/users/${user._id}`}
+                >
+                  View account
+                </Link>
+              </TableCell>
               <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                <div className="font-medium text-foreground">{formatDateTime(user.createdAt).date}</div>
-                <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(user.createdAt).time}</div>
+                <div className="font-medium text-foreground">
+                  {user.createdAt
+                    ? formatDateTime(user.createdAt).date
+                    : "Not recorded"}
+                </div>
+                <div className="text-[11px] text-muted-foreground/75 font-mono">
+                  {user.createdAt ? formatDateTime(user.createdAt).time : ""}
+                </div>
               </TableCell>
             </motion.tr>
           ))}

@@ -1,53 +1,81 @@
-import { dbConnect } from "@/lib/db/connect";
-import { Order } from "@/lib/db/models/Order";
-import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
+import OrdersTable from "@/components/admin/OrdersTable";
 import SupplierStatusBanner from "@/components/admin/SupplierStatusBanner";
-import FadeIn from "@/components/shared/FadeIn";
-
+import AdminPagination from "@/components/admin/AdminPagination";
+import {
+  getAdminOrders,
+  searchValue,
+  type AdminSearch,
+} from "@/lib/adminQueries";
 export const metadata = { title: "Orders | Surgeon Admin" };
-
-export default async function AdminOrdersPage() {
-  await dbConnect();
-  const orders = await Order.find({})
-    .sort({ createdAt: -1 })
-    .populate("userId", "name email")
-    .lean();
-
-  const rows: AdminOrderRow[] = orders.map((o) => ({
-    _id: o._id.toString(),
-    platformLabel: o.platformLabel,
-    category: o.category,
-    qtyValue: o.qtyValue,
-    targetLink: o.targetLink,
-    postsCovered: o.postsCovered ?? null,
-    pollOption: o.pollOption ?? null,
-    comments: o.comments ?? [],
-    priceCents: o.priceCents,
-    status: o.status,
-    paymentSource: o.paymentSource,
-    supplierOrderId: o.supplierOrderId ?? null,
-    supplierProvider: o.supplierProvider || null,
-    supplierRefillId: o.supplierRefillId || null,
-    platformId: o.platformId,
-    supplierStatus: o.supplierStatus ?? null,
-    failureReason: o.failureReason ?? null,
-    createdAt: o.createdAt
-      ? new Date(o.createdAt).toISOString()
-      : new Date().toISOString(),
-    userId: o.userId as unknown as { name?: string; email?: string },
-  }));
-
+const field = "rounded-lg border border-border bg-card px-3 py-2 text-sm";
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<AdminSearch>;
+}) {
+  const search = await searchParams;
+  const result = await getAdminOrders(search);
   return (
-    <div className="space-y-6">
-      <FadeIn>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold">All orders</h1>
-          <SupplierStatusBanner />
-        </div>
-      </FadeIn>
-      <FadeIn delay={0.05}>
-        <OrdersTable orders={rows} />
-      </FadeIn>
+    <div className="space-y-5">
+      <h1 className="text-2xl font-bold">Orders & processing</h1>
+      <SupplierStatusBanner />
+      <form className="flex flex-wrap gap-2">
+        <input
+          className={field}
+          name="q"
+          aria-label="Search orders"
+          placeholder="Order ID, email, target or provider ID"
+          defaultValue={searchValue(search, "q")}
+        />
+        {[
+          {
+            name: "status",
+            title: "All statuses",
+            options: [
+              "pending",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled",
+            ],
+          },
+          {
+            name: "method",
+            title: "All payment methods",
+            options: ["card", "crypto", "wallet", "bank", "bonus"],
+          },
+          {
+            name: "provider",
+            title: "All suppliers",
+            options: ["jap", "peakerr", "tiksta"],
+          },
+          {
+            name: "queue",
+            title: "All queues",
+            options: ["manual", "attention", "unpaid"],
+          },
+        ].map((filter) => (
+          <select
+            key={filter.name}
+            className={field}
+            name={filter.name}
+            aria-label={filter.title}
+            defaultValue={searchValue(search, filter.name)}
+          >
+            <option value="">{filter.title}</option>
+            {filter.options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        ))}
+        <button className={`${field} font-medium`} type="submit">
+          Filter orders
+        </button>
+      </form>
+      <OrdersTable key={JSON.stringify(search)} orders={result.rows} />
+      <AdminPagination base="/admin/orders" search={search} {...result} />
     </div>
   );
 }

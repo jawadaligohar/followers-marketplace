@@ -1,74 +1,29 @@
-"use client";
-
-import { motion } from "motion/react";
-import { ListOrdered, Users, DollarSign } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import CountUp from "@/components/CountUp";
-
+import Link from "next/link";
+import { Card } from "@/components/ui/card";
 export default function AdminStatCards({
-  totalOrders,
-  totalUsers,
-  totalRevenueCents,
+  stats,
 }: {
-  totalOrders: number;
-  totalUsers: number;
-  totalRevenueCents: number;
+  stats: { label: string; value: number; money?: boolean; href?: string }[];
 }) {
-  const stats = [
-    {
-      label: "Total orders",
-      value: totalOrders,
-      decimals: 0,
-      prefix: "",
-      icon: ListOrdered,
-      accent: "from-brand-50 to-transparent",
-      iconColor: "text-brand-600",
-    },
-    {
-      label: "Total users",
-      value: totalUsers,
-      decimals: 0,
-      prefix: "",
-      icon: Users,
-      accent: "from-warm-lilac/15 to-transparent",
-      iconColor: "text-brand-600",
-    },
-    {
-      label: "Revenue",
-      value: totalRevenueCents / 100,
-      decimals: 2,
-      prefix: "$",
-      icon: DollarSign,
-      accent: "from-warm-mint/15 to-transparent",
-      iconColor: "text-emerald-600",
-    },
-  ];
-
   return (
-    <div className="grid gap-6 sm:grid-cols-3">
-      {stats.map((s, i) => (
-        <motion.div
-          key={s.label}
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: i * 0.08 }}
-          whileHover={{ y: -3 }}
-        >
-          <Card className={`relative overflow-hidden border-border bg-gradient-to-br ${s.accent} bg-card`}>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">{s.label}</div>
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-muted">
-                  <s.icon className={`h-4 w-4 ${s.iconColor}`} />
-                </span>
-              </div>
-              <div className="mt-3 text-3xl font-extrabold text-gradient">
-                {s.prefix}
-                <CountUp value={s.value} decimals={s.decimals} />
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      {stats.map((stat) => (
+        <Card key={stat.label} className="gap-2 p-5">
+          <p className="text-xs text-muted-foreground">{stat.label}</p>
+          <p className="text-2xl font-bold">
+            {stat.money
+              ? `$${(stat.value / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : stat.value.toLocaleString("en-US")}
+          </p>
+          {stat.href && (
+            <Link
+              href={stat.href}
+              className="text-xs text-brand-600 hover:underline"
+            >
+              View details →
+            </Link>
+          )}
+        </Card>
       ))}
     </div>
   );

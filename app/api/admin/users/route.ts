@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
-import { dbConnect } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { getAdminUsers } from "@/lib/adminQueries";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session)
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  await dbConnect();
-  const users = await User.find({}).sort({ createdAt: -1 }).select("-passwordHash").lean();
-
-  return NextResponse.json({ users });
+  const result = await getAdminUsers(
+    Object.fromEntries(new URL(request.url).searchParams),
+  );
+  return NextResponse.json({
+    users: result.rows,
+    total: result.total,
+    page: result.page,
+    pages: result.pages,
+  });
 }
