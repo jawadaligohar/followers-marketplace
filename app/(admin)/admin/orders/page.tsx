@@ -1,7 +1,7 @@
 import { dbConnect } from "@/lib/db/connect";
 import { Order } from "@/lib/db/models/Order";
 import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
-import PeakerrStatusBanner from "@/components/admin/PeakerrStatusBanner";
+import SupplierStatusBanner from "@/components/admin/SupplierStatusBanner";
 import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Orders | Surgeon Admin" };
@@ -26,9 +26,14 @@ export default async function AdminOrdersPage() {
     status: o.status,
     paymentSource: o.paymentSource,
     supplierOrderId: o.supplierOrderId ?? null,
+    supplierProvider: o.supplierProvider || null,
+    supplierRefillId: o.supplierRefillId || null,
+    platformId: o.platformId,
     supplierStatus: o.supplierStatus ?? null,
     failureReason: o.failureReason ?? null,
-    createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
+    createdAt: o.createdAt
+      ? new Date(o.createdAt).toISOString()
+      : new Date().toISOString(),
     userId: o.userId as unknown as { name?: string; email?: string },
   }));
 
@@ -37,7 +42,7 @@ export default async function AdminOrdersPage() {
       <FadeIn>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold">All orders</h1>
-          <PeakerrStatusBanner />
+          <SupplierStatusBanner />
         </div>
       </FadeIn>
       <FadeIn delay={0.05}>

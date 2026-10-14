@@ -12,14 +12,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DraftExtras, LinkField, TierPicker } from "./ServiceFields";
 import { useLineDraft } from "./useLineDraft";
+import ProfilePostPicker from "./ProfilePostPicker";
 
 function unitPrice(service: ServiceDoc, priceCents: number, qtyValue: number) {
   if (service.kind === "auto") return "30-day plan";
-  if (service.kind === "comments") return `$${centsToUsd(priceCents / qtyValue)} each`;
+  if (service.kind === "comments")
+    return `$${centsToUsd(priceCents / qtyValue)} each`;
   return `$${centsToUsd((priceCents / qtyValue) * 1000)} per 1,000`;
 }
 
-export default function ServiceOrderPanel({ service, initialQty }: { service: ServiceDoc; initialQty?: number }) {
+export default function ServiceOrderPanel({
+  service,
+  initialQty,
+}: {
+  service: ServiceDoc;
+  initialQty?: number;
+}) {
   const router = useRouter();
   const { addItem } = useCart();
   const draft = useLineDraft(service, initialQty);
@@ -27,7 +35,8 @@ export default function ServiceOrderPanel({ service, initialQty }: { service: Se
   if (!tier) return null;
 
   const tierIndex = service.tiers.indexOf(tier);
-  const upsell = service.kind === "standard" ? service.tiers[tierIndex + 1] : undefined;
+  const upsell =
+    service.kind === "standard" ? service.tiers[tierIndex + 1] : undefined;
   const perPost = service.kind === "auto" ? " per post" : "";
 
   function add(goToCheckout: boolean) {
@@ -49,21 +58,48 @@ export default function ServiceOrderPanel({ service, initialQty }: { service: Se
       <div className="space-y-5">
         <div>
           <p className="mb-2 text-xs font-medium text-muted-foreground">
-            1. Choose a quantity{perPost && <span className="text-muted-foreground/70"> ({service.category.toLowerCase()}{perPost})</span>}
+            1. Choose a quantity
+            {perPost && (
+              <span className="text-muted-foreground/70">
+                {" "}
+                ({service.category.toLowerCase()}
+                {perPost})
+              </span>
+            )}
           </p>
-          <TierPicker tiers={service.tiers} value={tier.qtyValue} onChange={draft.setQtyValue} showPrices />
+          <TierPicker
+            tiers={service.tiers}
+            value={tier.qtyValue}
+            onChange={draft.setQtyValue}
+            showPrices
+          />
         </div>
 
         <div className="space-y-4">
-          <p className="text-xs font-medium text-muted-foreground">2. Your order details</p>
+          <p className="text-xs font-medium text-muted-foreground">
+            2. Your order details
+          </p>
           <DraftExtras service={service} draft={draft} idPrefix="svc" />
-          <LinkField service={service} id="svc-link" value={draft.targetLink} onChange={draft.setTargetLink} />
+          <LinkField
+            service={service}
+            id="svc-link"
+            value={draft.targetLink}
+            onChange={draft.setTargetLink}
+          />
+          {service.kind !== "auto" &&
+            ["post", "video", "tweet"].includes(service.target) && (
+              <ProfilePostPicker
+                platform={service.platformId}
+                onSelect={draft.setTargetLink}
+              />
+            )}
         </div>
 
         <div className="rounded-xl border border-border bg-muted/60 px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-medium">
-              {formatQty(tier.qtyValue)} {service.platformLabel} {service.category}
+              {formatQty(tier.qtyValue)} {service.platformLabel}{" "}
+              {service.category}
               {perPost}
             </span>
             {tier.highlight && (
@@ -85,15 +121,19 @@ export default function ServiceOrderPanel({ service, initialQty }: { service: Se
                 ${centsToUsd(priceCents)}
               </motion.span>
             </AnimatePresence>
-            <span className="text-xs text-muted-foreground">{unitPrice(service, tier.priceCents, tier.qtyValue)}</span>
+            <span className="text-xs text-muted-foreground">
+              {unitPrice(service, tier.priceCents, tier.qtyValue)}
+            </span>
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-xs text-brand-600">
-            <Wallet className="h-3.5 w-3.5" />${centsToUsd(walletPriceCents(priceCents))} if paid from wallet (
+            <Wallet className="h-3.5 w-3.5" />$
+            {centsToUsd(walletPriceCents(priceCents))} if paid from wallet (
             {WALLET_DISCOUNT * 100}% off)
           </div>
           {service.kind === "auto" && (
             <p className="mt-1 text-xs text-muted-foreground">
-              One-time payment for a 30-day plan covering your next {draft.postsCovered} posts. No subscription.
+              One-time payment for a 30-day plan covering your next{" "}
+              {draft.postsCovered} posts. No subscription.
             </p>
           )}
         </div>
@@ -106,18 +146,34 @@ export default function ServiceOrderPanel({ service, initialQty }: { service: Se
           >
             <Zap className="h-4 w-4 shrink-0 text-brand-500" />
             <span>
-              Want more? Get <span className="font-semibold text-foreground">{upsell.qty}</span> instead for{" "}
-              <span className="font-semibold text-foreground">${centsToUsd(upsell.priceCents)}</span>
+              Want more? Get{" "}
+              <span className="font-semibold text-foreground">
+                {upsell.qty}
+              </span>{" "}
+              instead for{" "}
+              <span className="font-semibold text-foreground">
+                ${centsToUsd(upsell.priceCents)}
+              </span>
             </span>
           </button>
         )}
 
         <div className="grid gap-2 sm:grid-cols-2">
-          <Button type="button" variant="outline" onClick={() => add(false)} className="flex items-center gap-2 py-5">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => add(false)}
+            className="flex items-center gap-2 py-5"
+          >
             <ShoppingCart className="h-4 w-4" />
             Add to cart
           </Button>
-          <Button type="button" variant="default" onClick={() => add(true)} className="flex items-center gap-2 py-5">
+          <Button
+            type="button"
+            variant="default"
+            onClick={() => add(true)}
+            className="flex items-center gap-2 py-5"
+          >
             Buy now
             <ArrowRight className="h-4 w-4" />
           </Button>

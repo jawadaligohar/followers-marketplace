@@ -15,13 +15,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { LinkTarget, ServiceKind } from "@/lib/catalog";
+import {
+  PROVIDERS,
+  PROVIDER_LABELS,
+  type ProviderId,
+  type ProviderMappings,
+} from "@/lib/supplier/providers";
 
 const KINDS: ServiceKind[] = ["standard", "auto", "comments", "poll"];
-const TARGETS: LinkTarget[] = ["profile", "post", "video", "reel", "live", "page", "tweet", "space"];
+const TARGETS: LinkTarget[] = [
+  "profile",
+  "post",
+  "video",
+  "reel",
+  "live",
+  "page",
+  "tweet",
+  "space",
+];
 const selectClass =
   "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30";
 
 export type ServiceFormTier = {
+  defaultProvider?: ProviderId | null;
+  providerMappings?: ProviderMappings;
   qty: string;
   qtyValue: number;
   priceCents: number;
@@ -40,6 +57,8 @@ export type ServiceFormData = {
   category: string;
   active: boolean;
   supplierServiceId?: string | null;
+  defaultProvider?: ProviderId;
+  providerMappings?: ProviderMappings;
   tiers: ServiceFormTier[];
 };
 
@@ -82,13 +101,18 @@ export default function ServiceFormModal({
   }
 
   function removeTier(index: number) {
-    setForm((prev) => ({ ...prev, tiers: prev.tiers.filter((_, i) => i !== index) }));
+    setForm((prev) => ({
+      ...prev,
+      tiers: prev.tiers.filter((_, i) => i !== index),
+    }));
   }
 
   async function handleSave() {
     setSaving(true);
 
-    const url = form._id ? `/api/admin/services/${form._id}` : "/api/admin/services";
+    const url = form._id
+      ? `/api/admin/services/${form._id}`
+      : "/api/admin/services";
     const method = form._id ? "PATCH" : "POST";
 
     const res = await fetch(url, {
@@ -104,6 +128,8 @@ export default function ServiceFormModal({
         category: form.category,
         active: form.active,
         supplierServiceId: form.supplierServiceId?.trim() || null,
+        defaultProvider: form.defaultProvider || "peakerr",
+        providerMappings: form.providerMappings || {},
         tiers: form.tiers,
         ...(!form._id && { sortOrder: 999 }),
       }),
@@ -129,6 +155,60 @@ export default function ServiceFormModal({
         </DialogHeader>
 
         <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2 sm:col-span-2 rounded-xl border border-border p-4">
+            <Label htmlFor="default-provider">
+              Default fulfillment provider
+            </Label>
+            <select
+              id="default-provider"
+              className={selectClass}
+              value={form.defaultProvider || "peakerr"}
+              onChange={(event) =>
+                setForm((previous) => ({
+                  ...previous,
+                  defaultProvider: event.target.value as ProviderId,
+                }))
+              }
+            >
+              {PROVIDERS.filter(
+                (provider) =>
+                  provider !== "tiksta" || form.platformId === "tiktok",
+              ).map((provider) => (
+                <option key={provider} value={provider}>
+                  {PROVIDER_LABELS[provider]}
+                </option>
+              ))}
+            </select>
+            {PROVIDERS.filter(
+              (provider) =>
+                provider !== "tiksta" || form.platformId === "tiktok",
+            ).map((provider) => (
+              <div key={provider} className="space-y-1">
+                <Label htmlFor={`mapping-${provider}`}>
+                  {PROVIDER_LABELS[provider]} service ID
+                </Label>
+                <Input
+                  id={`mapping-${provider}`}
+                  inputMode="numeric"
+                  value={form.providerMappings?.[provider] ?? ""}
+                  onChange={(event) =>
+                    setForm((previous) => ({
+                      ...previous,
+                      providerMappings: {
+                        ...previous.providerMappings,
+                        [provider]: event.target.value,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            ))}
+            <p className="text-xs text-muted-foreground">
+              Package overrides take priority. The legacy supplier ID remains a
+              Peakerr fallback. Missing mappings or credentials queue orders for
+              staff.
+            </p>
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="slug" className="text-xs text-muted-foreground">
               Slug (URL: /services/slug)
@@ -148,7 +228,12 @@ export default function ServiceFormModal({
               <select
                 id="kind"
                 value={form.kind}
-                onChange={(e) => setForm((p) => ({ ...p, kind: e.target.value as ServiceKind }))}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    kind: e.target.value as ServiceKind,
+                  }))
+                }
                 className={selectClass}
               >
                 {KINDS.map((k) => (
@@ -165,7 +250,12 @@ export default function ServiceFormModal({
               <select
                 id="target"
                 value={form.target}
-                onChange={(e) => setForm((p) => ({ ...p, target: e.target.value as LinkTarget }))}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    target: e.target.value as LinkTarget,
+                  }))
+                }
                 className={selectClass}
               >
                 {TARGETS.map((t) => (
@@ -177,24 +267,34 @@ export default function ServiceFormModal({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="platformId" className="text-xs text-muted-foreground">
+            <Label
+              htmlFor="platformId"
+              className="text-xs text-muted-foreground"
+            >
               Platform ID
             </Label>
             <Input
               id="platformId"
               value={form.platformId}
-              onChange={(e) => setForm((p) => ({ ...p, platformId: e.target.value }))}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, platformId: e.target.value }))
+              }
               placeholder="instagram"
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="platformLabel" className="text-xs text-muted-foreground">
+            <Label
+              htmlFor="platformLabel"
+              className="text-xs text-muted-foreground"
+            >
               Platform Label
             </Label>
             <Input
               id="platformLabel"
               value={form.platformLabel}
-              onChange={(e) => setForm((p) => ({ ...p, platformLabel: e.target.value }))}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, platformLabel: e.target.value }))
+              }
               placeholder="Instagram"
             />
           </div>
@@ -205,7 +305,9 @@ export default function ServiceFormModal({
             <Input
               id="category"
               value={form.category}
-              onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, category: e.target.value }))
+              }
               placeholder="Followers"
             />
           </div>
@@ -213,14 +315,19 @@ export default function ServiceFormModal({
             <label className="flex items-center gap-2 text-sm text-foreground/80">
               <Switch
                 checked={form.active}
-                onCheckedChange={(checked) => setForm((p) => ({ ...p, active: checked }))}
+                onCheckedChange={(checked) =>
+                  setForm((p) => ({ ...p, active: checked }))
+                }
               />
               Active
             </label>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="supplierServiceId" className="text-xs text-muted-foreground">
+              <Label
+                htmlFor="supplierServiceId"
+                className="text-xs text-muted-foreground"
+              >
                 Peakerr Service ID (Automated Fulfillment)
               </Label>
               <span className="text-[11px] text-muted-foreground/70">
@@ -230,7 +337,9 @@ export default function ServiceFormModal({
             <Input
               id="supplierServiceId"
               value={form.supplierServiceId ?? ""}
-              onChange={(e) => setForm((p) => ({ ...p, supplierServiceId: e.target.value }))}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, supplierServiceId: e.target.value }))
+              }
               placeholder="e.g. 1001 (from your Peakerr panel)"
             />
           </div>
@@ -238,7 +347,9 @@ export default function ServiceFormModal({
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <Label className="text-xs text-muted-foreground">Pricing tiers</Label>
+            <Label className="text-xs text-muted-foreground">
+              Pricing tiers
+            </Label>
             <button
               type="button"
               onClick={addTier}
@@ -260,24 +371,37 @@ export default function ServiceFormModal({
                 <Input
                   type="number"
                   value={tier.qtyValue || ""}
-                  onChange={(e) => updateTier(i, { qtyValue: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    updateTier(i, { qtyValue: parseInt(e.target.value) || 0 })
+                  }
                   placeholder="Qty"
                   className="col-span-3 h-8 text-xs"
                 />
                 <Input
                   type="number"
-                  value={tier.priceCents ? (tier.priceCents / 100).toString() : ""}
+                  value={
+                    tier.priceCents ? (tier.priceCents / 100).toString() : ""
+                  }
                   onChange={(e) =>
-                    updateTier(i, { priceCents: Math.round(parseFloat(e.target.value || "0") * 100) })
+                    updateTier(i, {
+                      priceCents: Math.round(
+                        parseFloat(e.target.value || "0") * 100,
+                      ),
+                    })
                   }
                   placeholder="Price $"
                   step="0.01"
                   className="col-span-3 h-8 text-xs"
                 />
-                <div className="col-span-1 flex items-center justify-center" title="Highlight">
+                <div
+                  className="col-span-1 flex items-center justify-center"
+                  title="Highlight"
+                >
                   <Switch
                     checked={!!tier.highlight}
-                    onCheckedChange={(checked) => updateTier(i, { highlight: checked })}
+                    onCheckedChange={(checked) =>
+                      updateTier(i, { highlight: checked })
+                    }
                   />
                 </div>
                 <Button
@@ -289,6 +413,53 @@ export default function ServiceFormModal({
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
+                <details className="col-span-12 rounded-lg border border-border p-2 text-xs">
+                  <summary className="cursor-pointer">
+                    Package provider overrides
+                  </summary>
+                  <select
+                    aria-label={`Provider for ${tier.qty || i + 1}`}
+                    className={`${selectClass} mt-2`}
+                    value={tier.defaultProvider || ""}
+                    onChange={(event) =>
+                      updateTier(i, {
+                        defaultProvider: (event.target.value ||
+                          null) as ProviderId | null,
+                      })
+                    }
+                  >
+                    <option value="">Use service default</option>
+                    {PROVIDERS.filter(
+                      (provider) =>
+                        provider !== "tiksta" || form.platformId === "tiktok",
+                    ).map((provider) => (
+                      <option key={provider} value={provider}>
+                        {PROVIDER_LABELS[provider]}
+                      </option>
+                    ))}
+                  </select>
+                  {PROVIDERS.filter(
+                    (provider) =>
+                      provider !== "tiksta" || form.platformId === "tiktok",
+                  ).map((provider) => (
+                    <Input
+                      key={provider}
+                      aria-label={`${PROVIDER_LABELS[provider]} package service ID for ${tier.qty || i + 1}`}
+                      className="mt-2"
+                      placeholder={`${PROVIDER_LABELS[provider]} ID (inherit if empty)`}
+                      inputMode="numeric"
+                      value={tier.providerMappings?.[provider] || ""}
+                      onChange={(event) =>
+                        updateTier(i, {
+                          providerMappings: {
+                            ...tier.providerMappings,
+                            [provider]: event.target.value,
+                          },
+                        })
+                      }
+                    />
+                  ))}
+                </details>
               </div>
             ))}
           </div>
@@ -298,7 +469,12 @@ export default function ServiceFormModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="default" onClick={handleSave} disabled={saving} className="gap-2">
+          <Button
+            variant="default"
+            onClick={handleSave}
+            disabled={saving}
+            className="gap-2"
+          >
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             Save
           </Button>

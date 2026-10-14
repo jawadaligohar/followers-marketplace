@@ -1,34 +1,46 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
-import { getPeakerrClient } from "@/lib/supplier";
-
+import { getProviderClient } from "@/lib/supplier";
+import {
+  PROVIDERS,
+  PROVIDER_LABELS,
+  providerConfig,
+} from "@/lib/supplier/providers";
 export async function GET() {
-  const session = await requireAdmin();
-  if (!session) {
+  if (!(await requireAdmin()))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
-  const client = getPeakerrClient();
-  const isSandbox = client.isSandbox();
-  const apiKeyConfigured = Boolean((process.env.PEAKERR_API_KEY || "").trim());
-
-  try {
-    const balance = await client.getBalance();
-    return NextResponse.json({
-      connected: true,
-      mode: isSandbox ? "sandbox" : "live",
-      apiKeyConfigured,
-      balance: balance.balance,
-      currency: balance.currency,
-    });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to connect to Peakerr";
-    return NextResponse.json({
-      connected: false,
-      mode: isSandbox ? "sandbox" : "live",
-      apiKeyConfigured,
-      error: message,
-    });
-  }
+  const providers = await Promise.all(
+    PROVIDERS.map(async (provider) => {
+      const config = providerConfig(provider);
+      const base = {
+        provider,
+        label: PROVIDER_LABELS[provider],
+        mode: config.sandbox ? "sandbox" : "live",
+        apiKeyConfigured: Boolean(config.apiKey),
+        configured: config.configured,
+      };
+      if (!config.configured)
+        return { ...base, connected: false, error: "Not configured" };
+      try {
+        const balance = await getProviderClient(provider).getBalance();
+        return {
+          ...base,
+          connected: true,
+          ...balance,
+          lowBalance:
+            balance.currency.toUpperCase() === "USD" && balance.balance < 25,
+        };
+      } catch {
+        return {
+          ...base,
+          connected: false,
+          error: "Balance check failed. Check provider credentials and credit.",
+        };
+      }
+    }),
+  );
+  return NextResponse.json({
+    ...providers.find((provider) => provider.provider === "peakerr"),
+    providers,
+  });
 }
-

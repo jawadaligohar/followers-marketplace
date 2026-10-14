@@ -28,6 +28,12 @@ Configure `RESEND_API_KEY` and `EMAIL_FROM` for transactional order/bonus, verif
 
 The older supplier/crypto integration scripts now refuse production databases and verify the target server's isolated database and sandbox modes before creating test records. This prevents the leftover E2E services previously shown in the live catalog from recurring. Provider refunds and staff-recorded refunds adjust loyalty credit; refund events reduce the posting month's draw qualification without changing closed-month entries. The admin rewards panel can issue agreed wallet-credit refunds or record money already returned through another channel.
 
+## SMM providers and profile previews
+
+The supplier layer supports JAP, Peakerr and Tiksta. Configure each provider's server-side `*_API_KEY` and set `*_SANDBOX=true` only for intentional simulation. Admin services support a default provider and optional package overrides. Tiksta is restricted to TikTok. Orders retain their original provider so status updates and cancellations keep using the correct panel after catalog changes. Balance checks, status refresh, cancellation/refill requests and unresolved-dispatch reconciliation are available in admin. Missing keys or mappings queue orders for manual fulfillment; uncertain network submissions must be checked before resending. Existing single-provider mappings remain compatible.
+
+Optional profile preview uses your own `SOCIAL_FETCH_API_URL` and `SOCIAL_FETCH_API_KEY`. Preview stays hidden when unconfigured and manual post URLs always work. See [the architecture review](reports/smm-architecture-review.md) for verified competitor evidence, integration contracts and deployment requirements. `npm run test:suppliers` runs isolated provider-routing and preview tests against a local `followers_suppliers_test` replica-set database.
+
 ## Local development
 
 Install dependencies with `npm ci`, copy `.env.example` to `.env`, and configure the database and authentication settings.

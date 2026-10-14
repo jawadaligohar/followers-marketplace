@@ -4,6 +4,10 @@ import type {
   SubmitOrderResult,
   OrderStatusResult,
 } from "./types";
+import { randomUUID } from "node:crypto";
+import { providerConfig, PROVIDER_LABELS, type ProviderId } from "./providers";
+
+export class ProviderRejectedError extends Error {}
 
 export interface PeakerrBalanceResult {
   balance: number;
@@ -21,34 +25,88 @@ export interface PeakerrServiceInfo {
 }
 
 const SAMPLE_SANDBOX_SERVICES: PeakerrServiceInfo[] = [
-  { service: "1001", name: "Instagram Followers [High Quality - Non Drop]", category: "Instagram Followers", rate: "0.85", min: "100", max: "50000" },
-  { service: "1002", name: "Instagram Likes [Instant - HQ]", category: "Instagram Likes", rate: "0.45", min: "50", max: "100000" },
-  { service: "1003", name: "TikTok Followers [Real & Active]", category: "TikTok Followers", rate: "1.20", min: "100", max: "25000" },
-  { service: "1004", name: "TikTok Likes [Instant]", category: "TikTok Likes", rate: "0.35", min: "100", max: "50000" },
-  { service: "1005", name: "YouTube Subscribers [Non-Drop Guarantee]", category: "YouTube Subscribers", rate: "4.50", min: "50", max: "10000" },
-  { service: "1006", name: "YouTube Views [Retention - Monetizable]", category: "YouTube Views", rate: "1.10", min: "500", max: "1000000" },
-  { service: "1007", name: "Twitter/X Followers [Global]", category: "Twitter Followers", rate: "2.10", min: "100", max: "20000" },
+  {
+    service: "1001",
+    name: "Instagram Followers [High Quality - Non Drop]",
+    category: "Instagram Followers",
+    rate: "0.85",
+    min: "100",
+    max: "50000",
+  },
+  {
+    service: "1002",
+    name: "Instagram Likes [Instant - HQ]",
+    category: "Instagram Likes",
+    rate: "0.45",
+    min: "50",
+    max: "100000",
+  },
+  {
+    service: "1003",
+    name: "TikTok Followers [Real & Active]",
+    category: "TikTok Followers",
+    rate: "1.20",
+    min: "100",
+    max: "25000",
+  },
+  {
+    service: "1004",
+    name: "TikTok Likes [Instant]",
+    category: "TikTok Likes",
+    rate: "0.35",
+    min: "100",
+    max: "50000",
+  },
+  {
+    service: "1005",
+    name: "YouTube Subscribers [Non-Drop Guarantee]",
+    category: "YouTube Subscribers",
+    rate: "4.50",
+    min: "50",
+    max: "10000",
+  },
+  {
+    service: "1006",
+    name: "YouTube Views [Retention - Monetizable]",
+    category: "YouTube Views",
+    rate: "1.10",
+    min: "500",
+    max: "1000000",
+  },
+  {
+    service: "1007",
+    name: "Twitter/X Followers [Global]",
+    category: "Twitter Followers",
+    rate: "2.10",
+    min: "100",
+    max: "20000",
+  },
 ];
 
 export class PeakerrSupplierClient implements SupplierClient {
   private endpoint: string;
 
-  constructor(private apiKey: string) {
-    this.endpoint = process.env.PEAKERR_API_BASE || "https://peakerr.com/api/v2";
+  constructor(
+    private apiKey: string,
+    private provider: ProviderId = "peakerr",
+  ) {
+    this.endpoint = providerConfig(provider).endpoint;
   }
 
   public isSandbox(): boolean {
-    return process.env.PEAKERR_SANDBOX === "true" || !this.apiKey || this.apiKey === "peakerr-sandbox";
+    return providerConfig(this.provider).sandbox;
   }
 
   async submitOrder(input: SubmitOrderInput): Promise<SubmitOrderResult> {
     if (this.isSandbox()) {
       console.log(
-        `[Peakerr Sandbox] Simulating order submission: Service #${input.supplierServiceId}, Qty: ${input.quantity}, Link: ${input.link}`,
-        input.subscription ?? input.pollOption ?? (input.comments ? `${input.comments.length} comments` : "")
+        `[${PROVIDER_LABELS[this.provider]} Sandbox] Simulating order submission: Service #${input.supplierServiceId}, Qty: ${input.quantity}, Link: ${input.link}`,
+        input.subscription ??
+          input.pollOption ??
+          (input.comments ? `${input.comments.length} comments` : ""),
       );
       return {
-        supplierOrderId: `sim-pk-${Date.now()}`,
+        supplierOrderId: `sim-${this.provider}-${randomUUID()}`,
         status: "processing",
       };
     }
@@ -68,7 +126,10 @@ export class PeakerrSupplierClient implements SupplierClient {
       body.set("delay", "0");
       const expiry = new Date();
       expiry.setUTCDate(expiry.getUTCDate() + 30);
-      body.set("expiry", `${expiry.getUTCDate()}/${expiry.getUTCMonth() + 1}/${expiry.getUTCFullYear()}`);
+      body.set(
+        "expiry",
+        `${expiry.getUTCDate()}/${expiry.getUTCMonth() + 1}/${expiry.getUTCFullYear()}`,
+      );
     } else if (input.comments?.length) {
       body.set("link", input.link);
       body.set("comments", input.comments.join("\n"));
@@ -80,6 +141,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -88,21 +150,29 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`Peakerr HTTP error (${res.status}): ${errorText}`);
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} HTTP error (${res.status}): ${errorText}`,
+      );
     }
 
     const data = await res.json().catch(() => null);
 
     if (!data) {
-      throw new Error("Peakerr returned invalid JSON response");
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} returned invalid JSON response`,
+      );
     }
 
     if (data.error) {
-      throw new Error(`Peakerr Error: ${data.error}`);
+      throw new ProviderRejectedError(
+        `${PROVIDER_LABELS[this.provider]} Error: ${data.error}`,
+      );
     }
 
     if (!data.order) {
-      throw new Error("Peakerr did not return an order ID");
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} did not return an order ID`,
+      );
     }
 
     return {
@@ -128,6 +198,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -136,21 +207,28 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`Peakerr HTTP error (${res.status}): ${errorText}`);
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} HTTP error (${res.status}): ${errorText}`,
+      );
     }
 
     const data = await res.json().catch(() => null);
 
     if (!data) {
-      throw new Error("Peakerr returned invalid JSON response");
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} returned invalid JSON response`,
+      );
     }
 
     if (data.error) {
-      throw new Error(`Peakerr Error: ${data.error}`);
+      throw new ProviderRejectedError(
+        `${PROVIDER_LABELS[this.provider]} Error: ${data.error}`,
+      );
     }
 
+    if (!data.status) throw new Error("Provider did not return an order status");
     return {
-      status: data.status ? String(data.status).toLowerCase() : "processing",
+      status: String(data.status).toLowerCase(),
       remains: data.remains ? Number(data.remains) : undefined,
       startCount: data.start_count ? Number(data.start_count) : undefined,
     };
@@ -168,6 +246,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -175,7 +254,9 @@ export class PeakerrSupplierClient implements SupplierClient {
     });
 
     if (!res.ok) {
-      throw new Error(`Peakerr HTTP error (${res.status})`);
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} HTTP error (${res.status})`,
+      );
     }
 
     const data = await res.json().catch(() => null);
@@ -186,6 +267,51 @@ export class PeakerrSupplierClient implements SupplierClient {
     return {
       balance: parseFloat(data.balance ?? "0"),
       currency: data.currency ?? "USD",
+    };
+  }
+
+  async requestAction(
+    action: "cancel" | "refill" | "refill_status",
+    id: string,
+  ) {
+    if (this.isSandbox())
+      return action === "refill"
+        ? { refill: `sim-refill-${randomUUID()}` }
+        : { status: action === "cancel" ? "requested" : "completed" };
+    const body = new URLSearchParams({
+      key: this.apiKey.trim(),
+      action,
+      [action === "cancel"
+        ? "orders"
+        : action === "refill_status"
+          ? "refill"
+          : "order"]: id,
+    });
+    const response = await fetch(this.endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!response.ok)
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} request failed (${response.status})`,
+      );
+    const payload = await response.json();
+    const data = Array.isArray(payload) ? payload[0] : payload;
+    if (!data || data.error || data.cancel?.error || data.refill?.error)
+      throw new ProviderRejectedError(
+        String(
+          data?.error ||
+            data?.cancel?.error ||
+            data?.refill?.error ||
+            "Provider action failed",
+        ),
+      );
+    return data as {
+      refill?: string | number;
+      status?: string;
+      cancel?: number;
     };
   }
 
@@ -201,6 +327,7 @@ export class PeakerrSupplierClient implements SupplierClient {
 
     const res = await fetch(this.endpoint, {
       method: "POST",
+      signal: AbortSignal.timeout(20000),
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -208,7 +335,9 @@ export class PeakerrSupplierClient implements SupplierClient {
     });
 
     if (!res.ok) {
-      throw new Error(`Peakerr HTTP error (${res.status})`);
+      throw new Error(
+        `${PROVIDER_LABELS[this.provider]} HTTP error (${res.status})`,
+      );
     }
 
     const data = await res.json().catch(() => null);

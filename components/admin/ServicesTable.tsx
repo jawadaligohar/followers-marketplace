@@ -16,10 +16,18 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import ServiceFormModal, { ServiceFormData } from "./ServiceFormModal";
+import {
+  PROVIDER_LABELS,
+  resolveProviderMapping,
+} from "@/lib/supplier/providers";
 
 export type AdminServiceRow = ServiceFormData & { _id: string };
 
-export default function ServicesTable({ services }: { services: AdminServiceRow[] }) {
+export default function ServicesTable({
+  services,
+}: {
+  services: AdminServiceRow[];
+}) {
   const [rows, setRows] = useState(services);
   const [editing, setEditing] = useState<ServiceFormData | null | "new">(null);
 
@@ -42,7 +50,11 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button variant="default" onClick={() => setEditing("new")} className="gap-2">
+        <Button
+          variant="default"
+          onClick={() => setEditing("new")}
+          className="gap-2"
+        >
           <Plus className="h-4 w-4" />
           New service
         </Button>
@@ -71,29 +83,49 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
               >
                 <TableCell>{svc.platformLabel}</TableCell>
                 <TableCell className="text-foreground/80">
-                  <a href={`/services/${svc.slug}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  <a
+                    href={`/services/${svc.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
                     {svc.category}
                   </a>
                   {svc.kind !== "standard" && (
-                    <Badge variant="outline" className="ml-2 text-[10px] capitalize">
+                    <Badge
+                      variant="outline"
+                      className="ml-2 text-[10px] capitalize"
+                    >
                       {svc.kind}
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-foreground/80">{svc.tiers.length} tiers</TableCell>
+                <TableCell className="text-foreground/80">
+                  {svc.tiers.length} tiers
+                </TableCell>
                 <TableCell>
-                  {svc.supplierServiceId ? (
-                    <Badge variant="outline" className="border-brand-500/30 bg-brand-500/10 text-brand-400 font-mono text-[11px]">
-                      Peakerr #{svc.supplierServiceId}
+                  {resolveProviderMapping(svc, 0).serviceId ? (
+                    <Badge
+                      variant="outline"
+                      className="border-brand-500/30 bg-brand-500/10 text-brand-400 font-mono text-[11px]"
+                    >
+                      {PROVIDER_LABELS[resolveProviderMapping(svc, 0).provider]}{" "}
+                      #{resolveProviderMapping(svc, 0).serviceId}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px]">
+                    <Badge
+                      variant="outline"
+                      className="border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px]"
+                    >
                       Manual
                     </Badge>
                   )}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={svc.active ? "completed" : "cancelled"} className="rounded-full">
+                  <Badge
+                    variant={svc.active ? "completed" : "cancelled"}
+                    className="rounded-full"
+                  >
                     {svc.active ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>

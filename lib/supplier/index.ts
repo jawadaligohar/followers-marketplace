@@ -1,6 +1,18 @@
-import type { SupplierClient, SubmitOrderInput, SubmitOrderResult, OrderStatusResult } from "./types";
+import type {
+  SupplierClient,
+  SubmitOrderInput,
+  SubmitOrderResult,
+  OrderStatusResult,
+} from "./types";
 import { MockSupplierClient } from "./mockSupplierClient";
 import { PeakerrSupplierClient } from "./peakerrSupplierClient";
+import { providerConfig, type ProviderId } from "./providers";
+
+export function getProviderClient(provider: ProviderId) {
+  const config = providerConfig(provider);
+  if (!config.configured) throw new Error(`${provider} is not configured`);
+  return new PeakerrSupplierClient(config.apiKey, provider);
+}
 
 export function getSupplierClient(): SupplierClient {
   const apiKey = (process.env.PEAKERR_API_KEY || "").trim();
@@ -14,8 +26,7 @@ export function getSupplierClient(): SupplierClient {
 }
 
 export function getPeakerrClient(): PeakerrSupplierClient {
-  const apiKey = (process.env.PEAKERR_API_KEY || "").trim();
-  return new PeakerrSupplierClient(apiKey || "peakerr-sandbox");
+  return getProviderClient("peakerr");
 }
 
 export const supplierClient: SupplierClient = {

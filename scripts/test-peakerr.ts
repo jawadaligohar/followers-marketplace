@@ -57,6 +57,7 @@ async function testPeakerr() {
     targetLink: "https://instagram.com/peakerr_test_profile",
     priceCents: 150,
     paymentSource: "crypto",
+    paymentConfirmedAt: new Date(),
     status: "pending",
   });
 

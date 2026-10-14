@@ -3,7 +3,6 @@ dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
 import bcrypt from "bcryptjs";
 
-
 async function seed() {
   const { dbConnect } = await import("../lib/db/connect");
   const { Service } = await import("../lib/db/models/Service");
@@ -15,7 +14,9 @@ async function seed() {
 
   // Services created before slugs existed were one "Followers" service per platform.
   // Give them their catalog slug so existing orders keep pointing at the same documents.
-  const legacy = await Service.collection.find({ slug: { $exists: false } }).toArray();
+  const legacy = await Service.collection
+    .find({ slug: { $exists: false } })
+    .toArray();
   for (const doc of legacy) {
     let slug = `${doc.platformId}-${String(doc.category)}`
       .toLowerCase()
@@ -30,12 +31,31 @@ async function seed() {
   // These exact records were left active by the earlier checkout test run.
   // Hide them without deleting records referenced by existing test orders.
   const hiddenTests = await Service.updateMany(
-    { category: { $in: ["Followers [E2E Auto]", "Followers [E2E Manual]"] }, active: true },
-    { $set: { active: false } }
+    {
+      category: { $in: ["Followers [E2E Auto]", "Followers [E2E Manual]"] },
+      active: true,
+    },
+    { $set: { active: false } },
   );
-  if (hiddenTests.modifiedCount) console.log(`Hidden ${hiddenTests.modifiedCount} leftover E2E services`);
+  if (hiddenTests.modifiedCount)
+    console.log(`Hidden ${hiddenTests.modifiedCount} leftover E2E services`);
 
   for (const [index, svc] of CATALOG.entries()) {
+    const existing = await Service.findOne({ slug: svc.slug }).lean();
+    const tiers = catalogTiers(svc).map((tier) => {
+      const prior = existing?.tiers?.find(
+        (t: { qtyValue: number }) => t.qtyValue === tier.qtyValue,
+      );
+      return {
+        ...tier,
+        ...(prior?.defaultProvider && {
+          defaultProvider: prior.defaultProvider,
+        }),
+        ...(prior?.providerMappings && {
+          providerMappings: prior.providerMappings,
+        }),
+      };
+    });
     await Service.findOneAndUpdate(
       { slug: svc.slug },
       {
@@ -46,12 +66,12 @@ async function seed() {
           kind: svc.kind,
           target: svc.target,
           sortOrder: index,
-          tiers: catalogTiers(svc),
+          tiers,
         },
         // Don't clobber admin-managed fields on re-seed.
         $setOnInsert: { active: true, supplierServiceId: null },
       },
-      { upsert: true }
+      { upsert: true },
     );
     console.log(`Seeded service: ${svc.slug} (${svc.tiers.length} tiers)`);
   }
@@ -59,7 +79,11 @@ async function seed() {
   const adminEmail = process.env.SEED_ADMIN_EMAIL;
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 
-  if (!process.argv.includes("--services-only") && adminEmail && adminPassword) {
+  if (
+    !process.argv.includes("--services-only") &&
+    adminEmail &&
+    adminPassword
+  ) {
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     await User.findOneAndUpdate(
       { email: adminEmail.toLowerCase() },
@@ -74,11 +98,13 @@ async function seed() {
           role: "admin",
         },
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     console.log(`Seeded admin user: ${adminEmail}`);
   } else {
-    console.log("SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set -- skipping admin user seed");
+    console.log(
+      "SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set -- skipping admin user seed",
+    );
   }
 
   console.log("Seed complete.");

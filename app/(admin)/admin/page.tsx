@@ -4,7 +4,7 @@ import { Order } from "@/lib/db/models/Order";
 import { User } from "@/lib/db/models/User";
 import AdminStatCards from "@/components/admin/AdminStatCards";
 import OrdersTable, { AdminOrderRow } from "@/components/admin/OrdersTable";
-import PeakerrStatusBanner from "@/components/admin/PeakerrStatusBanner";
+import SupplierStatusBanner from "@/components/admin/SupplierStatusBanner";
 import RevenueChart from "@/components/admin/RevenueChart";
 import FadeIn from "@/components/shared/FadeIn";
 
@@ -19,25 +19,36 @@ export default async function AdminOverviewPage() {
   const [totalOrders, totalUsers, allOrders, recentOrders] = await Promise.all([
     Order.countDocuments({}),
     User.countDocuments({}),
-    Order.find({ status: { $in: ["processing", "completed"] } }).select("priceCents createdAt").lean(),
-    Order.find({}).sort({ createdAt: -1 }).limit(5).populate("userId", "name email").lean(),
+    Order.find({ status: { $in: ["processing", "completed"] } })
+      .select("priceCents createdAt")
+      .lean(),
+    Order.find({})
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("userId", "name email")
+      .lean(),
   ]);
 
   const totalRevenueCents = allOrders.reduce((sum, o) => sum + o.priceCents, 0);
 
   // Group revenue by date for the chart
   const revenueByDateMap = new Map<string, number>();
-  allOrders.forEach(o => {
+  allOrders.forEach((o) => {
     if (o.createdAt >= thirtyDaysAgo) {
       const dateStr = o.createdAt.toISOString().split("T")[0];
-      revenueByDateMap.set(dateStr, (revenueByDateMap.get(dateStr) || 0) + o.priceCents);
+      revenueByDateMap.set(
+        dateStr,
+        (revenueByDateMap.get(dateStr) || 0) + o.priceCents,
+      );
     }
   });
 
-  const revenueData = Array.from(revenueByDateMap.entries()).map(([date, amountCents]) => ({
-    date,
-    amountCents,
-  }));
+  const revenueData = Array.from(revenueByDateMap.entries()).map(
+    ([date, amountCents]) => ({
+      date,
+      amountCents,
+    }),
+  );
 
   const recentRows: AdminOrderRow[] = recentOrders.map((o) => ({
     _id: o._id.toString(),
@@ -51,7 +62,9 @@ export default async function AdminOverviewPage() {
     supplierOrderId: o.supplierOrderId ?? null,
     supplierStatus: o.supplierStatus ?? null,
     failureReason: o.failureReason ?? null,
-    createdAt: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString(),
+    createdAt: o.createdAt
+      ? new Date(o.createdAt).toISOString()
+      : new Date().toISOString(),
     userId: o.userId as unknown as { name?: string; email?: string },
   }));
 
@@ -65,7 +78,7 @@ export default async function AdminOverviewPage() {
               A snapshot of how Surgeon is performing right now.
             </p>
           </div>
-          <PeakerrStatusBanner />
+          <SupplierStatusBanner />
         </div>
       </FadeIn>
       <FadeIn delay={0.05}>
@@ -81,7 +94,10 @@ export default async function AdminOverviewPage() {
       <FadeIn delay={0.15}>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Recent orders</h2>
-          <Link href="/admin/orders" className="text-sm text-brand-600 hover:underline">
+          <Link
+            href="/admin/orders"
+            className="text-sm text-brand-600 hover:underline"
+          >
             View all
           </Link>
         </div>

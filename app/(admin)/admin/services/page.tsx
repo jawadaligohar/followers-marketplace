@@ -1,6 +1,8 @@
 import { dbConnect } from "@/lib/db/connect";
 import { Service } from "@/lib/db/models/Service";
-import ServicesTable, { AdminServiceRow } from "@/components/admin/ServicesTable";
+import ServicesTable, {
+  AdminServiceRow,
+} from "@/components/admin/ServicesTable";
 import FadeIn from "@/components/shared/FadeIn";
 
 export const metadata = { title: "Services | Surgeon Admin" };
@@ -19,6 +21,8 @@ export default async function AdminServicesPage() {
     category: s.category,
     active: s.active,
     supplierServiceId: s.supplierServiceId ?? null,
+    defaultProvider: s.defaultProvider || "peakerr",
+    providerMappings: s.providerMappings || {},
     tiers: s.tiers,
   }));
 

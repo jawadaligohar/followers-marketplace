@@ -1,7 +1,13 @@
 import { dbConnect } from "@/lib/db/connect";
 import { Order, IOrder } from "@/lib/db/models/Order";
 import { Service } from "@/lib/db/models/Service";
-import { supplierClient } from "./index";
+import { getProviderClient } from "./index";
+import {
+  providerConfig,
+  resolveProviderMapping,
+  type ProviderId,
+} from "./providers";
+import { ProviderRejectedError } from "./peakerrSupplierClient";
 import { INCLUDED_AUTO_POSTS } from "@/lib/catalog";
 
 /** "https://instagram.com/name/", "@name" or "name" -> "name" */
@@ -25,12 +31,11 @@ export interface FulfillmentDispatchResult {
 }
 
 /**
- * Dispatches an order to the supplier (Peakerr or Mock) if a supplierServiceId
- * is mapped. If unmapped, gracefully marks the order for manual fulfillment.
+ * Uses the selected provider and package mapping; unconfigured orders queue for staff.
  */
 export async function fulfillOrder(
   orderIdOrDoc: string | (IOrder & { save: () => Promise<unknown> }),
-  options?: { manualSupplierServiceId?: string }
+  options?: { manualSupplierServiceId?: string; provider?: ProviderId },
 ): Promise<FulfillmentDispatchResult> {
   await dbConnect();
 
@@ -48,23 +53,90 @@ export async function fulfillOrder(
     };
   }
 
-  if (order.paymentSource === "bank" && !order.paymentConfirmedAt) {
-    return { success: false, mode: "manual", status: "pending", error: "Confirm the bank payment before dispatching this order" };
+  if (order.supplierOrderId)
+    return {
+      success: true,
+      mode: "automated",
+      status: order.status,
+      supplierOrderId: order.supplierOrderId,
+    };
+  if (["dispatching", "dispatch_unknown"].includes(order.supplierStatus || ""))
+    return {
+      success: false,
+      mode: "manual",
+      status: order.status,
+      error:
+        "Check the original provider submission and reconcile it before retrying",
+    };
+  if (
+    ["completed", "cancelled", "failed"].includes(order.status) ||
+    ((order.refundedCents || 0) >= order.priceCents &&
+      order.paymentSource !== "bonus")
+  )
+    return {
+      success: false,
+      mode: "manual",
+      status: order.status,
+      error: "Terminal or fully refunded orders cannot be dispatched",
+    };
+
+  if (order.paymentSource !== "bonus" && !order.paymentConfirmedAt) {
+    return {
+      success: false,
+      mode: "manual",
+      status: "pending",
+      error: "Confirm payment before dispatching this order",
+    };
   }
 
   const service = await Service.findById(order.serviceId);
-  const supplierServiceId =
-    options?.manualSupplierServiceId?.trim() ||
-    service?.supplierServiceId?.trim() ||
-    null;
+  let mapping;
+  try {
+    mapping = resolveProviderMapping(
+      service || { platformId: order.platformId },
+      order.qtyValue,
+      options?.provider,
+      options?.manualSupplierServiceId,
+    );
+  } catch (error) {
+    return {
+      success: false,
+      mode: "manual",
+      status: order.status,
+      error: error instanceof Error ? error.message : "Invalid provider",
+    };
+  }
+  const { provider, serviceId: supplierServiceId } = mapping;
 
-  // Case 1: No Peakerr service ID is mapped -> Queue for manual fulfillment
-  if (!supplierServiceId || (!process.env.PEAKERR_API_KEY?.trim() && process.env.PEAKERR_SANDBOX !== "true")) {
-    order.supplierOrderId = null;
+  // Missing credentials or mappings cannot silently simulate paid delivery.
+  if (!supplierServiceId || !providerConfig(provider).configured) {
+    const queued = await Order.findOneAndUpdate(
+      {
+        _id: order._id,
+        supplierOrderId: null,
+        supplierStatus: { $nin: ["dispatching", "dispatch_unknown"] },
+        status: { $nin: ["completed", "cancelled", "failed"] },
+      },
+      {
+        $set: {
+          supplierStatus: "manual_fulfillment_required",
+          status: "processing",
+          failureReason: null,
+          supplierProvider: provider,
+        },
+      },
+    );
+    if (!queued)
+      return {
+        success: false,
+        mode: "manual",
+        status: order.status,
+        error: "Order changed; refresh before dispatching",
+      };
     order.supplierStatus = "manual_fulfillment_required";
     order.status = "processing";
     order.failureReason = null;
-    await order.save();
+    order.supplierProvider = provider;
 
     return {
       success: true,
@@ -73,19 +145,40 @@ export async function fulfillOrder(
     };
   }
 
-  // Case 2: Peakerr service ID is mapped -> Automated dispatch
+  // Reserve submission before making an external call.
   const claimed = await Order.findOneAndUpdate(
-    { _id: order._id, supplierOrderId: null, supplierStatus: { $ne: "dispatching" } },
-    { $set: { supplierStatus: "dispatching" } }
+    {
+      _id: order._id,
+      supplierOrderId: null,
+      supplierStatus: { $nin: ["dispatching", "dispatch_unknown"] },
+      status: { $nin: ["completed", "cancelled", "failed"] },
+    },
+    {
+      $set: {
+        supplierStatus: "dispatching",
+        supplierProvider: provider,
+        supplierServiceIdUsed: supplierServiceId,
+      },
+    },
   );
-  if (!claimed) return { success: true, mode: "automated", status: order.status, supplierOrderId: order.supplierOrderId || undefined };
+  if (!claimed)
+    return {
+      success: false,
+      mode: "manual",
+      status: order.status,
+      error:
+        "Dispatch is already in progress or needs reconciliation. Do not resend until the provider order is checked.",
+    };
+  order.supplierProvider = provider;
+  order.supplierServiceIdUsed = supplierServiceId;
   try {
-    const result = await supplierClient.submitOrder({
+    const result = await getProviderClient(provider).submitOrder({
       supplierServiceId,
       link: order.targetLink,
       quantity: order.qtyValue,
       ...(order.serviceKind === "comments" && { comments: order.comments }),
-      ...(order.serviceKind === "poll" && order.pollOption && { pollOption: order.pollOption }),
+      ...(order.serviceKind === "poll" &&
+        order.pollOption && { pollOption: order.pollOption }),
       ...(order.serviceKind === "auto" && {
         subscription: {
           username: usernameFromLink(order.targetLink),
@@ -107,10 +200,15 @@ export async function fulfillOrder(
       status: "processing",
     };
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Supplier dispatch failed";
-    console.error(`[Supplier Fulfillment] Failed for order ${order._id}:`, message);
+    const message =
+      error instanceof Error ? error.message : "Supplier dispatch failed";
+    console.error(
+      `[Supplier Fulfillment] Failed for order ${order._id}:`,
+      message,
+    );
 
-    order.supplierStatus = "submission_error";
+    const rejected = error instanceof ProviderRejectedError;
+    order.supplierStatus = rejected ? "submission_error" : "dispatch_unknown";
     order.failureReason = message;
     // Keep as processing so admin can see failure reason and retry or resolve manually
     order.status = "processing";
@@ -118,10 +216,9 @@ export async function fulfillOrder(
 
     return {
       success: false,
-      mode: "automated",
+      mode: rejected ? "automated" : "manual",
       status: "processing",
       error: message,
     };
   }
 }
-

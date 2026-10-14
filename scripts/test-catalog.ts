@@ -50,7 +50,17 @@ async function main() {
       );
     }
     seed();
+    const mapped = await Service.findOne({ slug: "tiktok-likes" });
+    mapped.defaultProvider = "jap";
+    mapped.providerMappings = { jap: "711" };
+    mapped.tiers[0].defaultProvider = "tiksta";
+    mapped.tiers[0].providerMappings = { tiksta: "812" };
+    await mapped.save();
     seed();
+    const preserved = await Service.findById(mapped._id);
+    assert.equal(preserved.defaultProvider, "jap");
+    assert.equal(preserved.providerMappings.jap, "711");
+    assert.equal(preserved.tiers[0].providerMappings.tiksta, "812");
     const migrated = await Service.findById(legacy.insertedId).lean();
     assert.equal(migrated.slug, "instagram-followers");
     assert.equal(migrated.supplierServiceId, "1001");
@@ -75,7 +85,8 @@ async function main() {
             saved.postsOptions.find(
               (o: { posts: number }) => o.posts === Number(posts),
             ).priceCents,
-            Math.round((tier.gbp + price) * GBP_TO_USD * 100) - Math.round(tier.gbp * GBP_TO_USD * 100),
+            Math.round((tier.gbp + price) * GBP_TO_USD * 100) -
+              Math.round(tier.gbp * GBP_TO_USD * 100),
           );
         }
       }
@@ -137,6 +148,7 @@ async function main() {
         ...line.orderFields,
         status: "pending",
         paymentSource: "card",
+        paymentConfirmedAt: new Date(),
       });
       const result = await fulfillOrder(order);
       assert.equal(result.success, true);

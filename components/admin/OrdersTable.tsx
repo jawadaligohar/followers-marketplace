@@ -3,10 +3,18 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
-import { PackageOpen, ExternalLink, Send, Loader2, AlertCircle } from "lucide-react";
+import {
+  PackageOpen,
+  ExternalLink,
+  Send,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
 import EmptyState from "@/components/shared/EmptyState";
-import OrderExtras, { type OrderExtrasData } from "@/components/shared/OrderExtras";
+import OrderExtras, {
+  type OrderExtrasData,
+} from "@/components/shared/OrderExtras";
 import { formatDateTime } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import {
@@ -26,6 +34,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  PROVIDERS,
+  PROVIDER_LABELS,
+  type ProviderId,
+} from "@/lib/supplier/providers";
 
 export type AdminOrderRow = OrderExtrasData & {
   _id: string;
@@ -37,6 +50,9 @@ export type AdminOrderRow = OrderExtrasData & {
   status: string;
   paymentSource: string;
   supplierOrderId?: string | null;
+  supplierProvider?: ProviderId | null;
+  supplierRefillId?: string | null;
+  platformId?: string;
   supplierStatus?: string | null;
   failureReason?: string | null;
   createdAt: string;
@@ -49,6 +65,59 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
   const [rows, setRows] = useState(orders);
   const [updating, setUpdating] = useState<string | null>(null);
   const [dispatchingId, setDispatchingId] = useState<string | null>(null);
+  const [providerOverrides, setProviderOverrides] = useState<
+    Record<string, string>
+  >({});
+
+  async function providerAction(order: AdminOrderRow, action: string) {
+    if (
+      ["cancel", "refill"].includes(action) &&
+      !confirm(
+        `${action === "cancel" ? "Request cancellation" : "Request a refill"} with the provider? Provider approval is required. This does not issue a customer refund.`,
+      )
+    )
+      return;
+    const supplierOrderId =
+      action === "reconcile"
+        ? prompt(
+            "Enter the verified order ID from the provider account originally used. This links it without placing another order.",
+          )
+        : undefined;
+    if (action === "reconcile" && !supplierOrderId) return;
+    setDispatchingId(order._id);
+    try {
+      const response = await fetch(`/api/admin/orders/${order._id}/supplier`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          provider: order.supplierProvider,
+          supplierOrderId,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Supplier action failed");
+      const updated = data.result.order || data.result;
+      setRows((previous) =>
+        previous.map((row) =>
+          row._id === order._id
+            ? { ...row, ...updated, userId: row.userId }
+            : row,
+        ),
+      );
+      toast.success(
+        data.result.refillStatus
+          ? `Refill: ${data.result.refillStatus.status}`
+          : "Provider action completed",
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Supplier action failed",
+      );
+    } finally {
+      setDispatchingId(null);
+    }
+  }
 
   async function handleStatusChange(id: string, status: string) {
     setUpdating(id);
@@ -73,19 +142,25 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
       const res = await fetch(`/api/admin/orders/${order._id}/dispatch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          provider: providerOverrides[order._id] || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        toast.error(data.error || "Failed to dispatch order to Peakerr");
+        toast.error(data.error || "Failed to dispatch order to supplier");
         if (data.order) {
-          setRows((prev) => prev.map((r) => (r._id === order._id ? { ...r, ...data.order } : r)));
+          setRows((prev) =>
+            prev.map((r) =>
+              r._id === order._id ? { ...r, ...data.order } : r,
+            ),
+          );
         }
         return;
       }
 
-      toast.success(data.message || "Dispatched to Peakerr");
+      toast.success(data.message || "Dispatched to supplier");
       if (data.order) {
         setRows((prev) =>
           prev.map((r) =>
@@ -93,12 +168,13 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
               ? {
                   ...r,
                   supplierOrderId: data.order.supplierOrderId,
+                  supplierProvider: data.order.supplierProvider,
                   supplierStatus: data.order.supplierStatus,
                   status: data.order.status,
                   failureReason: null,
                 }
-              : r
-          )
+              : r,
+          ),
         );
       }
     } catch {
@@ -149,13 +225,19 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
               >
                 <TableCell>
-                  <div className="font-medium text-foreground">{user?.name ?? "—"}</div>
-                  <div className="text-xs text-muted-foreground">{user?.email}</div>
+                  <div className="font-medium text-foreground">
+                    {user?.name ?? "—"}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {user?.email}
+                  </div>
                 </TableCell>
 
                 <TableCell>
                   <span className="font-medium">{order.platformLabel}</span>{" "}
-                  <span className="text-muted-foreground">{order.category}</span>
+                  <span className="text-muted-foreground">
+                    {order.category}
+                  </span>
                   <OrderExtras order={order} showComments />
                 </TableCell>
 
@@ -172,7 +254,9 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                       className="inline-flex items-center gap-1 font-mono text-xs text-brand-500 hover:text-brand-400 hover:underline"
                       title={order.targetLink}
                     >
-                      <span className="truncate max-w-[150px]">{order.targetLink}</span>
+                      <span className="truncate max-w-[150px]">
+                        {order.targetLink}
+                      </span>
                       <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
                   ) : (
@@ -185,7 +269,10 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 </TableCell>
 
                 <TableCell>
-                  <Badge variant="outline" className="capitalize text-[11px] font-normal">
+                  <Badge
+                    variant="outline"
+                    className="capitalize text-[11px] font-normal"
+                  >
                     {order.paymentSource}
                   </Badge>
                 </TableCell>
@@ -201,14 +288,17 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                         variant="outline"
                         className="border-brand-500/30 bg-brand-500/10 text-brand-400 font-mono text-[11px]"
                       >
-                        Peakerr #{order.supplierOrderId}
+                        {PROVIDER_LABELS[order.supplierProvider || "peakerr"]} #
+                        {order.supplierOrderId}
                       </Badge>
                     ) : order.supplierStatus === "submission_error" ? (
                       <div className="flex items-center gap-1.5">
                         <Badge
                           variant="outline"
                           className="border-rose-500/30 bg-rose-500/10 text-rose-400 text-[11px]"
-                          title={order.failureReason || "Error sending to supplier"}
+                          title={
+                            order.failureReason || "Error sending to supplier"
+                          }
                         >
                           <AlertCircle className="mr-1 h-3 w-3" /> Error
                         </Badge>
@@ -219,7 +309,11 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                           onClick={() => handleDispatch(order)}
                           className="h-6 px-1.5 text-[11px] text-brand-500 hover:text-brand-400"
                         >
-                          {isDispatching ? <Loader2 className="h-3 w-3 animate-spin" /> : "Retry"}
+                          {isDispatching ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            "Retry"
+                          )}
                         </Button>
                       </div>
                     ) : (
@@ -249,6 +343,91 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                       </div>
                     )}
                   </div>
+                  {!isDispatched &&
+                    !["dispatching", "dispatch_unknown"].includes(
+                      order.supplierStatus || "",
+                    ) && (
+                      <select
+                        aria-label={`Dispatch provider for ${order._id}`}
+                        className="mt-2 max-w-40 rounded border border-border bg-card p-1 text-xs"
+                        value={providerOverrides[order._id] || ""}
+                        onChange={(event) =>
+                          setProviderOverrides((previous) => ({
+                            ...previous,
+                            [order._id]: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Service default</option>
+                        {PROVIDERS.filter(
+                          (provider) =>
+                            provider !== "tiksta" ||
+                            order.platformId === "tiktok",
+                        ).map((provider) => (
+                          <option key={provider} value={provider}>
+                            {PROVIDER_LABELS[provider]}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  <div className="mt-2 flex max-w-52 flex-wrap gap-1">
+                    {isDispatched && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={isDispatching}
+                          onClick={() => providerAction(order, "sync")}
+                        >
+                          Refresh status
+                        </Button>
+                        {!["completed", "cancelled", "failed"].includes(
+                          order.status,
+                        ) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={isDispatching}
+                            onClick={() => providerAction(order, "cancel")}
+                          >
+                            Cancel at provider
+                          </Button>
+                        )}
+                        {order.status === "completed" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={isDispatching}
+                            onClick={() =>
+                              providerAction(
+                                order,
+                                order.supplierRefillId
+                                  ? "refillStatus"
+                                  : "refill",
+                              )
+                            }
+                          >
+                            {order.supplierRefillId
+                              ? "Refill status"
+                              : "Request refill"}
+                          </Button>
+                        )}
+                      </>
+                    )}
+                    {!isDispatched &&
+                      ["dispatching", "dispatch_unknown"].includes(
+                        order.supplierStatus || "",
+                      ) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={isDispatching}
+                          onClick={() => providerAction(order, "reconcile")}
+                        >
+                          Link verified provider order
+                        </Button>
+                      )}
+                  </div>
                 </TableCell>
 
                 <TableCell>
@@ -257,7 +436,9 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                     <Select
                       value={order.status}
                       disabled={updating === order._id}
-                      onValueChange={(value) => handleStatusChange(order._id, value as string)}
+                      onValueChange={(value) =>
+                        handleStatusChange(order._id, value as string)
+                      }
                     >
                       <SelectTrigger size="sm" className="h-7 text-xs">
                         <SelectValue />
@@ -274,8 +455,12 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 </TableCell>
 
                 <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                  <div className="font-medium text-foreground">{formatDateTime(order.createdAt).date}</div>
-                  <div className="text-[11px] text-muted-foreground/75 font-mono">{formatDateTime(order.createdAt).time}</div>
+                  <div className="font-medium text-foreground">
+                    {formatDateTime(order.createdAt).date}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground/75 font-mono">
+                    {formatDateTime(order.createdAt).time}
+                  </div>
                 </TableCell>
               </motion.tr>
             );

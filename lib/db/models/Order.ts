@@ -1,7 +1,9 @@
 import mongoose, { Schema, models, model } from "mongoose";
 import type { ServiceKind } from "@/lib/catalog";
+import { PROVIDERS, type ProviderId } from "@/lib/supplier/providers";
 
-export type OrderStatus = "pending" | "processing" | "completed" | "failed" | "cancelled";
+export type OrderStatus =
+  "pending" | "processing" | "completed" | "failed" | "cancelled";
 export type PaymentSource = "wallet" | "card" | "crypto" | "bank" | "bonus";
 
 export interface IOrder {
@@ -22,6 +24,11 @@ export interface IOrder {
   paymentSource: PaymentSource;
   status: OrderStatus;
   supplierOrderId: string | null;
+  supplierProvider: ProviderId | null;
+  supplierServiceIdUsed: string | null;
+  supplierLastCheckedAt: Date | null;
+  supplierRefillId: string | null;
+  supplierActionPending: string | null;
   supplierStatus: string | null;
   failureReason: string | null;
   stripeSessionId: string | null;
@@ -37,7 +44,12 @@ export interface IOrder {
 
 const OrderSchema = new Schema<IOrder>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
+    },
     guestEmail: { type: String, default: null, lowercase: true, trim: true },
     serviceId: { type: Schema.Types.ObjectId, ref: "Service", required: true },
     platformId: { type: String, required: true },
@@ -45,12 +57,20 @@ const OrderSchema = new Schema<IOrder>(
     category: { type: String, required: true },
     qtyValue: { type: Number, required: true },
     targetLink: { type: String, required: true },
-    serviceKind: { type: String, enum: ["standard", "auto", "comments", "poll"], default: "standard" },
+    serviceKind: {
+      type: String,
+      enum: ["standard", "auto", "comments", "poll"],
+      default: "standard",
+    },
     postsCovered: { type: Number, default: null },
     comments: { type: [String], default: [] },
     pollOption: { type: Number, default: null },
     priceCents: { type: Number, required: true },
-    paymentSource: { type: String, enum: ["wallet", "card", "crypto", "bank", "bonus"], required: true },
+    paymentSource: {
+      type: String,
+      enum: ["wallet", "card", "crypto", "bank", "bonus"],
+      required: true,
+    },
     checkoutGroupId: { type: String, default: null, index: true },
     paymentConfirmedAt: { type: Date, default: null, index: true },
     refundedCents: { type: Number, default: 0 },
@@ -62,6 +82,15 @@ const OrderSchema = new Schema<IOrder>(
       index: true,
     },
     supplierOrderId: { type: String, default: null },
+    supplierProvider: {
+      type: String,
+      enum: [...PROVIDERS, null],
+      default: null,
+    },
+    supplierServiceIdUsed: { type: String, default: null },
+    supplierLastCheckedAt: { type: Date, default: null },
+    supplierRefillId: { type: String, default: null },
+    supplierActionPending: { type: String, default: null },
     supplierStatus: { type: String, default: null },
     failureReason: { type: String, default: null },
     stripeSessionId: { type: String, default: null, index: true },
@@ -70,12 +99,17 @@ const OrderSchema = new Schema<IOrder>(
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },
-  { timestamps: true, collection: "orders" }
+  { timestamps: true, collection: "orders" },
 );
 
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ guestEmail: 1, createdAt: -1 });
 
 // Development refresh can otherwise retain the schema from before new order fields existed.
-if (process.env.NODE_ENV === "development" && models.Order && !models.Order.schema.path("stripePaymentIntentId")) mongoose.deleteModel("Order");
+if (
+  process.env.NODE_ENV === "development" &&
+  models.Order &&
+  !models.Order.schema.path("supplierActionPending")
+)
+  mongoose.deleteModel("Order");
 export const Order = models.Order || model<IOrder>("Order", OrderSchema);

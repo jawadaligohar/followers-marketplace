@@ -1,0 +1,114 @@
+{
+  "checkedAt": "2026-10-14T07:59:56.244Z",
+  "pages": [
+    {
+      "url": "https://dashboard.megafollowers.uk/",
+      "status": 200,
+      "scripts": [
+        "/static/js/main.4e7ff84d.js"
+      ],
+      "bundle": {
+        "url": "https://dashboard.megafollowers.uk/static/js/main.4e7ff84d.js",
+        "sha256": "4cec1c4519d1d74cf4c2621d137ac708b64db16660eadc3a933a7fe287202a9e",
+        "bytes": 3565571,
+        "matches": [
+          {
+            "term": "peakerr_service_id",
+            "found": true
+          },
+          {
+            "term": "tiksta_service_id",
+            "found": true
+          },
+          {
+            "term": "default_provider",
+            "found": false
+          },
+          {
+            "term": "default_panel",
+            "found": true
+          },
+          {
+            "term": "Tiksta is only",
+            "found": true
+          },
+          {
+            "term": "Provider balances",
+            "found": true
+          },
+          {
+            "term": "service_id",
+            "found": true
+          },
+          {
+            "term": "jap_order_id",
+            "found": true
+          },
+          {
+            "term": "25",
+            "found": true
+          },
+          {
+            "term": "Place with each",
+            "found": true
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://social-api.megafollowers.uk/openapi.json",
+      "status": 200,
+      "title": "Social Fetch API",
+      "paths": [
+        "/api/v1/instagram/{username}",
+        "/api/v1/tiktok/{username}",
+        "/api/v1/twitter/{username}",
+        "/admin/login",
+        "/admin/logout",
+        "/admin/dashboard",
+        "/admin/keys",
+        "/admin/keys/{key_id}/revoke",
+        "/admin/instagram-accounts",
+        "/admin/instagram-accounts/{account_id}/edit",
+        "/admin/instagram-accounts/{account_id}/{action}",
+        "/healthz",
+        "/"
+      ]
+    },
+    {
+      "url": "https://browserless.megafollowers.uk/",
+      "status": 401,
+      "server": "Caddy",
+      "apiUrls": []
+    },
+    {
+      "url": "https://tiksta.com/api",
+      "status": 200,
+      "title": "API",
+      "server": "nginx",
+      "apiUrls": [
+        "https://tiksta.com/api/v2"
+      ]
+    },
+    {
+      "url": "https://peakerr.com/api",
+      "status": 200,
+      "title": "API",
+      "server": "nginx",
+      "apiUrls": [
+        "https://peakerr.com/api/v2"
+      ]
+    }
+  ],
+  "confirmed": [
+    "Public dashboard bundle defines JAP, Peakerr and Tiksta provider mapping fields, default panel selection, TikTok-only validation, per-package/duration mapping UI, balance-monitoring UI and a USD25 low-credit threshold.",
+    "Social Fetch API publishes keyed Instagram, TikTok and Twitter fetch routes.",
+    "JAP, Peakerr and Tiksta publish SMM API v2 documentation."
+  ],
+  "notProven": [
+    "Active supplier mappings, actual provider credentials or wholesale service IDs",
+    "Automatic failover or any particular provider being primary",
+    "Browserless product/version or its use by Social Fetch: public root only returns 401 via Caddy",
+    "Internal worker topology, operating-system hosting details, proxy-account rotation or PHP/framework version"
+  ]
+}
