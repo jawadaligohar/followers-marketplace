@@ -1,3 +1,6 @@
+import { markOrdersPaid } from "@/lib/benefits";
+import { recordExternalRefund } from "@/lib/refunds";
+import { User } from "@/lib/db/models/User";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { nowpayments } from "@/lib/nowpayments";
@@ -10,7 +13,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null);
     if (!body) {
-      return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid JSON payload" },
+        { status: 400 },
+      );
     }
 
     const reqHeaders = await headers();
@@ -22,6 +28,24 @@ export async function POST(req: Request) {
     }
 
     const { payment_id, invoice_id, payment_status, order_id } = body;
+    if (
+      payment_status === "refunded" &&
+      typeof order_id === "string" &&
+      order_id.startsWith("cart_")
+    ) {
+      await dbConnect();
+      const orders = await Order.find({
+        cryptoCheckoutId: order_id,
+        paymentConfirmedAt: { $ne: null },
+      });
+      if (orders.length)
+        await recordExternalRefund(
+          orders.map((order) => String(order._id)),
+          orders.reduce((sum, order) => sum + order.priceCents, 0),
+          `crypto:${order_id}`,
+        );
+      return NextResponse.json({ received: true });
+    }
 
     if (payment_status !== "finished" && payment_status !== "confirmed") {
       return NextResponse.json({ received: true, status: payment_status });
@@ -33,33 +57,51 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
-    const orders = await Order.find({ cryptoCheckoutId: order_id, status: "pending" });
+    const orders = await Order.find({ cryptoCheckoutId: order_id });
     if (orders.length === 0) {
-      return NextResponse.json({ received: true, note: "Orders already processed or not found" });
+      return NextResponse.json({
+        received: true,
+        note: "Orders already processed or not found",
+      });
     }
 
     // Ledger entry for auditing/idempotency tracking if order has an authenticated user
     const firstOrder = orders[0];
     if (firstOrder.userId) {
-      await Transaction.create({
-        userId: firstOrder.userId,
-        type: "order_debit",
-        amountCents: 0,
-        balanceAfterCents: 0,
-        relatedOrderId: firstOrder._id,
-        nowpaymentsInvoiceId: invoice_id ? String(invoice_id) : null,
-        nowpaymentsPaymentId: payment_id ? String(payment_id) : null,
-        note: `Cart crypto payment confirmed via NOWPayments (${orders.length} items)`,
-      });
+      await Transaction.findOneAndUpdate(
+        { nowpaymentsPaymentId: String(payment_id) },
+        {
+          $setOnInsert: {
+            userId: firstOrder.userId,
+            type: "order_debit",
+            amountCents: 0,
+            balanceAfterCents:
+              (
+                await User.findById(firstOrder.userId).select(
+                  "walletBalanceCents",
+                )
+              )?.walletBalanceCents || 0,
+            relatedOrderId: firstOrder._id,
+            nowpaymentsInvoiceId: invoice_id ? String(invoice_id) : null,
+            nowpaymentsPaymentId: payment_id ? String(payment_id) : null,
+            note: `Cart crypto payment confirmed via NOWPayments (${orders.length} items)`,
+          },
+        },
+        { upsert: true },
+      );
     }
 
+    await markOrdersPaid(orders.map((order) => String(order._id)));
     for (const order of orders) {
-      await fulfillOrder(order);
+      if (order.status === "pending") await fulfillOrder(order);
     }
 
     return NextResponse.json({ received: true });
   } catch (error: unknown) {
     console.error("NOWPayments cart webhook error:", error);
-    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook handler failed" },
+      { status: 500 },
+    );
   }
 }

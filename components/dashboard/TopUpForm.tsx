@@ -1,4 +1,5 @@
 "use client";
+import { usePaymentOptions } from "@/lib/usePaymentOptions";
 
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,9 +13,10 @@ import { Button } from "@/components/ui/button";
 const PRESETS_CENTS = [1000, 2500, 5000, 10000];
 
 export default function TopUpForm() {
+  const { bankEnabled } = usePaymentOptions();
   const [amountCents, setAmountCents] = useState(2500);
   const [customAmount, setCustomAmount] = useState("");
-  const [method, setMethod] = useState<"stripe" | "nowpayments">("stripe");
+  const [method, setMethod] = useState<"stripe" | "nowpayments" | "bank">("stripe");
   const [loading, setLoading] = useState(false);
 
   async function handleTopUp() {
@@ -46,7 +48,7 @@ export default function TopUpForm() {
     <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Top up wallet</CardTitle>
-        <CardDescription>Pay from your wallet to save 15% on every order.</CardDescription>
+        <CardDescription>Pay from your wallet to save 5% on every order.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-4 gap-2">
@@ -87,6 +89,7 @@ export default function TopUpForm() {
 
         <div className="mt-4 space-y-2">
           <Label className="text-xs font-medium text-muted-foreground">Payment Method</Label>
+          {bankEnabled && <Button type="button" variant={method === "bank" ? "default" : "outline"} onClick={() => setMethod("bank")}>Bank transfer · manual confirmation</Button>}
           <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
@@ -151,7 +154,7 @@ export default function TopUpForm() {
           className="mt-5 flex w-full items-center justify-center gap-2 py-5"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          {method === "nowpayments" ? "Continue to Crypto Checkout" : "Continue to payment"}
+          {method === "bank" ? "Get bank transfer instructions" : method === "nowpayments" ? "Continue to Crypto Checkout" : "Continue to payment"}
         </Button>
       </CardContent>
     </Card>

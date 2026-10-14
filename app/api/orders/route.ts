@@ -1,12 +1,14 @@
+import { randomUUID } from "node:crypto";
+import { createWalletOrders, fulfillWalletOrders } from "@/lib/walletCheckout";
+import { orderAccessToken } from "@/lib/orderAccess";
+import { createBankTransfer, bankInstructions } from "@/lib/bankTransfer";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
-import { Service } from "@/lib/db/models/Service";
 import { Order } from "@/lib/db/models/Order";
 import { createOrderSchema } from "@/lib/validation/order";
-import { walletPriceCents } from "@/lib/pricing";
-import { applyWalletTransaction, InsufficientBalanceError } from "@/lib/wallet";
-import { fulfillOrder } from "@/lib/supplier/fulfillment";
+import { resolveLine, LineItemError, type ResolvedLine } from "@/lib/orderLine";
+import { InsufficientBalanceError } from "@/lib/wallet";
 import { stripe } from "@/lib/stripe";
 import { nowpayments } from "@/lib/nowpayments";
 
@@ -35,38 +37,53 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const { serviceId, qtyValue, targetLink, paymentSource } = parsed.data;
+  const { paymentSource } = parsed.data;
 
   await dbConnect();
 
-  const service = await Service.findById(serviceId);
-  if (!service || !service.active) {
-    return NextResponse.json({ error: "Service not found" }, { status: 404 });
+  let line: ResolvedLine;
+  try {
+    line = await resolveLine(parsed.data, paymentSource);
+  } catch (err) {
+    if (err instanceof LineItemError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+    throw err;
   }
-
-  const tier = service.tiers.find((t: { qtyValue: number }) => t.qtyValue === qtyValue);
-  if (!tier) {
-    return NextResponse.json({ error: "Invalid quantity for this service" }, { status: 400 });
+  const { chargeCents } = line;
+  if (parsed.data.expectedTotalCents !== undefined && parsed.data.expectedTotalCents !== chargeCents) return NextResponse.json({ error: "Package prices changed. Refresh the page and review the new total before paying." }, { status: 409 });
+  const checkoutGroupId = "checkout_" + randomUUID();
+  const trackingToken = orderAccessToken(checkoutGroupId);
+  if (paymentSource === "bank") {
+    if (!bankInstructions())
+      return NextResponse.json(
+        { error: "Bank transfers are not configured yet" },
+        { status: 503 },
+      );
+    const transfer = await createBankTransfer({
+      email: session.user.email!,
+      userId: session.user.id,
+      lines: [line],
+    });
+    const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+    return NextResponse.json({
+      checkoutUrl:
+        origin +
+        "/checkout/bank-transfer?token=" +
+        encodeURIComponent(transfer.token),
+    });
   }
-
-  // Price is always re-derived server-side from the Service tier; client-sent price is never trusted.
-  const fullPriceCents = tier.priceCents;
-  const chargeCents = paymentSource === "wallet" ? walletPriceCents(fullPriceCents) : fullPriceCents;
 
   if (paymentSource === "crypto") {
     const order = await Order.create({
+      ...line.orderFields,
+      checkoutGroupId,
+      customerEmail: session.user.email,
       userId: session.user.id,
-      serviceId: service._id,
-      platformId: service.platformId,
-      platformLabel: service.platformLabel,
-      category: service.category,
-      qtyValue,
-      targetLink,
-      priceCents: chargeCents,
       paymentSource: "crypto",
       status: "pending",
     });
@@ -78,9 +95,9 @@ export async function POST(req: Request) {
         price_amount: chargeCents / 100,
         price_currency: "usd",
         order_id: `order_${order._id.toString()}`,
-        order_description: `${service.platformLabel} ${service.category} - ${tier.qty}`,
+        order_description: line.name,
         ipn_callback_url: `${origin}/api/webhooks/nowpayments-order`,
-        success_url: `${origin}/checkout/success`,
+        success_url: `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}`,
         cancel_url: `${origin}/checkout/cancel`,
       });
 
@@ -97,14 +114,10 @@ export async function POST(req: Request) {
 
   if (paymentSource === "card") {
     const order = await Order.create({
+      ...line.orderFields,
+      checkoutGroupId,
+      customerEmail: session.user.email,
       userId: session.user.id,
-      serviceId: service._id,
-      platformId: service.platformId,
-      platformLabel: service.platformLabel,
-      category: service.category,
-      qtyValue,
-      targetLink,
-      priceCents: chargeCents,
       paymentSource: "card",
       status: "pending",
     });
@@ -119,15 +132,15 @@ export async function POST(req: Request) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `${service.platformLabel} ${service.category} — ${tier.qty}`,
+              name: line.name,
             },
             unit_amount: chargeCents,
           },
           quantity: 1,
         },
       ],
-      metadata: { kind: "order_payment", orderId: order._id.toString() },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: { kind: "order_payment", checkoutGroupId },
+      success_url: `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout/cancel`,
       customer_email: session.user.email ?? undefined,
     });
@@ -138,50 +151,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ checkoutUrl: checkoutSession.url });
   }
 
-  // Wallet path: debit synchronously and submit to the supplier immediately.
   try {
-    await applyWalletTransaction({
-      userId: session.user.id,
-      type: "order_debit",
-      amountCents: -chargeCents,
-      note: `${service.platformLabel} ${service.category} — ${tier.qty}`,
-    });
-  } catch (err) {
-    if (err instanceof InsufficientBalanceError) {
+    const orders = await createWalletOrders(
+      [line],
+      session.user.id,
+      session.user.email!,
+      checkoutGroupId,
+    );
+    await fulfillWalletOrders(orders);
+    return NextResponse.json({ order: orders[0] });
+  } catch (error) {
+    if (error instanceof InsufficientBalanceError)
       return NextResponse.json(
-        { error: "Insufficient wallet balance", shortfallCents: err.shortfallCents },
-        { status: 402 }
+        {
+          error: "Insufficient wallet balance",
+          shortfallCents: error.shortfallCents,
+        },
+        { status: 402 },
       );
-    }
-    throw err;
+    throw error;
   }
-
-  const order = await Order.create({
-    userId: session.user.id,
-    serviceId: service._id,
-    platformId: service.platformId,
-    platformLabel: service.platformLabel,
-    category: service.category,
-    qtyValue,
-    targetLink,
-    priceCents: chargeCents,
-    paymentSource: "wallet",
-    status: "pending",
-  });
-
-  const fulfillment = await fulfillOrder(order);
-  if (!fulfillment.success && fulfillment.mode === "automated") {
-    order.status = "failed";
-    await order.save();
-
-    await applyWalletTransaction({
-      userId: session.user.id,
-      type: "refund",
-      amountCents: chargeCents,
-      relatedOrderId: order._id,
-      note: `Refund: ${fulfillment.error || "Supplier submission failed"}`,
-    });
-  }
-
-  return NextResponse.json({ order });
 }

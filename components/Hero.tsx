@@ -73,7 +73,7 @@ export default function Hero() {
           </motion.h1>
 
           <motion.p variants={item} className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Connect with real people on Instagram, TikTok, YouTube and Facebook. We help creators and brands build authentic audiences—fast, affordable, and fully secure. Let's grow together.
+            Choose followers, likes, views, comments, and automatic plans for Instagram, TikTok, Facebook, and X. Pick your service and quantity below to see your package price in USD.
           </motion.p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3 pb-6">

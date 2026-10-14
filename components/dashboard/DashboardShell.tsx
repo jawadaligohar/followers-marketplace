@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "Orders", href: "/dashboard/orders", icon: ListOrdered },
   { label: "New Order", href: "/dashboard/orders/new", icon: PlusCircle },
   { label: "Wallet", href: "/dashboard/wallet", icon: Wallet },
+  { label: "Rewards", href: "/dashboard/rewards", icon: Sparkles },
 ];
 
 export default function DashboardShell({

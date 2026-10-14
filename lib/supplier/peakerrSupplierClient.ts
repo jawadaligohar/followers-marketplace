@@ -43,7 +43,10 @@ export class PeakerrSupplierClient implements SupplierClient {
 
   async submitOrder(input: SubmitOrderInput): Promise<SubmitOrderResult> {
     if (this.isSandbox()) {
-      console.log(`[Peakerr Sandbox] Simulating order submission: Service #${input.supplierServiceId}, Qty: ${input.quantity}, Link: ${input.link}`);
+      console.log(
+        `[Peakerr Sandbox] Simulating order submission: Service #${input.supplierServiceId}, Qty: ${input.quantity}, Link: ${input.link}`,
+        input.subscription ?? input.pollOption ?? (input.comments ? `${input.comments.length} comments` : "")
+      );
       return {
         supplierOrderId: `sim-pk-${Date.now()}`,
         status: "processing",
@@ -54,9 +57,26 @@ export class PeakerrSupplierClient implements SupplierClient {
       key: this.apiKey.trim(),
       action: "add",
       service: input.supplierServiceId,
-      link: input.link,
-      quantity: String(input.quantity),
     });
+
+    // Standard SMM-panel parameters per service type.
+    if (input.subscription) {
+      body.set("username", input.subscription.username);
+      body.set("min", String(input.quantity));
+      body.set("max", String(input.quantity));
+      body.set("posts", String(input.subscription.posts));
+      body.set("delay", "0");
+      const expiry = new Date();
+      expiry.setUTCDate(expiry.getUTCDate() + 30);
+      body.set("expiry", `${expiry.getUTCDate()}/${expiry.getUTCMonth() + 1}/${expiry.getUTCFullYear()}`);
+    } else if (input.comments?.length) {
+      body.set("link", input.link);
+      body.set("comments", input.comments.join("\n"));
+    } else {
+      body.set("link", input.link);
+      body.set("quantity", String(input.quantity));
+      if (input.pollOption) body.set("answer_number", String(input.pollOption));
+    }
 
     const res = await fetch(this.endpoint, {
       method: "POST",

@@ -1,88 +1,64 @@
 "use client";
+import { usePaymentOptions } from "@/lib/usePaymentOptions";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
 import { Loader2, Wallet, CreditCard, Bitcoin } from "lucide-react";
-import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
+import { PLATFORM_ORDER, PLATFORMS, type PlatformId } from "@/lib/catalog";
 import { walletPriceCents } from "@/lib/pricing";
+import { useServices } from "@/lib/cart/useServices";
+import PlatformIcon from "@/components/shared/PlatformIcon";
+import { DraftExtras, LinkField, TierPicker } from "@/components/service/ServiceFields";
+import { useLineDraft } from "@/components/service/useLineDraft";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 
-const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
-  instagram: { icon: FaInstagram, color: "text-pink-500" },
-  tiktok: { icon: FaTiktok, color: "text-foreground" },
-  facebook: { icon: FaFacebook, color: "text-blue-500" },
-};
-
-type Tier = { qty: string; qtyValue: number; priceCents: number; highlight?: boolean };
-type ServiceDoc = {
-  _id: string;
-  platformId: string;
-  platformLabel: string;
-  category: string;
-  tiers: Tier[];
-};
-
 export default function NewOrderForm() {
   const router = useRouter();
+  const { bankEnabled } = usePaymentOptions();
   const { update } = useSession();
 
-  const [services, setServices] = useState<ServiceDoc[]>([]);
-  const [loadingServices, setLoadingServices] = useState(true);
-  const [platformId, setPlatformId] = useState<string>("");
-  const [qtyValue, setQtyValue] = useState<number | null>(null);
-  const [targetLink, setTargetLink] = useState("");
-  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto">("wallet");
+  const { services: allServices, loaded } = useServices();
+  // Only database-backed services can be ordered.
+  const services = allServices.filter((s) => s._id);
+  const [platformId, setPlatformId] = useState<PlatformId>("instagram");
+  const [slug, setSlug] = useState("");
+  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto" | "bank">("wallet");
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/services")
-      .then((r) => r.json())
-      .then((data) => {
-        setServices(data.services ?? []);
-        if (data.services?.length) {
-          setPlatformId(data.services[0].platformId);
-          setQtyValue(data.services[0].tiers[0]?.qtyValue ?? null);
-        }
-      })
-      .finally(() => setLoadingServices(false));
-  }, []);
+  const platforms = PLATFORM_ORDER.filter((p) => services.some((s) => s.platformId === p));
+  const platformServices = services.filter((s) => s.platformId === platformId);
+  const currentService = platformServices.find((s) => s.slug === slug) ?? platformServices[0];
+  const draft = useLineDraft(currentService);
+  const selectedTier = draft.tier;
 
-  const currentService = useMemo(
-    () => services.find((s) => s.platformId === platformId),
-    [services, platformId]
-  );
-
-  const selectedTier = useMemo(
-    () => currentService?.tiers.find((t) => t.qtyValue === qtyValue) ?? currentService?.tiers[0],
-    [currentService, qtyValue]
-  );
-
-  function handlePlatformChange(id: string) {
+  function handlePlatformChange(id: PlatformId) {
     setPlatformId(id);
-    const svc = services.find((s) => s.platformId === id);
-    setQtyValue(svc?.tiers[0]?.qtyValue ?? null);
+    setSlug("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!currentService || !selectedTier) return;
+    const error = draft.validate(true);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     setSubmitting(true);
 
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        serviceId: currentService._id,
-        qtyValue: selectedTier.qtyValue,
-        targetLink,
+        ...draft.toCartItem(),
         paymentSource,
+        expectedTotalCents: paymentSource === "wallet" ? walletPriceCents(draft.priceCents) : draft.priceCents,
       }),
     });
 
@@ -111,7 +87,7 @@ export default function NewOrderForm() {
     router.refresh();
   }
 
-  if (loadingServices) {
+  if (!loaded) {
     return (
       <div className="max-w-xl space-y-6">
         <Skeleton className="h-20 w-full" />
@@ -129,25 +105,20 @@ export default function NewOrderForm() {
     );
   }
 
-  const chargeCents =
-    paymentSource === "wallet"
-      ? walletPriceCents(selectedTier?.priceCents ?? 0)
-      : selectedTier?.priceCents ?? 0;
+  const chargeCents = paymentSource === "wallet" ? walletPriceCents(draft.priceCents) : draft.priceCents;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
       <div>
         <Label className="mb-2 text-xs text-muted-foreground">Platform</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {services.map((svc) => {
-            const meta = PLATFORM_ICONS[svc.platformId];
-            const Icon = meta?.icon;
-            const active = platformId === svc.platformId;
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {platforms.map((p) => {
+            const active = platformId === p;
             return (
               <motion.button
-                key={svc.platformId}
+                key={p}
                 type="button"
-                onClick={() => handlePlatformChange(svc.platformId)}
+                onClick={() => handlePlatformChange(p)}
                 whileTap={{ scale: 0.95 }}
                 className={`flex flex-col items-center gap-2 rounded-xl border px-2 py-3 text-xs font-medium transition ${
                   active
@@ -155,8 +126,8 @@ export default function NewOrderForm() {
                     : "border-border text-muted-foreground hover:border-brand-500/30"
                 }`}
               >
-                {Icon && <Icon className={`h-5 w-5 ${meta.color}`} />}
-                {svc.platformLabel}
+                <PlatformIcon platformId={p} className="h-5 w-5" />
+                {PLATFORMS[p].label}
               </motion.button>
             );
           })}
@@ -164,42 +135,41 @@ export default function NewOrderForm() {
       </div>
 
       <div>
-        <Label className="mb-2 text-xs text-muted-foreground">Quantity</Label>
-        <div className="grid grid-cols-4 gap-2">
-          {currentService?.tiers.map((tier) => (
-            <motion.button
-              key={tier.qty}
+        <Label className="mb-2 text-xs text-muted-foreground">Service</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {platformServices.map((s) => (
+            <button
+              key={s.slug}
               type="button"
-              onClick={() => setQtyValue(tier.qtyValue)}
-              whileTap={{ scale: 0.95 }}
-              className={`rounded-lg border px-2 py-2 text-xs font-medium transition ${
-                qtyValue === tier.qtyValue
+              onClick={() => setSlug(s.slug)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                s.slug === currentService?.slug
                   ? "border-brand-500 bg-brand-500/10 text-foreground"
-                  : "border-border text-muted-foreground hover:border-brand-500/30"
+                  : "border-border text-muted-foreground hover:border-brand-500/30 hover:text-foreground"
               }`}
             >
-              {tier.qty}
-            </motion.button>
+              {s.category}
+            </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="target-link" className="text-xs text-muted-foreground">
-          Profile Link
-        </Label>
-        <Input
-          id="target-link"
-          type="url"
-          required
-          value={targetLink}
-          onChange={(e) => setTargetLink(e.target.value)}
-          placeholder="https://instagram.com/yourprofile"
-        />
-      </div>
+      {currentService && selectedTier && (
+        <>
+          <div>
+            <Label className="mb-2 text-xs text-muted-foreground">
+              Quantity{currentService.kind === "auto" && " (per post)"}
+            </Label>
+            <TierPicker tiers={currentService.tiers} value={selectedTier.qtyValue} onChange={draft.setQtyValue} showPrices />
+          </div>
+          <DraftExtras service={currentService} draft={draft} idPrefix="dash" />
+          <LinkField service={currentService} id="target-link" value={draft.targetLink} onChange={draft.setTargetLink} />
+        </>
+      )}
 
       <div>
         <Label className="mb-2 block text-xs font-medium text-muted-foreground">Payment method</Label>
+        {bankEnabled && <Button type="button" className="mb-3" variant={paymentSource === "bank" ? "default" : "outline"} onClick={() => setPaymentSource("bank")}>Bank transfer · manual confirmation</Button>}
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           <motion.button
             type="button"
@@ -216,7 +186,7 @@ export default function NewOrderForm() {
                 <Wallet className="h-4 w-4" />
               </span>
               <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
-                15% OFF
+                5% OFF
               </span>
             </div>
             <div className="mt-3">
@@ -288,7 +258,7 @@ export default function NewOrderForm() {
         <span className="text-sm text-muted-foreground">Total price</span>
         <AnimatePresence mode="wait">
           <motion.span
-            key={`${platformId}-${qtyValue}-${paymentSource}`}
+            key={`${currentService?.slug}-${selectedTier?.qtyValue}-${draft.postsCovered}-${paymentSource}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -308,7 +278,9 @@ export default function NewOrderForm() {
           className="flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {paymentSource === "crypto"
+          {paymentSource === "bank"
+            ? "Get bank transfer instructions"
+            : paymentSource === "crypto"
             ? "Pay with Crypto"
             : paymentSource === "card"
             ? "Continue to payment"

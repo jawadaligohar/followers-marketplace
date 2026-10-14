@@ -1,24 +1,22 @@
 "use client";
 
+import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import PackageLinks from "@/components/shared/PackageLinks";
+import { SERVICE_FAQS } from "@/lib/faqs";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Search, Package, ShieldCheck, RefreshCw, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
-const FAQS = [
-  { question: "When will my order start?", answer: "Most orders begin processing immediately after payment is confirmed. Depending on the service, you should see results within 1-12 hours." },
-  { question: "What is the 30-day refill guarantee?", answer: "If your follower or like count drops within 30 days of purchase, we will automatically refill the dropped amount completely free of charge. No questions asked." },
-  { question: "Is my account safe?", answer: "Absolutely. We never ask for your password or sensitive information. Our methods comply with platform limits to ensure your account remains 100% secure." },
-  { question: "Do you offer refunds?", answer: "Yes, if we fail to deliver your order within the promised timeframe, we offer a full refund. Please contact support to initiate a request." },
-];
 
 export default function HelpPage() {
-  const [trackId, setTrackId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="relative overflow-hidden bg-zinc-950 py-24 sm:py-32">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-600/30 via-zinc-950 to-zinc-950" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
@@ -43,10 +41,10 @@ export default function HelpPage() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4">
-               <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><Package className="h-4 w-4 text-brand-400" /> Track order</div>
-               <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><RefreshCw className="h-4 w-4 text-emerald-400" /> Refill Guarantee</div>
-               <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><ShieldCheck className="h-4 w-4 text-blue-400" /> Refund Policy</div>
-               <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><MessageSquare className="h-4 w-4 text-amber-400" /> Contact Us</div>
+               <Link href="/dashboard/orders" className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><Package className="h-4 w-4 text-brand-400" /> Track order</Link>
+               <button type="button" onClick={() => setSearchQuery("refill")} className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><RefreshCw className="h-4 w-4 text-emerald-400" /> Refill Guarantee</button>
+               <button type="button" onClick={() => setSearchQuery("refund")} className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><ShieldCheck className="h-4 w-4 text-blue-400" /> Refund Policy</button>
+               <Link href="/contact" className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white"><MessageSquare className="h-4 w-4 text-amber-400" /> Contact Us</Link>
             </div>
           </div>
 
@@ -64,49 +62,14 @@ export default function HelpPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Where&apos;s my order?</h3>
-                  <p className="text-sm text-zinc-400">Use the order ID from your confirmation email.</p>
+                  <p className="text-sm text-zinc-400">View package details and delivery status in your dashboard.</p>
                 </div>
               </div>
 
-              <div className="mt-8 rounded-2xl bg-black/40 p-6">
-                 {/* Progress Steps Mockup */}
-                 <div className="relative space-y-6">
-                    <div className="absolute bottom-6 left-3.5 top-2 w-0.5 bg-zinc-800" />
-                    
-                    <div className="relative flex items-center gap-4">
-                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 shadow-[0_0_15px_rgba(249,115,22,0.5)] z-10">
-                         <div className="h-2 w-2 rounded-full bg-white" />
-                       </div>
-                       <div className="font-medium text-white">Order placed</div>
-                    </div>
-                    
-                    <div className="relative flex items-center gap-4">
-                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500/20 border-2 border-brand-500 z-10">
-                         <div className="h-2 w-2 rounded-full bg-brand-500" />
-                       </div>
-                       <div className="flex-1">
-                         <div className="font-medium text-white">In progress</div>
-                         <div className="mt-2 h-1.5 w-full rounded-full bg-zinc-800">
-                           <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-brand-500 to-accent-500" />
-                         </div>
-                       </div>
-                    </div>
-
-                    <div className="relative flex items-center gap-4">
-                       <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 z-10" />
-                       <div className="font-medium text-zinc-500">Completed</div>
-                    </div>
-                 </div>
-              </div>
-
-              <div className="mt-8 flex gap-3">
-                <Input 
-                  placeholder="e.g. 628de..." 
-                  value={trackId}
-                  onChange={(e) => setTrackId(e.target.value)}
-                  className="border-white/10 bg-white/5 text-white placeholder:text-zinc-500 focus-visible:ring-brand-500"
-                />
-                <Button className="shrink-0 bg-brand-500 hover:bg-brand-600 text-white">Track &rarr;</Button>
+              <p className="mt-6 text-sm leading-relaxed text-zinc-300">Sign in with the account used at checkout to see your orders. For guest purchases, contact support with your checkout email and package details.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button render={<Link href="/dashboard/orders" />} nativeButton={false}>View my orders</Button>
+                <Button variant="outline" render={<Link href="/contact" />} nativeButton={false}>Guest order support</Button>
               </div>
             </motion.div>
           </div>
@@ -116,7 +79,8 @@ export default function HelpPage() {
       <div className="mx-auto max-w-3xl px-6 py-24 sm:py-32 lg:px-8">
         <h2 className="text-3xl font-bold tracking-tight text-foreground">Common Questions</h2>
         <dl className="mt-10 space-y-8">
-          {FAQS.filter(f => f.question.toLowerCase().includes(searchQuery.toLowerCase())).map((faq) => (
+          {!SERVICE_FAQS.some(f => `${f.question} ${f.answer}`.toLowerCase().includes(searchQuery.toLowerCase())) && <p className="text-muted-foreground">No matching questions. <Link href="/contact" className="text-brand-600 hover:underline">Contact support</Link> for help.</p>}
+          {SERVICE_FAQS.filter(f => `${f.question} ${f.answer}`.toLowerCase().includes(searchQuery.toLowerCase())).map((faq) => (
             <div key={faq.question} className="rounded-2xl border border-border bg-card p-8 shadow-sm">
               <dt className="text-lg font-semibold leading-7 text-foreground">
                 {faq.question}
@@ -127,7 +91,9 @@ export default function HelpPage() {
             </div>
           ))}
         </dl>
+        <PackageLinks slugs={["instagram-comments", "tiktok-auto-likes", "twitter-votes"]} />
       </div>
+      <Footer />
     </div>
   );
 }

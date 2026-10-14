@@ -14,16 +14,27 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import type { LinkTarget, ServiceKind } from "@/lib/catalog";
+
+const KINDS: ServiceKind[] = ["standard", "auto", "comments", "poll"];
+const TARGETS: LinkTarget[] = ["profile", "post", "video", "reel", "live", "page", "tweet", "space"];
+const selectClass =
+  "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30";
 
 export type ServiceFormTier = {
   qty: string;
   qtyValue: number;
   priceCents: number;
   highlight?: boolean;
+  /** Auto plans; not editable here, but preserved on save. */
+  postsOptions?: { posts: number; priceCents: number }[];
 };
 
 export type ServiceFormData = {
   _id?: string;
+  slug: string;
+  kind: ServiceKind;
+  target: LinkTarget;
   platformId: string;
   platformLabel: string;
   category: string;
@@ -33,6 +44,9 @@ export type ServiceFormData = {
 };
 
 const EMPTY: ServiceFormData = {
+  slug: "",
+  kind: "standard",
+  target: "profile",
   platformId: "",
   platformLabel: "",
   category: "Followers",
@@ -80,14 +94,18 @@ export default function ServiceFormModal({
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
+      // sortOrder is only sent on create, so editing keeps the service's position.
       body: JSON.stringify({
+        slug: form.slug.trim(),
+        kind: form.kind,
+        target: form.target,
         platformId: form.platformId,
         platformLabel: form.platformLabel,
         category: form.category,
         active: form.active,
         supplierServiceId: form.supplierServiceId?.trim() || null,
         tiers: form.tiers,
-        sortOrder: 0,
+        ...(!form._id && { sortOrder: 999 }),
       }),
     });
 
@@ -111,6 +129,53 @@ export default function ServiceFormModal({
         </DialogHeader>
 
         <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="slug" className="text-xs text-muted-foreground">
+              Slug (URL: /services/slug)
+            </Label>
+            <Input
+              id="slug"
+              value={form.slug}
+              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
+              placeholder="instagram-likes"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="kind" className="text-xs text-muted-foreground">
+                Kind
+              </Label>
+              <select
+                id="kind"
+                value={form.kind}
+                onChange={(e) => setForm((p) => ({ ...p, kind: e.target.value as ServiceKind }))}
+                className={selectClass}
+              >
+                {KINDS.map((k) => (
+                  <option key={k} value={k}>
+                    {k}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="target" className="text-xs text-muted-foreground">
+                Link target
+              </Label>
+              <select
+                id="target"
+                value={form.target}
+                onChange={(e) => setForm((p) => ({ ...p, target: e.target.value as LinkTarget }))}
+                className={selectClass}
+              >
+                {TARGETS.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="platformId" className="text-xs text-muted-foreground">
               Platform ID

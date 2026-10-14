@@ -1,4 +1,5 @@
 "use client";
+import { usePaymentOptions } from "@/lib/usePaymentOptions";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,9 +8,11 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { ArrowLeft, Loader2, Wallet, CreditCard, Trash2, ShieldCheck, Bitcoin } from "lucide-react";
-import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { useCart } from "@/lib/cart/CartContext";
 import { walletPriceCents } from "@/lib/pricing";
+import { lineExtrasError } from "@/lib/serviceDocs";
+import PlatformIcon from "@/components/shared/PlatformIcon";
+import { CommentsField, LinkField, PollOptionField } from "@/components/service/ServiceFields";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,29 +20,33 @@ import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/EmptyState";
 import { PackageOpen } from "lucide-react";
 
-const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
-  instagram: { icon: FaInstagram, color: "text-pink-500" },
-  tiktok: { icon: FaTiktok, color: "text-foreground" },
-  facebook: { icon: FaFacebook, color: "text-blue-500" },
-};
-
 export default function CheckoutPageClient() {
   const router = useRouter();
-  const { items, removeItem, updateLink, clear, totalCents } = useCart();
+  const { bankEnabled } = usePaymentOptions();
+  const { items, removeItem, updateItem, clear, totalCents, pricingLoaded } = useCart();
   const { status } = useSession();
   const isAuthed = status === "authenticated";
 
   const [guestEmail, setGuestEmail] = useState("");
-  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto">(isAuthed ? "wallet" : "card");
+  const [paymentSource, setPaymentSource] = useState<"wallet" | "card" | "crypto" | "bank">(isAuthed ? "wallet" : "card");
   const [submitting, setSubmitting] = useState(false);
 
   const chargeCents =
-    paymentSource === "wallet" ? walletPriceCents(totalCents) : totalCents;
+    paymentSource === "wallet" ? items.reduce((sum, item) => sum + walletPriceCents(item.priceCents), 0) : totalCents;
 
   async function handleCheckout() {
+    if (!pricingLoaded) { toast.error("Current package prices are loading"); return; }
+    if (items.some(item => item.unavailable)) { toast.error("Remove unavailable packages and choose a current service before paying"); return; }
     if (items.some((i) => !i.targetLink.trim())) {
-      toast.error("Add a profile link for every item in your cart");
+      toast.error("Add a link for every item in your cart");
       return;
+    }
+    for (const item of items) {
+      const error = lineExtrasError(item.kind, item.qtyValue, item);
+      if (error) {
+        toast.error(`${item.platformLabel} ${item.category}: ${error}`);
+        return;
+      }
     }
     if (!isAuthed && !guestEmail.trim()) {
       toast.error("Enter your email to continue as a guest");
@@ -55,8 +62,12 @@ export default function CheckoutPageClient() {
           serviceId: i.serviceId,
           qtyValue: i.qtyValue,
           targetLink: i.targetLink,
+          postsCovered: i.postsCovered,
+          comments: i.comments?.map((c) => c.trim()).filter(Boolean),
+          pollOption: i.pollOption,
         })),
         paymentSource,
+        expectedTotalCents: chargeCents,
         guestEmail: isAuthed ? undefined : guestEmail.trim(),
       }),
     });
@@ -93,7 +104,7 @@ export default function CheckoutPageClient() {
           title="Your cart is empty"
           description="Add a service from the homepage to get started."
         >
-          <Button variant="default" className="mt-5" render={<Link href="/#pricing" />}>
+          <Button variant="default" className="mt-5" render={<Link href="/services" />} nativeButton={false}>
             Browse services
           </Button>
         </EmptyState>
@@ -113,13 +124,11 @@ export default function CheckoutPageClient() {
 
       <h1 className="mt-4 text-2xl font-bold">Checkout</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Review your order, add your profile links, and pay securely.
+        Review your order, add your links, and pay securely.
       </p>
 
       <div className="mt-8 space-y-4">
         {items.map((item, i) => {
-          const meta = PLATFORM_ICONS[item.platformId];
-          const Icon = meta?.icon;
           return (
             <motion.div
               key={item.id}
@@ -132,13 +141,16 @@ export default function CheckoutPageClient() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-                        {Icon && <Icon className={`h-4 w-4 ${meta.color}`} />}
+                        <PlatformIcon platformId={item.platformId} />
                       </span>
                       <div>
                         <div className="text-sm font-medium">
                           {item.platformLabel} {item.category}
                         </div>
-                        <div className="text-xs text-muted-foreground">{item.qty}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {item.qty}
+                          {item.postsCovered && ` · ${item.postsCovered} posts over 30 days`}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -154,11 +166,26 @@ export default function CheckoutPageClient() {
                       </button>
                     </div>
                   </div>
-                  <Input
+                  <LinkField
+                    service={item}
+                    id={`link-${item.id}`}
                     value={item.targetLink}
-                    onChange={(e) => updateLink(item.id, e.target.value)}
-                    placeholder={`https://${item.platformId}.com/yourprofile`}
+                    onChange={(targetLink) => updateItem(item.id, { targetLink })}
                   />
+                  {item.kind === "comments" && (
+                    <CommentsField
+                      id={`comments-${item.id}`}
+                      count={item.qtyValue}
+                      value={item.comments ?? []}
+                      onChange={(comments) => updateItem(item.id, { comments })}
+                    />
+                  )}
+                  {item.kind === "poll" && (
+                    <PollOptionField
+                      value={item.pollOption}
+                      onChange={(pollOption) => updateItem(item.id, { pollOption })}
+                    />
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
@@ -185,7 +212,7 @@ export default function CheckoutPageClient() {
               <Link href="/login" className="text-brand-600 hover:underline">
                 Sign in
               </Link>{" "}
-              to pay from your wallet and save 15%.
+              to pay from your wallet and save 5%.
             </p>
           </CardContent>
         </Card>
@@ -193,6 +220,7 @@ export default function CheckoutPageClient() {
 
       <div className="mt-6">
         <Label className="mb-2 block text-xs font-medium text-muted-foreground">Payment method</Label>
+        {bankEnabled && <Button type="button" className="mb-3" variant={paymentSource === "bank" ? "default" : "outline"} onClick={() => setPaymentSource("bank")}>Bank transfer · manual confirmation</Button>}
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           <motion.button
             type="button"
@@ -210,7 +238,7 @@ export default function CheckoutPageClient() {
                 <Wallet className="h-4 w-4" />
               </span>
               <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
-                15% OFF
+                5% OFF
               </span>
             </div>
             <div className="mt-3">
@@ -294,7 +322,9 @@ export default function CheckoutPageClient() {
           className="mt-4 flex w-full items-center justify-center gap-2 py-5"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {paymentSource === "crypto"
+          {paymentSource === "bank"
+            ? "Get bank transfer instructions"
+            : paymentSource === "crypto"
             ? "Pay with Crypto"
             : paymentSource === "card"
             ? "Continue to payment"

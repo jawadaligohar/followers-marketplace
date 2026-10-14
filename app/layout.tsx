@@ -11,7 +11,7 @@ const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
 export const metadata: Metadata = {
   title: "Surgeon | Real Growth, Real People",
   description:
-    "Buy real Instagram, TikTok, YouTube and Facebook followers, likes and views. Fast delivery, secure checkout, 24/7 support.",
+    "Buy real Instagram, TikTok, Facebook and X (Twitter) followers, likes, views, comments and auto likes. Fast delivery, secure checkout, 24/7 support.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

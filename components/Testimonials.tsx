@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { Star, Quote, BadgeCheck } from "lucide-react";
 import { motion } from "motion/react";
@@ -13,7 +14,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "I was skeptical at first but the delivery was fast and my engagement actually improved. Support answered my questions within minutes.",
-    purchased: "2,500 Instagram Followers",
+    purchased: "2,500 Instagram Followers", slug: "instagram-followers", qty: 2500,
     time: "2 weeks ago",
   },
   {
@@ -22,7 +23,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "Used this for my shop's Instagram before a launch. Smooth checkout, no password needed, and the followers started coming in right away.",
-    purchased: "1,000 Instagram Followers",
+    purchased: "1,000 Instagram Followers", slug: "instagram-followers", qty: 1000,
     time: "1 month ago",
   },
   {
@@ -31,7 +32,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "Best value I've found for TikTok growth services. The drip-feed option made everything look natural. Will be ordering again.",
-    purchased: "5,000 TikTok Followers",
+    purchased: "5,000 TikTok Followers", slug: "tiktok-followers", qty: 5000,
     time: "3 weeks ago",
   },
   {
@@ -40,7 +41,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "Needed a quick boost before a big showcase post. Delivery started within the hour and everything looked completely natural.",
-    purchased: "2,500 Instagram Likes",
+    purchased: "2,500 Instagram Likes", slug: "instagram-likes", qty: 2500,
     time: "5 days ago",
   },
   {
@@ -49,7 +50,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "Support walked me through everything since it was my first time. The wallet discount makes reordering every month a no-brainer.",
-    purchased: "1,000 Facebook Followers",
+    purchased: "1,000 Facebook Followers", slug: "facebook-followers", qty: 1000,
     time: "1 week ago",
   },
   {
@@ -58,7 +59,7 @@ const TESTIMONIALS = [
     photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&h=120&q=80",
     quote:
       "Refill guarantee actually means something here — had a small drop after two weeks and they topped it right back up, no questions asked.",
-    purchased: "500 TikTok Likes",
+    purchased: "500 TikTok Likes", slug: "tiktok-likes", qty: 500,
     time: "2 months ago",
   },
 ];
@@ -110,7 +111,7 @@ export default function Testimonials() {
                 </p>
 
                 <Badge variant="completed" className="mt-4 rounded-full font-normal">
-                  Purchased {t.purchased}
+                  Purchased <Link href={`/services/${t.slug}?qty=${t.qty}#buy`} className="hover:underline">{t.purchased}</Link>
                 </Badge>
 
                 <div className="mt-4 flex items-center justify-between border-t border-border pt-4">

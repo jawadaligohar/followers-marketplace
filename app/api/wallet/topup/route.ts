@@ -1,3 +1,4 @@
+import { createBankTransfer, bankInstructions } from "@/lib/bankTransfer";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
@@ -22,6 +23,11 @@ export async function POST(req: Request) {
   const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
   const { amountCents, method } = parsed.data;
 
+  if (method === "bank") {
+    if (!bankInstructions()) return NextResponse.json({ error: "Bank transfers are not configured yet" }, { status: 503 });
+    const transfer = await createBankTransfer({ email: session.user.email!, userId: session.user.id, topupCents: amountCents });
+    return NextResponse.json({ checkoutUrl: origin + "/checkout/bank-transfer?token=" + encodeURIComponent(transfer.token) });
+  }
   if (method === "nowpayments") {
     try {
       const orderId = `topup_${session.user.id}_${Date.now()}`;

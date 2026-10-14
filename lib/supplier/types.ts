@@ -2,6 +2,12 @@ export interface SubmitOrderInput {
   supplierServiceId: string;
   link: string;
   quantity: number;
+  /** Custom-comments services: one comment per entry. */
+  comments?: string[];
+  /** Poll services: which option receives the votes. */
+  pollOption?: number;
+  /** Auto (subscription) services: deliver `quantity` to each of the next `posts` posts. */
+  subscription?: { username: string; posts: number };
 }
 
 export interface SubmitOrderResult {

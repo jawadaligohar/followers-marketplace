@@ -7,6 +7,7 @@ import NicheShowcase from "@/components/NicheShowcase";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import Stats from "@/components/Stats";
 import Services from "@/components/Services";
+import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
 import ComparisonTable from "@/components/ComparisonTable";
 import Pricing from "@/components/Pricing";
@@ -32,6 +33,7 @@ export default function Home() {
         <ShowcaseSection />
         <Stats />
         <Services />
+        <Offers />
         <HowItWorks />
         <ComparisonTable />
         <Pricing />

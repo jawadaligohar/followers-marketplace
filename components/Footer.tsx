@@ -4,11 +4,15 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { Heart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { PLATFORM_ORDER, PLATFORMS } from "@/lib/catalog";
 
-const FOOTER_LINKS = {
-  Services: ["Instagram", "TikTok", "YouTube", "Facebook", "Telegram"],
-  Company: ["Our Story", "Contact", "Blog", "Careers"],
-  Legal: ["Terms of Service", "Privacy Policy", "Refund Policy"],
+const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
+  Services: [
+    ...PLATFORM_ORDER.map((p) => ({ label: PLATFORMS[p].label, href: `/services#${p}` })),
+    { label: "All services", href: "/services" },
+  ],
+  Support: [{ label: "Contact", href: "/contact" }, { label: "Help & refill requests", href: "/help" }, { label: "Track order", href: "/track-order" }, { label: "Wallet", href: "/dashboard/wallet" }, { label: "Rewards", href: "/rewards" }],
+  "Free likes": PLATFORM_ORDER.map((platform) => ({ label: `50 free ${PLATFORMS[platform].label} likes`, href: `/free-${platform}-likes` })),
 };
 
 export default function Footer() {
@@ -32,7 +36,7 @@ export default function Footer() {
               <span className="text-base font-bold">Surgeon</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-              Helping you build real, lasting connections with your community. We're in this together.
+              Followers, likes, views, and more for Instagram, TikTok, Facebook, and X. Choose a package that fits your next goal.
             </p>
           </motion.div>
 
@@ -47,14 +51,14 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-foreground">{title}</h4>
               <ul className="mt-4 space-y-2.5">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
                       className="group relative text-sm text-muted-foreground transition hover:text-foreground"
                     >
-                      {link}
+                      {link.label}
                       <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-brand-500/60 transition-all duration-300 group-hover:w-full" />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -71,7 +75,7 @@ export default function Footer() {
           className="flex flex-col items-center justify-between gap-4 pt-8 text-xs text-muted-foreground/70 sm:flex-row"
         >
           <p>© {new Date().getFullYear()} Surgeon. All rights reserved.</p>
-          <p>Not affiliated with Instagram, TikTok, YouTube or Facebook.</p>
+          <p>Not affiliated with Instagram, TikTok, Facebook or X.</p>
         </motion.div>
       </div>
     </footer>

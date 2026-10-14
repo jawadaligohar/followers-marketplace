@@ -4,8 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { ShoppingCart, Trash2, ArrowRight, PackageOpen } from "lucide-react";
-import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
 import { useCart } from "@/lib/cart/CartContext";
+import PlatformIcon from "@/components/shared/PlatformIcon";
+import OrderExtras from "@/components/shared/OrderExtras";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,12 +14,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-
-const PLATFORM_ICONS: Record<string, { icon: typeof FaInstagram; color: string }> = {
-  instagram: { icon: FaInstagram, color: "text-pink-500" },
-  tiktok: { icon: FaTiktok, color: "text-foreground" },
-  facebook: { icon: FaFacebook, color: "text-blue-500" },
-};
 
 export default function CartDrawer() {
   const [open, setOpen] = useState(false);
@@ -62,7 +57,7 @@ export default function CartDrawer() {
               <PackageOpen className="h-6 w-6 text-muted-foreground/50" />
             </span>
             <p className="text-sm text-muted-foreground">Your cart is empty.</p>
-            <Button variant="outline" onClick={() => setOpen(false)} render={<Link href="/#pricing" />}>
+            <Button variant="outline" onClick={() => setOpen(false)} render={<Link href="/services" />} nativeButton={false}>
               Browse services
             </Button>
           </div>
@@ -71,8 +66,6 @@ export default function CartDrawer() {
             <div className="flex-1 space-y-3 overflow-y-auto px-4">
               <AnimatePresence initial={false}>
                 {items.map((item) => {
-                  const meta = PLATFORM_ICONS[item.platformId];
-                  const Icon = meta?.icon;
                   return (
                     <motion.div
                       key={item.id}
@@ -84,13 +77,15 @@ export default function CartDrawer() {
                       className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
                     >
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-                        {Icon && <Icon className={`h-4 w-4 ${meta.color}`} />}
+                        <PlatformIcon platformId={item.platformId} />
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">
-                          {item.platformLabel} {item.category}
+                          <Link href={`/services/${item.slug}?qty=${item.qtyValue}#buy`} onClick={() => setOpen(false)} className="hover:underline">{item.platformLabel} {item.category}</Link>
                         </div>
                         <div className="text-xs text-muted-foreground">{item.qty}</div>
+                        <OrderExtras order={item} />
+                        {item.unavailable && <p className="mt-1 text-xs text-red-600">This package is no longer available. Remove it and choose a current package.</p>}
                       </div>
                       <div className="shrink-0 text-right">
                         <div className="text-sm font-semibold">
@@ -122,6 +117,7 @@ export default function CartDrawer() {
                 className="mt-4 flex w-full items-center justify-center gap-2 py-5"
                 onClick={() => setOpen(false)}
                 render={<Link href="/checkout" />}
+                nativeButton={false}
               >
                 Checkout
                 <ArrowRight className="h-4 w-4" />

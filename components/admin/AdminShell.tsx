@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "Orders", href: "/admin/orders", icon: ListOrdered },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Services", href: "/admin/services", icon: Boxes },
+  { label: "Payments & rewards", href: "/admin/benefits", icon: Sparkles },
 ];
 
 export default function AdminShell({

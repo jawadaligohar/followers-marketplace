@@ -48,7 +48,7 @@ export default function Guarantees() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-lg text-zinc-600"
           >
-            Quality, security, and elite support aren't just buzzwords for us—they are built into the DNA of every single order.
+            Clear package details, secure checkout, and support for every order.
           </motion.p>
         </div>
 

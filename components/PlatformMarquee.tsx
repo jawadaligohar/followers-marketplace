@@ -1,24 +1,7 @@
-import {
-  FaInstagram,
-  FaTiktok,
-  FaYoutube,
-  FaFacebook,
-  FaXTwitter,
-  FaSpotify,
-  FaTelegram,
-  FaLinkedin,
-} from "react-icons/fa6";
-
-const LOGOS = [
-  { name: "Instagram", icon: FaInstagram },
-  { name: "TikTok", icon: FaTiktok },
-  { name: "YouTube", icon: FaYoutube },
-  { name: "Facebook", icon: FaFacebook },
-  { name: "Twitter / X", icon: FaXTwitter },
-  { name: "Spotify", icon: FaSpotify },
-  { name: "Telegram", icon: FaTelegram },
-  { name: "LinkedIn", icon: FaLinkedin },
-];
+import Link from "next/link";
+import { PLATFORM_ORDER, PLATFORMS } from "@/lib/catalog";
+import PlatformIcon from "@/components/shared/PlatformIcon";
+const LOGOS = PLATFORM_ORDER.map(platform => ({ platform, name: PLATFORMS[platform].label }));
 
 export default function PlatformMarquee() {
   const items = [...LOGOS, ...LOGOS];
@@ -35,13 +18,14 @@ export default function PlatformMarquee() {
       >
         <div className="flex w-max animate-marquee gap-12">
           {items.map((item, i) => (
-            <span
+            <Link
+              href={`/services#${item.platform}`}
               key={`${item.name}-${i}`}
               className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-foreground"
             >
-              <item.icon className="h-4 w-4" />
+              <PlatformIcon platformId={item.platform} colored={false} />
               {item.name}
-            </span>
+            </Link>
           ))}
         </div>
       </div>

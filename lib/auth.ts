@@ -3,12 +3,12 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
-import clientPromise from "@/lib/db/mongoClient";
+import getMongoClient from "@/lib/db/mongoClient";
 import { dbConnect } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: MongoDBAdapter(getMongoClient),
   session: { strategy: "jwt" },
   pages: { signIn: "/login", error: "/login" },
   providers: [

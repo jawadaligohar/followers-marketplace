@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { assertIsolatedTestServer } from "../lib/testing";
 dotenv.config({ path: ".env" });
 dotenv.config({ path: ".env.local" });
 
@@ -8,11 +9,11 @@ import { Order } from "../lib/db/models/Order";
 import { User } from "../lib/db/models/User";
 import { Transaction } from "../lib/db/models/Transaction";
 import { nowpayments, getNowpaymentsApiBase, getNowpaymentsIpnSecret } from "../lib/nowpayments";
-import { supplierClient } from "../lib/supplier";
 import { fulfillOrder } from "../lib/supplier/fulfillment";
 import crypto from "crypto";
 
 async function runEndToEndCryptoTest() {
+  await assertIsolatedTestServer("http://localhost:3000");
   console.log("==================================================");
   console.log("🚀 STARTING END-TO-END CRYPTO PAYMENT VERIFICATION");
   console.log("==================================================");
@@ -85,12 +86,7 @@ async function runEndToEndCryptoTest() {
   const ipnSecret = getNowpaymentsIpnSecret();
   let sig = "";
   if (ipnSecret) {
-    const sortedBody = Object.keys(webhookBody)
-      .sort()
-      .reduce((acc, key) => {
-        (acc as any)[key] = (webhookBody as any)[key];
-        return acc;
-      }, {} as any);
+    const sortedBody = Object.fromEntries(Object.entries(webhookBody).sort(([a], [b]) => a.localeCompare(b)));
     const hmac = crypto.createHmac("sha512", ipnSecret);
     hmac.update(JSON.stringify(sortedBody));
     sig = hmac.digest("hex");

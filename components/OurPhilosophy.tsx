@@ -1,7 +1,9 @@
 "use client";
 
+import PackageLinks from "@/components/shared/PackageLinks";
+import Image from "next/image";
 import { motion } from "motion/react";
-import { HeartHandshake, Leaf, Sparkles, TrendingUp, Users } from "lucide-react";
+import { HeartHandshake, Leaf, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const PILLARS = [
@@ -19,22 +21,6 @@ const PILLARS = [
   },
 ];
 
-const FLOATING_STATS = [
-  {
-    icon: TrendingUp,
-    label: "+80% Engagement",
-    className: "-left-12 top-20 bg-warm-amber text-warm-amber-foreground",
-    delay: 0.6,
-    float: { y: [0, -12, 0] },
-  },
-  {
-    icon: Users,
-    label: "250K+ Creators",
-    className: "-right-8 bottom-32 bg-warm-rose text-warm-rose-foreground",
-    delay: 0.8,
-    float: { y: [0, 12, 0] },
-  },
-];
 
 export default function OurPhilosophy() {
   return (
@@ -109,7 +95,7 @@ export default function OurPhilosophy() {
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-bold text-zinc-900">5,000 Likes</span>
-                <span className="text-[10px] text-zinc-500">Delivered instantly</span>
+                <span className="text-[10px] text-zinc-500">Instagram package</span>
               </div>
             </motion.div>
 
@@ -136,7 +122,7 @@ export default function OurPhilosophy() {
                 "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=64&h=64&fit=crop&crop=faces",
                 "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64&h=64&fit=crop&crop=faces",
               ].map((src, i) => (
-                <img key={i} src={src} alt="User" className="h-8 w-8 rounded-full border-2 border-white object-cover" />
+                <Image key={i} src={src} alt="User" width={32} height={32} className="h-8 w-8 rounded-full border-2 border-white object-cover" />
               ))}
               <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-brand-500 text-[10px] font-bold text-white">
                 +250k
@@ -162,7 +148,7 @@ export default function OurPhilosophy() {
             viewport={{ once: true, margin: "-80px" }}
             className="text-4xl font-extrabold tracking-tight sm:text-5xl"
           >
-            We're building the <span className="text-gradient">community</span> you deserve
+            We&apos;re building the <span className="text-gradient">community</span> you deserve
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -171,7 +157,7 @@ export default function OurPhilosophy() {
             transition={{ delay: 0.1 }}
             className="mt-6 text-lg text-muted-foreground leading-relaxed"
           >
-            We're not just another growth tool. We're a team of creators building the platform we always wished we had. We believe your audience should be as real as your content.
+            Build a package around your goal: followers for your profile, likes and views for a post, or automatic engagement for your next month of content.
           </motion.p>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -197,6 +183,7 @@ export default function OurPhilosophy() {
               </motion.div>
             ))}
           </div>
+          <PackageLinks slugs={["instagram-likes", "tiktok-auto-views", "facebook-followers"]} />
         </div>
       </div>
     </section>

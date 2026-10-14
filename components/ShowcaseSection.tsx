@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Zap, TrendingUp, Users } from "lucide-react";
 import HeroMockup from "./HeroMockup";
+import PackageLinks from "@/components/shared/PackageLinks";
 
 const HIGHLIGHTS = [
   {
@@ -34,7 +35,7 @@ export default function ShowcaseSection() {
             <span className="text-gradient">come to life</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            We don't just send numbers; we help you build a presence you're proud of. Watch your audience grow naturally, with full transparency every step of the way.
+            Choose a package for your profile or your next post. Followers, likes, views, and custom comments each have their own quantities and order details.
           </p>
 
           <div className="mt-8 space-y-5">
@@ -57,6 +58,7 @@ export default function ShowcaseSection() {
               </motion.div>
             ))}
           </div>
+          <PackageLinks slugs={["instagram-followers", "instagram-likes", "instagram-comments"]} />
         </div>
       </div>
     </section>

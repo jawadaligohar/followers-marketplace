@@ -8,7 +8,7 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 
 const BENEFITS = [
   { icon: TrendingUp, title: "Track every order from one dashboard" },
-  { icon: Wallet, title: "Pay with your wallet for a flat 15% off" },
+  { icon: Wallet, title: "Pay with your wallet for a flat 5% off" },
   { icon: Headset, title: "Get support whenever you need it" },
 ];
 
@@ -61,7 +61,7 @@ export default function AuthCard({
             <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-rose-100">
               <Wallet className="h-3.5 w-3.5 text-rose-500" />
             </div>
-            <span className="text-zinc-900">15% off with wallet</span>
+            <span className="text-zinc-900">5% off with wallet</span>
           </motion.div>
           
           <motion.div
@@ -128,7 +128,7 @@ export default function AuthCard({
         <div className="w-full max-w-[400px]">
           <div className="mb-8 md:hidden">
             <h1 className="text-3xl font-bold tracking-tight">
-              {isLogin ? "Welcome back." : "Create Account"}
+              {title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {subtitle}
@@ -140,7 +140,7 @@ export default function AuthCard({
               {isLogin ? "Login" : "Account"}
             </h2>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
-              {isLogin ? "Welcome back" : "Create Account"}
+              {title}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {subtitle}

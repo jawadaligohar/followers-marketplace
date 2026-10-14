@@ -24,6 +24,7 @@ export type TransactionRow = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
+  reward_credit: "Reward credit",
   topup: "Top-up",
   order_debit: "Order",
   refund: "Refund",

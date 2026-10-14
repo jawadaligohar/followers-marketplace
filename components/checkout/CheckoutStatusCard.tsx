@@ -77,7 +77,7 @@ export default function CheckoutStatusCard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.5 }}
         >
-          <Button variant={ctaVariant} className="mt-6" render={<Link href={ctaHref} />}>
+          <Button variant={ctaVariant} className="mt-6" render={<Link href={ctaHref} />} nativeButton={false}>
             {ctaLabel}
           </Button>
         </motion.div>

@@ -21,7 +21,7 @@ export default function ComparisonTable() {
           Why choose real people?
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Not all growth services are built the same. Here's why building a genuine community beats artificial bot-driven numbers.
+          Not all growth services are built the same. Here&apos;s why building a genuine community beats artificial bot-driven numbers.
         </p>
       </div>
 

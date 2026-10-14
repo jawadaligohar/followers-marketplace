@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Surgeon
 
-## Getting Started
+Social media service storefront with USD checkout, a customer wallet, rewards, and order administration.
 
-First, run the development server:
+## Service catalog
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The catalog in `lib/catalog.ts` contains 34 services and 222 quantity packages across Instagram, TikTok, Facebook, and X. GBP package prices are converted to USD using `GBP_TO_USD` (1.3247 in this snapshot). Runtime prices and availability come from MongoDB and can be managed at `/admin/services`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Run `npm run seed:services` against the intended database to import the catalog. This updates package prices and service definitions, migrates legacy service slugs while preserving document IDs, and preserves active settings and supplier mappings. It does not create or reset an admin account. The configured environment may point at production, so verify the destination before running it. Newly imported services require a matching supplier service ID in admin for automatic fulfillment; unmapped orders queue for manual fulfillment.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Every service has a page under `/services/<slug>`. Links with `?qty=<quantity>` select that package. Automatic plans accept a posts limit, comment packages require one comment per unit, and poll packages accept options 1–4. Card and crypto checkout charge the listed USD price; wallet orders receive the existing 5% discount. Server pricing is derived from the service document, never a client price.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For isolated catalog tests, start a local MongoDB and set `MONGODB_URI=mongodb://127.0.0.1:27999/followers_catalog_test`, then run `npm run test:catalog`. The test refuses remote databases, uses only supplier sandbox fulfillment, and drops its dedicated test database before and after the run. It checks all prices, auto upgrades, validation, legacy migration, repeated seeding, and supplier mappings. `npm run lint` and `npm run build` verify the application.
 
-## Learn More
+Set `SUPPORT_EMAIL` to the inbox shown on the contact page; the package enquiry form opens an email draft and does not send mail automatically.
 
-To learn more about Next.js, take a look at the following resources:
+## Offers, payments, and rewards
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every confirmed paid checkout earns one 50-like bonus for the platform of its first item. Private, signed tracking and claim links are available on the payment-return page. Authenticated customers can also claim through `/dashboard/rewards`. Fully refunded or unpaid checkouts do not qualify. Claims are protected by a unique checkout key and a database transaction. Bonus orders are separate $0 orders and never earn further bonuses or loyalty credit.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Paid packages earn a 1% loyalty credit. Customers redeem that credit into their wallets; refunds reduce eligibility and any excess previously redeemed credit offsets future earnings. Rewards and wallet checkout use MongoDB transactions, requiring a replica set (Atlas provides one). One monthly draw entry is earned for each $132.47 of qualifying direct-payment spend or wallet top-ups. Spending a topped-up wallet is not counted again, and refunds reduce qualification. Entries close at UTC month-end. Admins run a completed month's draw from `/admin/benefits`, specifying the fixed USD wallet-credit prize; each ticket has equal weight and a month can be drawn only once. The bank receiving details and prize amount were deliberately deferred by the user.
 
-## Deploy on Vercel
+Configure `BANK_TRANSFER_INSTRUCTIONS` with public USD receiving details to enable bank checkout and wallet top-ups. Pending transfers appear in `/admin/benefits`. Staff must verify the amount and reference before confirming; confirmation is idempotent and releases the order or credits the wallet. Until receiving instructions exist, bank payment is hidden and the API refuses to create a transfer.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Configure `RESEND_API_KEY` and `EMAIL_FROM` for transactional order/bonus, verification, and password-reset emails. Without them, messages remain in a persistent outbox and can be sent from `/admin/benefits` after configuration. Private order and bonus links remain accessible at checkout. A guest draw prize requires verification of the winning email address before redemption; a checkout token alone cannot authorize that prize. No real payment or email provider calls are required by the tests.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`npm run test:benefits` requires a local replica-set database named `followers_benefits_test`. It refuses remote connections and drops only its named test database. Tests cover concurrent bonus claims and reward redemptions, refunds, draw accounting and prizes, and repeat bank confirmations. `npm run audit:competitor` performs a read-only comparison against the competitor and saves structured evidence to `reports/catalog-parity.json`.
+
+The older supplier/crypto integration scripts now refuse production databases and verify the target server's isolated database and sandbox modes before creating test records. This prevents the leftover E2E services previously shown in the live catalog from recurring. Provider refunds and staff-recorded refunds adjust loyalty credit; refund events reduce the posting month's draw qualification without changing closed-month entries. The admin rewards panel can issue agreed wallet-credit refunds or record money already returned through another channel.
+
+## Local development
+
+Install dependencies with `npm ci`, copy `.env.example` to `.env`, and configure the database and authentication settings.
+
+Run `npm run dev` and open http://localhost:3000. Use `npm run lint` and `npm run build` to validate changes.

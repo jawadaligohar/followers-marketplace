@@ -11,6 +11,9 @@ export default async function AdminServicesPage() {
 
   const rows: AdminServiceRow[] = services.map((s) => ({
     _id: s._id.toString(),
+    slug: s.slug,
+    kind: s.kind ?? "standard",
+    target: s.target ?? "profile",
     platformId: s.platformId,
     platformLabel: s.platformLabel,
     category: s.category,

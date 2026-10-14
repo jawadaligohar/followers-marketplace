@@ -1,6 +1,6 @@
 import mongoose, { Schema, models, model } from "mongoose";
 
-export type TransactionType = "topup" | "order_debit" | "refund" | "admin_adjustment";
+export type TransactionType = "topup" | "order_debit" | "refund" | "admin_adjustment" | "reward_credit";
 
 export interface ITransaction {
   _id: mongoose.Types.ObjectId;
@@ -22,7 +22,7 @@ const TransactionSchema = new Schema<ITransaction>(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     type: {
       type: String,
-      enum: ["topup", "order_debit", "refund", "admin_adjustment"],
+      enum: ["topup", "order_debit", "refund", "admin_adjustment", "reward_credit"],
       required: true,
     },
     amountCents: { type: Number, required: true },
@@ -47,5 +47,6 @@ TransactionSchema.index(
   { unique: true, partialFilterExpression: { nowpaymentsPaymentId: { $type: "string" } } }
 );
 
+if (process.env.NODE_ENV === "development" && models.Transaction && !(models.Transaction.schema.path("type").options.enum as string[]).includes("reward_credit")) mongoose.deleteModel("Transaction");
 export const Transaction =
   models.Transaction || model<ITransaction>("Transaction", TransactionSchema);

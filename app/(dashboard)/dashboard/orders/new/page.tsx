@@ -9,7 +9,7 @@ export default function NewOrderPage() {
       <FadeIn>
         <h1 className="text-2xl font-bold">Place a new order</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Choose a platform, quantity and payment method.
+          Choose a platform, service, package quantity, and payment method. Add the link and details required by your package.
         </p>
       </FadeIn>
       <FadeIn delay={0.05}>

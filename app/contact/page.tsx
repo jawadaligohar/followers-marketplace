@@ -1,13 +1,17 @@
-import { Mail, Phone, MapPin, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Mail } from "lucide-react";
+import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import PackageLinks from "@/components/shared/PackageLinks";
+import PackageSupportForm from "@/components/service/PackageSupportForm";
 
 export const metadata = { title: "Contact Us | Surgeon" };
 
 export default function ContactPage() {
+  const email = process.env.SUPPORT_EMAIL || "hello@surgeon.io";
   return (
     <div className="relative min-h-[calc(100vh-80px)] overflow-hidden bg-background">
+      <Header />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-500/10 via-background to-background" />
       
       <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
@@ -30,67 +34,22 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold">Email support</p>
-                <p className="text-sm text-muted-foreground">hello@surgeon.io</p>
+                <a href={`mailto:${email}`} className="text-sm text-brand-600 hover:underline">{email}</a>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600">
-                <Phone className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="font-semibold">24/7 Phone</p>
-                <p className="text-sm text-muted-foreground">+44 123 456 7890</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600">
-                <MapPin className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="font-semibold">London Office</p>
-                <p className="text-sm text-muted-foreground">123 Market St, London, UK</p>
-              </div>
-            </div>
+            <p className="text-sm leading-relaxed text-muted-foreground">Include your checkout email, order ID, and package details so support can find your purchase.</p>
+            <Link href="/dashboard/orders" className="text-sm font-semibold text-brand-600 hover:underline">View your orders &rarr;</Link>
+            <PackageLinks slugs={["instagram-followers", "tiktok-likes", "facebook-page-likes", "twitter-votes"]} />
           </div>
 
           {/* Form */}
           <div className="rounded-3xl border border-border bg-card p-10 shadow-xl shadow-black/5">
-            <form className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="first-name">First name</Label>
-                  <Input id="first-name" placeholder="Jane" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last-name">Last name</Label>
-                  <Input id="last-name" placeholder="Doe" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="jane@example.com" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
-                <textarea 
-                  id="message" 
-                  rows={4} 
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="How can we help you?"
-                />
-              </div>
-
-              <Button type="button" className="w-full gap-2 py-6 text-base">
-                Send message <Send className="h-4 w-4" />
-              </Button>
-            </form>
+            <PackageSupportForm email={email} />
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

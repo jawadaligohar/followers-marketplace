@@ -70,7 +70,16 @@ export default function ServicesTable({ services }: { services: AdminServiceRow[
                 className="border-b border-border transition-colors last:border-0 hover:bg-muted/50"
               >
                 <TableCell>{svc.platformLabel}</TableCell>
-                <TableCell className="text-foreground/80">{svc.category}</TableCell>
+                <TableCell className="text-foreground/80">
+                  <a href={`/services/${svc.slug}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    {svc.category}
+                  </a>
+                  {svc.kind !== "standard" && (
+                    <Badge variant="outline" className="ml-2 text-[10px] capitalize">
+                      {svc.kind}
+                    </Badge>
+                  )}
+                </TableCell>
                 <TableCell className="text-foreground/80">{svc.tiers.length} tiers</TableCell>
                 <TableCell>
                   {svc.supplierServiceId ? (

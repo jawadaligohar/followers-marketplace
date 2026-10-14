@@ -1,22 +1,11 @@
 import { MongoClient } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-
 declare global {
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
+  var _nativeMongoClient: MongoClient | undefined;
 }
-
-let clientPromise: Promise<MongoClient>;
-
-if (!uri) {
-  clientPromise = Promise.reject(new Error("MONGODB_URI is not set"));
-} else if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    global._mongoClientPromise = new MongoClient(uri).connect();
-  }
-  clientPromise = global._mongoClientPromise;
-} else {
-  clientPromise = new MongoClient(uri).connect();
+// The adapter connects when it performs an operation, rather than during a build/import.
+export default function getMongoClient() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) throw new Error("MONGODB_URI is not set");
+  return global._nativeMongoClient ??= new MongoClient(uri);
 }
-
-export default clientPromise;

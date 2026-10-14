@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { assertLocalTestEnvironment } from "../lib/testing";
 dotenv.config({ path: ".env" });
 dotenv.config({ path: ".env.local" });
 
@@ -9,6 +10,7 @@ import { getPeakerrClient } from "../lib/supplier";
 import { fulfillOrder } from "../lib/supplier/fulfillment";
 
 async function testPeakerr() {
+  assertLocalTestEnvironment();
   console.log("==========================================");
   console.log("🛠️ TESTING PEAKERR INTEGRATION & SANDBOX");
   console.log("==========================================");
@@ -35,6 +37,7 @@ async function testPeakerr() {
 
   // Create temporary test service with Peakerr ID mapped
   const testService = await Service.create({
+    slug: `peakerr-test-${Date.now()}`,
     platformId: "instagram",
     platformLabel: "Instagram",
     category: "Followers [Automated Peakerr Test]",

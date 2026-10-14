@@ -7,7 +7,6 @@ import {
   SiAmericanexpress,
   SiApplepay,
   SiGooglepay,
-  SiPaypal,
   SiBitcoin,
   SiTether,
 } from "react-icons/si";
@@ -18,7 +17,6 @@ const METHODS = [
   { name: "American Express", icon: SiAmericanexpress },
   { name: "Apple Pay", icon: SiApplepay },
   { name: "Google Pay", icon: SiGooglepay },
-  { name: "PayPal", icon: SiPaypal },
   { name: "Bitcoin", icon: SiBitcoin },
   { name: "USDT", icon: SiTether },
 ];

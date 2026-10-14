@@ -58,7 +58,7 @@ export default function RevenueChart({ data }: { data: { date: string; amountCen
               <Tooltip 
                 contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px" }}
                 itemStyle={{ color: "hsl(var(--foreground))" }}
-                formatter={(value: any) => [`$${value.toFixed(2)}`, "Revenue"]}
+                formatter={(value) => [`$${Number(value ?? 0).toFixed(2)}`, "Revenue"]}
               />
               <Area 
                 type="monotone" 

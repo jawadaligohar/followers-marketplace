@@ -14,6 +14,7 @@ export const metadata = { title: "Dashboard | Surgeon" };
 export default async function DashboardOverviewPage() {
   const session = await auth();
   await dbConnect();
+  const totalOrders = await Order.countDocuments({ userId: session!.user.id });
 
   const orders = await Order.find({ userId: session!.user.id })
     .sort({ createdAt: -1 })
@@ -25,6 +26,9 @@ export default async function DashboardOverviewPage() {
     platformLabel: o.platformLabel,
     category: o.category,
     qtyValue: o.qtyValue,
+    postsCovered: o.postsCovered ?? null,
+    pollOption: o.pollOption ?? null,
+    comments: o.comments ?? [],
     priceCents: o.priceCents,
     status: o.status,
     paymentSource: o.paymentSource,
@@ -54,7 +58,7 @@ export default async function DashboardOverviewPage() {
               </span>
               Total orders
             </div>
-            <div className="mt-4 text-3xl font-extrabold text-gradient">{orders.length}</div>
+            <div className="mt-4 text-3xl font-extrabold text-gradient">{totalOrders}</div>
           </CardContent>
         </Card>
         <Card className="border-border bg-card">

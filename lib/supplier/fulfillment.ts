@@ -2,6 +2,19 @@ import { dbConnect } from "@/lib/db/connect";
 import { Order, IOrder } from "@/lib/db/models/Order";
 import { Service } from "@/lib/db/models/Service";
 import { supplierClient } from "./index";
+import { INCLUDED_AUTO_POSTS } from "@/lib/catalog";
+
+/** "https://instagram.com/name/", "@name" or "name" -> "name" */
+export function usernameFromLink(link: string) {
+  const trimmed = link.trim();
+  try {
+    const segment = new URL(trimmed).pathname.split("/").find(Boolean);
+    if (segment) return segment.replace(/^@/, "");
+  } catch {
+    // not a URL; treat as a handle
+  }
+  return trimmed.replace(/^@/, "");
+}
 
 export interface FulfillmentDispatchResult {
   success: boolean;
@@ -35,6 +48,10 @@ export async function fulfillOrder(
     };
   }
 
+  if (order.paymentSource === "bank" && !order.paymentConfirmedAt) {
+    return { success: false, mode: "manual", status: "pending", error: "Confirm the bank payment before dispatching this order" };
+  }
+
   const service = await Service.findById(order.serviceId);
   const supplierServiceId =
     options?.manualSupplierServiceId?.trim() ||
@@ -42,7 +59,7 @@ export async function fulfillOrder(
     null;
 
   // Case 1: No Peakerr service ID is mapped -> Queue for manual fulfillment
-  if (!supplierServiceId) {
+  if (!supplierServiceId || (!process.env.PEAKERR_API_KEY?.trim() && process.env.PEAKERR_SANDBOX !== "true")) {
     order.supplierOrderId = null;
     order.supplierStatus = "manual_fulfillment_required";
     order.status = "processing";
@@ -57,11 +74,24 @@ export async function fulfillOrder(
   }
 
   // Case 2: Peakerr service ID is mapped -> Automated dispatch
+  const claimed = await Order.findOneAndUpdate(
+    { _id: order._id, supplierOrderId: null, supplierStatus: { $ne: "dispatching" } },
+    { $set: { supplierStatus: "dispatching" } }
+  );
+  if (!claimed) return { success: true, mode: "automated", status: order.status, supplierOrderId: order.supplierOrderId || undefined };
   try {
     const result = await supplierClient.submitOrder({
       supplierServiceId,
       link: order.targetLink,
       quantity: order.qtyValue,
+      ...(order.serviceKind === "comments" && { comments: order.comments }),
+      ...(order.serviceKind === "poll" && order.pollOption && { pollOption: order.pollOption }),
+      ...(order.serviceKind === "auto" && {
+        subscription: {
+          username: usernameFromLink(order.targetLink),
+          posts: order.postsCovered ?? INCLUDED_AUTO_POSTS,
+        },
+      }),
     });
 
     order.supplierOrderId = result.supplierOrderId;

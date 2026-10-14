@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Check, Loader2, TrendingUp } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
+import Link from "next/link";
 
 const STEPS = [
   {
@@ -14,7 +15,7 @@ const STEPS = [
   {
     number: "02",
     title: "Secure checkout",
-    desc: "Pay safely with card, PayPal or crypto in seconds. Your payment is the only thing we ever touch.",
+    desc: "Pay in USD with card or crypto, or sign in and use your wallet for 5% off.",
     visual: "pay",
   },
   {
@@ -136,6 +137,9 @@ export default function HowItWorks() {
             </motion.div>
           ))}
         </div>
+        <Link href="/services" className="mt-10 inline-flex text-sm font-semibold text-brand-600 hover:underline">
+          Choose your platform and package &rarr;
+        </Link>
       </div>
     </section>
   );

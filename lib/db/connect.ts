@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
 type MongooseCache = {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -26,6 +24,7 @@ export async function dbConnect() {
     cache.promise = mongoose.connect(uri);
   }
 
-  cache.conn = await cache.promise;
+  try { cache.conn = await cache.promise; }
+  catch (error) { cache.promise = null; throw error; }
   return cache.conn;
 }

@@ -1,13 +1,14 @@
+import { randomUUID } from "node:crypto";
+import { createWalletOrders, fulfillWalletOrders } from "@/lib/walletCheckout";
+import { orderAccessToken } from "@/lib/orderAccess";
+import { createBankTransfer, bankInstructions } from "@/lib/bankTransfer";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { dbConnect } from "@/lib/db/connect";
-import { Service } from "@/lib/db/models/Service";
-import type { IService } from "@/lib/db/models/Service";
 import { Order } from "@/lib/db/models/Order";
 import { checkoutSchema } from "@/lib/validation/checkout";
-import { walletPriceCents } from "@/lib/pricing";
-import { applyWalletTransaction, InsufficientBalanceError } from "@/lib/wallet";
-import { fulfillOrder } from "@/lib/supplier/fulfillment";
+import { resolveLine, LineItemError, type ResolvedLine } from "@/lib/orderLine";
+import { InsufficientBalanceError } from "@/lib/wallet";
 import { stripe } from "@/lib/stripe";
 import { nowpayments } from "@/lib/nowpayments";
 
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid input" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -27,57 +28,74 @@ export async function POST(req: Request) {
   const guestEmail = parsed.data.guestEmail?.toLowerCase().trim();
 
   if (!session?.user && paymentSource === "wallet") {
-    return NextResponse.json({ error: "Sign in to pay from your wallet" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Sign in to pay from your wallet" },
+      { status: 401 },
+    );
   }
   if (!session?.user && !guestEmail) {
-    return NextResponse.json({ error: "Email is required for guest checkout" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Email is required for guest checkout" },
+      { status: 400 },
+    );
   }
 
   await dbConnect();
 
-  // Re-derive every line's price server-side from the Service tiers; client-sent prices are never trusted.
-  const resolved: {
-    service: IService;
-    tier: { qty: string; qtyValue: number; priceCents: number };
-    targetLink: string;
-    fullPriceCents: number;
-    chargeCents: number;
-  }[] = [];
-
+  const resolved: ResolvedLine[] = [];
   for (const item of items) {
-    const service = await Service.findById(item.serviceId);
-    if (!service || !service.active) {
-      return NextResponse.json({ error: "One of the services in your cart is no longer available" }, { status: 404 });
+    try {
+      resolved.push(await resolveLine(item, paymentSource));
+    } catch (err) {
+      if (err instanceof LineItemError) {
+        return NextResponse.json(
+          { error: err.message },
+          { status: err.status },
+        );
+      }
+      throw err;
     }
-    const tier = service.tiers.find((t: { qtyValue: number }) => t.qtyValue === item.qtyValue);
-    if (!tier) {
-      return NextResponse.json({ error: "Invalid quantity for one of your cart items" }, { status: 400 });
-    }
-    const fullPriceCents = tier.priceCents;
-    const chargeCents = paymentSource === "wallet" ? walletPriceCents(fullPriceCents) : fullPriceCents;
-    resolved.push({ service, tier, targetLink: item.targetLink, fullPriceCents, chargeCents });
   }
 
   const totalChargeCents = resolved.reduce((sum, r) => sum + r.chargeCents, 0);
+  if (parsed.data.expectedTotalCents !== undefined && parsed.data.expectedTotalCents !== totalChargeCents) return NextResponse.json({ error: "Package prices changed. Refresh checkout and review the new total before paying." }, { status: 409 });
 
+  const checkoutGroupId = "checkout_" + randomUUID();
+  const trackingToken = orderAccessToken(checkoutGroupId);
+  const checkoutOrigin =
+    process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
+  if (paymentSource === "bank") {
+    if (!bankInstructions())
+      return NextResponse.json(
+        { error: "Bank transfers are not configured yet" },
+        { status: 503 },
+      );
+    const transfer = await createBankTransfer({
+      email: session?.user?.email || guestEmail!,
+      userId: session?.user?.id,
+      lines: resolved,
+    });
+    return NextResponse.json({
+      checkoutUrl:
+        checkoutOrigin +
+        "/checkout/bank-transfer?token=" +
+        encodeURIComponent(transfer.token),
+    });
+  }
   if (paymentSource === "crypto") {
     const cryptoCheckoutId = `cart_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-    const orders = await Order.insertMany(
+    await Order.insertMany(
       resolved.map((r) => ({
+        ...r.orderFields,
+        checkoutGroupId,
+        customerEmail: session?.user?.email || guestEmail,
         userId: session?.user?.id ?? null,
         guestEmail: session?.user ? null : guestEmail,
-        serviceId: r.service._id,
-        platformId: r.service.platformId,
-        platformLabel: r.service.platformLabel,
-        category: r.service.category,
-        qtyValue: r.tier.qtyValue,
-        targetLink: r.targetLink,
-        priceCents: r.chargeCents,
         paymentSource: "crypto",
         status: "pending",
         cryptoCheckoutId,
-      }))
+      })),
     );
 
     const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
@@ -90,8 +108,8 @@ export async function POST(req: Request) {
         order_description: `${resolved.length} items from cart`,
         ipn_callback_url: `${origin}/api/webhooks/nowpayments-cart`,
         success_url: session?.user
-          ? `${origin}/checkout/success`
-          : `${origin}/checkout/success?guest_email=${encodeURIComponent(guestEmail!)}`,
+          ? `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}`
+          : `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}&guest_email=${encodeURIComponent(guestEmail!)}`,
         cancel_url: `${origin}/checkout/cancel`,
       });
 
@@ -109,18 +127,14 @@ export async function POST(req: Request) {
   if (paymentSource === "card") {
     const orders = await Order.insertMany(
       resolved.map((r) => ({
+        ...r.orderFields,
+        checkoutGroupId,
+        customerEmail: session?.user?.email || guestEmail,
         userId: session?.user?.id ?? null,
         guestEmail: session?.user ? null : guestEmail,
-        serviceId: r.service._id,
-        platformId: r.service.platformId,
-        platformLabel: r.service.platformLabel,
-        category: r.service.category,
-        qtyValue: r.tier.qtyValue,
-        targetLink: r.targetLink,
-        priceCents: r.chargeCents,
         paymentSource: "card",
         status: "pending",
-      }))
+      })),
     );
 
     const origin = process.env.NEXT_PUBLIC_APP_URL ?? new URL(req.url).origin;
@@ -132,7 +146,7 @@ export async function POST(req: Request) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: `${r.service.platformLabel} ${r.service.category} — ${r.tier.qty}`,
+            name: r.name,
           },
           unit_amount: r.chargeCents,
         },
@@ -140,74 +154,41 @@ export async function POST(req: Request) {
       })),
       metadata: {
         kind: "order_payment",
-        orderIds: orders.map((o) => o._id.toString()).join(","),
+        checkoutGroupId,
       },
       success_url: session?.user
-        ? `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`
-        : `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&guest_email=${encodeURIComponent(guestEmail!)}`,
+        ? `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}&session_id={CHECKOUT_SESSION_ID}`
+        : `${origin}/checkout/success?token=${encodeURIComponent(trackingToken)}&session_id={CHECKOUT_SESSION_ID}&guest_email=${encodeURIComponent(guestEmail!)}`,
       cancel_url: `${origin}/checkout/cancel`,
       customer_email: session?.user?.email ?? guestEmail,
     });
 
     await Order.updateMany(
       { _id: { $in: orders.map((o) => o._id) } },
-      { $set: { stripeSessionId: checkoutSession.id } }
+      { $set: { stripeSessionId: checkoutSession.id } },
     );
 
     return NextResponse.json({ checkoutUrl: checkoutSession.url });
   }
 
-  // Wallet path (logged-in only): debit once for the whole cart, then submit each order.
   try {
-    await applyWalletTransaction({
-      userId: session!.user.id,
-      type: "order_debit",
-      amountCents: -totalChargeCents,
-      note: resolved.length === 1
-        ? `${resolved[0].service.platformLabel} ${resolved[0].service.category} — ${resolved[0].tier.qty}`
-        : `${resolved.length} items from cart`,
-    });
-  } catch (err) {
-    if (err instanceof InsufficientBalanceError) {
+    const orders = await createWalletOrders(
+      resolved,
+      session!.user.id,
+      session!.user.email!,
+      checkoutGroupId,
+    );
+    await fulfillWalletOrders(orders);
+    return NextResponse.json({ orders });
+  } catch (error) {
+    if (error instanceof InsufficientBalanceError)
       return NextResponse.json(
-        { error: "Insufficient wallet balance", shortfallCents: err.shortfallCents },
-        { status: 402 }
+        {
+          error: "Insufficient wallet balance",
+          shortfallCents: error.shortfallCents,
+        },
+        { status: 402 },
       );
-    }
-    throw err;
+    throw error;
   }
-
-  const createdOrders = [];
-  for (const r of resolved) {
-    const order = await Order.create({
-      userId: session!.user.id,
-      serviceId: r.service._id,
-      platformId: r.service.platformId,
-      platformLabel: r.service.platformLabel,
-      category: r.service.category,
-      qtyValue: r.tier.qtyValue,
-      targetLink: r.targetLink,
-      priceCents: r.chargeCents,
-      paymentSource: "wallet",
-      status: "pending",
-    });
-
-    const fulfillment = await fulfillOrder(order);
-    if (!fulfillment.success && fulfillment.mode === "automated") {
-      order.status = "failed";
-      await order.save();
-
-      await applyWalletTransaction({
-        userId: session!.user.id,
-        type: "refund",
-        amountCents: r.chargeCents,
-        relatedOrderId: order._id,
-        note: `Refund: ${fulfillment.error || "Supplier submission failed"}`,
-      });
-    }
-
-    createdOrders.push(order);
-  }
-
-  return NextResponse.json({ orders: createdOrders });
 }

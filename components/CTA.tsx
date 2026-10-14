@@ -16,10 +16,10 @@ export default function CTA() {
       >
         <Card className="glow relative overflow-hidden border-border bg-gradient-to-br from-brand-50 to-warm-lilac/20 px-8 py-16 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Let's build something amazing together
+            Find the right package for your next post
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Join a thriving community of creators who are finding their voices and connecting with real people. Your journey starts here.
+            Choose followers, likes, views, comments, or automatic plans for Instagram, TikTok, Facebook, and X. Compare quantities and prices in USD.
           </p>
           <motion.div
             className="mt-8 inline-block"
@@ -29,9 +29,10 @@ export default function CTA() {
             <Button
               variant="default"
               className="px-8 py-6"
-              render={<Link href="/#pricing" />}
+              render={<Link href="/services" />}
+              nativeButton={false}
             >
-              Start Growing Now
+              Explore all packages
             </Button>
           </motion.div>
         </Card>

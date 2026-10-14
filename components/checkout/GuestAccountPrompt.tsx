@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function GuestAccountPrompt({ email }: { email: string }) {
+export default function GuestAccountPrompt({ email, orderToken }: { email: string; orderToken?: string }) {
   const router = useRouter();
   const [dismissed, setDismissed] = useState(false);
   const [name, setName] = useState("");
@@ -24,7 +24,7 @@ export default function GuestAccountPrompt({ email }: { email: string }) {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, orderToken }),
     });
     const data = await res.json().catch(() => ({}));
 
@@ -63,7 +63,7 @@ export default function GuestAccountPrompt({ email }: { email: string }) {
             Save this order to an account
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Optional — create a password for {email} to track this order, reorder faster, and unlock 15% off with wallet payments.
+            Optional — create a password for {email} to track this order, reorder faster, and unlock 5% off with wallet payments.
           </p>
 
           <form onSubmit={handleCreate} className="mt-4 space-y-3">

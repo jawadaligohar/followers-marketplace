@@ -19,7 +19,6 @@ export default function PeakerrStatusBanner() {
   const [loading, setLoading] = useState(true);
 
   async function fetchStatus() {
-    setLoading(true);
     try {
       const res = await fetch("/api/admin/supplier/status");
       const data = await res.json();
@@ -37,7 +36,13 @@ export default function PeakerrStatusBanner() {
   }
 
   useEffect(() => {
-    fetchStatus();
+    let cancelled = false;
+    fetch("/api/admin/supplier/status")
+      .then((res) => res.json())
+      .then((data) => { if (!cancelled) setStatus(data); })
+      .catch(() => { if (!cancelled) setStatus({ connected: false, mode: "sandbox", apiKeyConfigured: false, error: "Network error fetching Peakerr status" }); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   if (loading && !status) {
@@ -95,7 +100,7 @@ export default function PeakerrStatusBanner() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={fetchStatus}
+        onClick={() => { setLoading(true); void fetchStatus(); }}
         disabled={loading}
         className="h-6 gap-1 text-[11px] text-muted-foreground hover:text-foreground"
       >

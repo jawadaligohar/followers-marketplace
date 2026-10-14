@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/adminGuard";
 import { dbConnect } from "@/lib/db/connect";
 import { Service } from "@/lib/db/models/Service";
-import { serviceSchema } from "@/lib/validation/service";
+import { serviceUpdateSchema } from "@/lib/validation/service";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await requireAdmin();
@@ -10,7 +10,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params;
   const body = await req.json().catch(() => null);
-  const parsed = serviceSchema.partial().safeParse(body);
+  const parsed = serviceUpdateSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid input" },

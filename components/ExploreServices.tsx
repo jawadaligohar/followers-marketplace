@@ -3,27 +3,13 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import {
-  FaInstagram,
-  FaTiktok,
-  FaYoutube,
-  FaFacebook,
-} from "react-icons/fa6";
-
-const SERVICES = [
-  { platform: "Instagram", label: "Followers", icon: FaInstagram, color: "text-pink-500" },
-  { platform: "Instagram", label: "Likes", icon: FaInstagram, color: "text-pink-500" },
-  { platform: "Instagram", label: "Views", icon: FaInstagram, color: "text-pink-500" },
-  { platform: "TikTok", label: "Followers", icon: FaTiktok, color: "text-foreground" },
-  { platform: "TikTok", label: "Likes", icon: FaTiktok, color: "text-foreground" },
-  { platform: "TikTok", label: "Views", icon: FaTiktok, color: "text-foreground" },
-  { platform: "YouTube", label: "Subscribers", icon: FaYoutube, color: "text-red-500" },
-  { platform: "YouTube", label: "Views", icon: FaYoutube, color: "text-red-500" },
-  { platform: "Facebook", label: "Page Likes", icon: FaFacebook, color: "text-blue-500" },
-  { platform: "Facebook", label: "Followers", icon: FaFacebook, color: "text-blue-500" },
-];
+import PlatformIcon from "@/components/shared/PlatformIcon";
+import { PLATFORMS } from "@/lib/catalog";
+import { useServices } from "@/lib/cart/useServices";
+import { centsToUsd } from "@/lib/pricing";
 
 export default function ExploreServices() {
+  const { services, loaded } = useServices();
   return (
     <section className="border-y border-border bg-muted/40 py-20">
       <div className="mx-auto max-w-7xl px-6">
@@ -37,24 +23,26 @@ export default function ExploreServices() {
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {SERVICES.map((svc, i) => (
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {services.map((svc, i) => (
             <motion.div
-              key={`${svc.platform}-${svc.label}`}
+              key={svc.slug}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.3, delay: i * 0.03 }}
+              transition={{ duration: 0.3, delay: Math.min(i * 0.02, 0.4) }}
               whileHover={{ y: -3 }}
             >
               <Link
-                href="/#pricing"
+                href={`/services/${svc.slug}`}
                 className="group flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3.5 text-sm transition hover:border-brand-500/40 hover:shadow-sm"
               >
-                <span className="flex items-center gap-2.5">
-                  <svc.icon className={`h-4 w-4 shrink-0 ${svc.color}`} />
-                  <span className="text-muted-foreground">
-                    {svc.platform} <span className="text-foreground">{svc.label}</span>
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <PlatformIcon platformId={svc.platformId} />
+                  <span className="min-w-0 text-muted-foreground">
+                    {PLATFORMS[svc.platformId].label.replace(" (Twitter)", "")}{" "}
+                    <span className="text-foreground">{svc.category}</span>
+                    {loaded && svc.tiers.length > 0 && <span className="block text-xs">From ${centsToUsd(Math.min(...svc.tiers.map((t) => t.priceCents)))}</span>}
                   </span>
                 </span>
                 <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 transition group-hover:text-brand-500" />

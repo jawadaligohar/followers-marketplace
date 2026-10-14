@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { PackageOpen, ExternalLink, Send, Loader2, AlertCircle } from "lucide-react";
 import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
 import EmptyState from "@/components/shared/EmptyState";
+import OrderExtras, { type OrderExtrasData } from "@/components/shared/OrderExtras";
 import { formatDateTime } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import {
@@ -26,7 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export type AdminOrderRow = {
+export type AdminOrderRow = OrderExtrasData & {
   _id: string;
   platformLabel: string;
   category: string;
@@ -155,6 +156,7 @@ export default function OrdersTable({ orders }: { orders: AdminOrderRow[] }) {
                 <TableCell>
                   <span className="font-medium">{order.platformLabel}</span>{" "}
                   <span className="text-muted-foreground">{order.category}</span>
+                  <OrderExtras order={order} showComments />
                 </TableCell>
 
                 <TableCell className="max-w-[200px]">

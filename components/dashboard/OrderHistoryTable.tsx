@@ -14,10 +14,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/EmptyState";
+import OrderExtras, { type OrderExtrasData } from "@/components/shared/OrderExtras";
 import OrderStatusBadge from "./OrderStatusBadge";
 import { formatDateTime } from "@/lib/format";
 
-export type OrderRow = {
+export type OrderRow = OrderExtrasData & {
   _id: string;
   platformLabel: string;
   category: string;
@@ -67,6 +68,8 @@ export default function OrderHistoryTable({ orders }: { orders: OrderRow[] }) {
             >
               <TableCell>
                 {order.platformLabel} {order.category}
+                <OrderExtras order={order} />
+                <Link href={`/track-order?orderId=${order._id}`} className="mt-1 block text-xs text-brand-600 hover:underline">Track order · {order._id}</Link>
               </TableCell>
               <TableCell className="text-foreground/80">{order.qtyValue.toLocaleString()}</TableCell>
               <TableCell className="capitalize text-foreground/80">{order.paymentSource}</TableCell>

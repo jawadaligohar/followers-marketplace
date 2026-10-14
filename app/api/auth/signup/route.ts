@@ -1,3 +1,4 @@
+import { groupQuery, verifyOrderAccessToken } from "@/lib/orderAccess";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { dbConnect } from "@/lib/db/connect";
@@ -40,8 +41,9 @@ export async function POST(req: Request) {
   });
 
   // Link any prior guest orders placed with this email to the new account.
-  await Order.updateMany(
-    { guestEmail: email.toLowerCase(), userId: null },
+  const groupKey = parsed.data.orderToken ? verifyOrderAccessToken(parsed.data.orderToken) : null;
+  if (groupKey) await Order.updateMany(
+    { ...groupQuery(groupKey), guestEmail: email.toLowerCase(), userId: null },
     { $set: { userId: user._id }, $unset: { guestEmail: "" } }
   );
 

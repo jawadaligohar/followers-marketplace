@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { assertIsolatedTestServer } from "../lib/testing";
 dotenv.config({ path: ".env" });
 dotenv.config({ path: ".env.local" });
 
@@ -6,7 +7,6 @@ import { dbConnect } from "../lib/db/connect";
 import { Service } from "../lib/db/models/Service";
 import { Order } from "../lib/db/models/Order";
 import { User } from "../lib/db/models/User";
-import { Transaction } from "../lib/db/models/Transaction";
 import { getNowpaymentsIpnSecret } from "../lib/nowpayments";
 import { getPeakerrClient } from "../lib/supplier";
 import { fulfillOrder } from "../lib/supplier/fulfillment";
@@ -25,6 +25,7 @@ function generateIpnSignature(payload: Record<string, unknown>, secret: string):
 }
 
 async function runMasterE2ETest() {
+  await assertIsolatedTestServer(BASE_URL);
   console.log("======================================================================");
   console.log("🌟 MASTER END-TO-END SYSTEM TEST: CRYPTO CHECKOUT + PEAKERR FULFILLMENT");
   console.log("======================================================================");
@@ -62,6 +63,7 @@ async function runMasterE2ETest() {
   // -------------------------------------------------------------------------
   console.log("\n📦 STEP 3: Creating Test Services in Database...");
   const autoService = await Service.create({
+    slug: `e2e-auto-${Date.now()}`,
     platformId: "instagram",
     platformLabel: "Instagram",
     category: "Followers [E2E Auto]",
@@ -72,6 +74,7 @@ async function runMasterE2ETest() {
   });
 
   const manualService = await Service.create({
+    slug: `e2e-manual-${Date.now()}`,
     platformId: "tiktok",
     platformLabel: "TikTok",
     category: "Followers [E2E Manual]",

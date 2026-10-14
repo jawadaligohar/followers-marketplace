@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, CheckCircle2, MapPin, Mail } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
+import PackageLinks from "@/components/shared/PackageLinks";
 
 const NICHES = [
   { 
@@ -302,12 +303,13 @@ export default function NicheShowcase() {
           </div>
 
         </div>
+        <PackageLinks slugs={["instagram-followers", "tiktok-views", "facebook-page-likes", "twitter-likes"]} />
       </div>
     </section>
   );
 }
 
-function TrendingUpIcon(props: any) {
+function TrendingUpIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

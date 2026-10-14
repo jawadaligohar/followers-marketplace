@@ -25,7 +25,7 @@ export default function WalletBalanceCard({ walletBalanceCents }: { walletBalanc
             </div>
             <span className="flex items-center gap-1 rounded-full bg-warm-amber/20 px-2.5 py-1 text-[11px] font-medium text-warm-amber-foreground">
               <Sparkles className="h-3 w-3" />
-              15% off
+              5% off
             </span>
           </div>
           <div className="mt-4 text-3xl font-extrabold text-gradient">

@@ -1,22 +1,24 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Users, PackageCheck, Star, Headset } from "lucide-react";
+import { Users, PackageCheck, Star, Wallet } from "lucide-react";
 import CountUp from "./CountUp";
-
-const STATS = [
-  { value: 250, suffix: "K+", label: "Happy Customers", icon: Users, badge: "bg-warm-amber/20 text-warm-amber-foreground" },
-  { value: 5, suffix: "M+", label: "Orders Delivered", icon: PackageCheck, badge: "bg-warm-mint/20 text-warm-mint-foreground" },
-  { value: 4.9, suffix: "/5", label: "Average Rating", decimals: 1, icon: Star, badge: "bg-warm-rose/20 text-warm-rose-foreground" },
-  { value: 24, suffix: "/7", label: "Support Available", icon: Headset, badge: "bg-warm-lilac/20 text-warm-lilac-foreground" },
-];
+import Link from "next/link";
+import { useServices } from "@/lib/cart/useServices";
 
 export default function Stats() {
+  const { services } = useServices();
+  const stats = [
+    { value: new Set(services.map((s) => s.platformId)).size, suffix: "", label: "Platforms", icon: Users, badge: "bg-warm-amber/20 text-warm-amber-foreground", href: "/services" },
+    { value: services.length, suffix: "", label: "Services", icon: Star, badge: "bg-warm-rose/20 text-warm-rose-foreground", href: "/services" },
+    { value: services.reduce((total, s) => total + s.tiers.length, 0), suffix: "", label: "Packages", icon: PackageCheck, badge: "bg-warm-mint/20 text-warm-mint-foreground", href: "/#pricing" },
+    { value: 5, suffix: "%", label: "Wallet savings", icon: Wallet, badge: "bg-warm-lilac/20 text-warm-lilac-foreground", href: "/dashboard/wallet" },
+  ];
   return (
     <section className="relative overflow-hidden border-y border-border bg-muted/40 py-14">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-6 sm:grid-cols-4">
-        {STATS.map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 16 }}
@@ -33,9 +35,9 @@ export default function Stats() {
             </motion.span>
             <div>
               <div className="text-2xl font-extrabold text-gradient sm:text-3xl">
-                <CountUp value={stat.value} suffix={stat.suffix} decimals={stat.decimals ?? 0} />
+                <CountUp value={stat.value} suffix={stat.suffix} />
               </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
+              <Link href={stat.href} className="text-sm text-muted-foreground hover:text-foreground hover:underline">{stat.label}</Link>
             </div>
           </motion.div>
         ))}

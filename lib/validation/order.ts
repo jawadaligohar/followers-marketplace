@@ -1,14 +1,13 @@
 import { z } from "zod";
+import { checkoutItemSchema } from "./checkout";
 
-export const createOrderSchema = z.object({
-  serviceId: z.string().min(1),
-  qtyValue: z.number().int().positive(),
-  targetLink: z.string().min(2, "Enter a valid profile or post link"),
-  paymentSource: z.enum(["wallet", "card", "crypto"]),
+export const createOrderSchema = checkoutItemSchema.extend({
+  expectedTotalCents: z.number().int().nonnegative().optional(),
+  paymentSource: z.enum(["wallet", "card", "crypto", "bank"]),
 });
 
 export const topupSchema = z.object({
-  method: z.enum(["stripe", "nowpayments"]).default("stripe"),
+  method: z.enum(["stripe", "nowpayments", "bank"]).default("stripe"),
   amountCents: z
     .number()
     .int()
